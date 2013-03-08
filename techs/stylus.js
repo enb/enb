@@ -1,55 +1,34 @@
-var fs = require('fs'),
+var inherit = require('inherit'),
+    fs = require('fs'),
     Vow = require('vow'),
     stylus = require('stylus');
 
-function StylusTech() {}
-
-StylusTech.prototype = {
-
-    init: function(node) {
-        this.node = node;
+module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
+    getName: function() {
+        return 'stylus';
     },
-
-    getTargets: function() {
-        return [this.node.getTargetName('styl.css')];
+    getDestSuffixes: function() {
+        return ['css'];
     },
-
-    build: function() {
-        var promise = Vow.promise(), _this = this;
-        try {
-            var target = this.node.getTargetName('styl.css'),
-                targetPath = this.node.resolvePath(target);
-            this.node.requireSources([this.node.getTargetName('files')]).spread((function(files) {
-                try {
-                    var res = [];
-                    var filesBySuffix = files.getBySuffix(['styl', 'css']);
-                    for (var i = 0, l = filesBySuffix.length; i < l; i++) {
-                        res.push('@import "' + filesBySuffix[i].fullname + '";');
-                    }
-                    stylus(res.join('\n'))
-                      .set('filename', _this.node.resolvePath(target))
-                      .render(function(err, css) {
-                          if (err) {
-                              return promise.reject(err);
-                          }
-                          css = css.replace(/@import "([^"]+)";/g, function(s, fn) {
-                              return fs.readFileSync(fn, "utf8");
-                          });
-                          fs.writeFileSync(targetPath, css, "utf8");
-                          _this.node.resolveTarget(target);
-                          return promise.fulfill();
-                      });
-                } catch (err) {
-                    return promise.reject(err);
-                }
-            }), function(err) {
-                return promise.reject(err);
-            });
-        } catch (e) {
-            promise.reject(e);
-        }
+    getSourceSuffixes: function() {
+        return ['css', 'styl'];
+    },
+    getBuildResult: function(sourceFiles, suffix) {
+        var promise = Vow.promise();
+        var res = sourceFiles.map(function(file) {
+            return '@import "' + file.fullname + '";';
+        });
+        stylus(res.join('\n'))
+          .set('filename', this.node.resolvePath(this.node.getTargetName(suffix)))
+          .render(function(err, css) {
+              if (err) {
+                  return promise.reject(err);
+              }
+              css = css.replace(/@import "([^"]+)";/g, function(s, fn) {
+                  return fs.readFileSync(fn, "utf8");
+              });
+              return promise.fulfill(css);
+          });
         return promise;
     }
-};
-
-module.exports = StylusTech;
+});

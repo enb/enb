@@ -5,6 +5,9 @@
 function FilesTech() {}
 
 FilesTech.prototype = {
+    getName: function() {
+        return 'files';
+    },
 
     init: function(node) {
         this.node = node;
@@ -30,6 +33,7 @@ FilesTech.prototype = {
                                 files.addFiles(levels.getBlockFiles(dep.block, dep.mod, dep.val));
                             }
                         }
+                        _this.node.getLogger().logAction('files', files.items.length);
                         _this.node.resolveTarget(target, files);
                         return promise.fulfill();
                     } catch (err) {
@@ -42,7 +46,9 @@ FilesTech.prototype = {
             promise.reject(e);
         }
         return promise;
-    }
+    },
+
+    clean: function() {}
 };
 
 module.exports = FilesTech;

@@ -9,6 +9,9 @@ function LevelsTech(levelConfig) {
 }
 
 LevelsTech.prototype = {
+    getName: function() {
+        return 'levels';
+    },
 
     init: function(node) {
         this.node = node;
@@ -22,13 +25,28 @@ LevelsTech.prototype = {
         var _this = this,
             promise = Vow.promise();
         try {
-            var target = this.node.getTargetName('levels');
-            var levelList = [];
+            var target = this.node.getTargetName('levels'),
+                levelList = [],
+                levelsToCache = [],
+                cache = this.node.getNodeCache(target);
             for (var i = 0, l = this.levelConfig.length; i < l; i++) {
-                var levelPath = this.levelConfig[i],
+                var levelInfo = this.levelConfig[i];
+                levelInfo = typeof levelInfo == 'object' ? levelInfo : {path: levelInfo};
+                var
+                    levelPath = levelInfo.path,
                     levelKey = 'level:' + levelPath;
                 if (!this.node.buildCache[levelKey]) {
-                    this.node.buildCache[levelKey] = new Level(levelPath);
+                    var level = new Level(levelPath);
+                    if (levelInfo.check === false) {
+                        var blocks = cache.get(levelPath);
+                        if (blocks) {
+                            level.setBlocks(blocks);
+                            level.setLoaded();
+                        } else {
+                            levelsToCache.push(level);
+                        }
+                    }
+                    this.node.buildCache[levelKey] = level;
                 }
                 levelList.push(this.node.buildCache[levelKey]);
             }
@@ -40,6 +58,9 @@ LevelsTech.prototype = {
                     return Vow.all(levelList.map(function(level) {
                         return level.load();
                     })).then((function() {
+                        levelsToCache.forEach(function(level) {
+                            cache.set(level.path, level.getBlocks());
+                        });
                         _this.node.resolveTarget(target, new Levels(levelList));
                         return promise.fulfill();
                     }), function(err) {
@@ -53,7 +74,9 @@ LevelsTech.prototype = {
             promise.reject(err);
         }
         return promise;
-    }
+    },
+
+    clean: function() {}
 };
 
 module.exports = LevelsTech;

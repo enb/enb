@@ -6,6 +6,10 @@ var Vow = require('vow'),
 function DepsTech() {}
 
 DepsTech.prototype = {
+    getName: function() {
+        return 'deps';
+    },
+
     init: function(node) {
         this.node = node;
     },
@@ -51,6 +55,18 @@ DepsTech.prototype = {
             return promise.reject(err);
         });
         return promise;
+    },
+
+    clean: function() {
+        return this.cleanTarget(this.node.getTargetName('deps.js'));
+    },
+
+    cleanTarget: function(target) {
+        var targetPath = this.node.resolvePath(target);
+        if (fs.existsSync(targetPath)) {
+            fs.unlinkSync(this.node.resolvePath(target));
+            this.node.getLogger().logClean(target);
+        }
     }
 };
 

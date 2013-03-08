@@ -1,11 +1,18 @@
 var path = require('path'),
     cdir = process.cwd(),
     MakePlatform = require('../lib/make'),
-    makePlatform = new MakePlatform();
+    makePlatform = new MakePlatform(),
+    argv = require('optimist')
+        .boolean('cache')
+        .default({cache: true})
+        .argv;
 
 makePlatform.init(cdir).then((function() {
-    return makePlatform.build(process.argv[2])
-}), function(err) {
-  return console.log(err);
+    if (!argv['cache']) {
+        makePlatform.dropCache();
+    }
+    return makePlatform.build(argv._[0])
+})).then(null, function(err) {
+    console.error(err.stack);
+    process.exit(1);
 });
-

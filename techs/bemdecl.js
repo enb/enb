@@ -4,6 +4,10 @@ function BemdeclTech() {}
 
 BemdeclTech.prototype = {
 
+    getName: function() {
+        return 'bemdecl';
+    },
+
     init: function(node) {
       this.node = node;
     },
@@ -27,7 +31,9 @@ BemdeclTech.prototype = {
             return promise.fulfill();
         });
         return promise;
-    }
+    },
+
+    clean: function() {}
 };
 
 module.exports = BemdeclTech;

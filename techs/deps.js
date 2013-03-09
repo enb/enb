@@ -25,8 +25,9 @@ DepsTech.prototype = {
         depsTarget = this.node.getTargetName('deps.js');
         depsTargetPath = this.node.resolvePath(depsTarget);
         this.node.requireSources([this.node.getTargetName('bemdecl.js'), this.node.getTargetName('levels')]).spread((function(bemdecl, levels) {
-            var dep = new Dep(levels);
             try {
+                var bemdecl = require(_this.node.resolvePath(_this.node.getTargetName('bemdecl.js'))),
+                    dep = new Dep(levels);
                 bemdecl.blocks.forEach(function(block) {
                     dep.addBlock(block.name);
                     if (block.mods) {

@@ -4,7 +4,7 @@ var inherit = require('inherit'),
 
 module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     getName: function() {
-        return 'module';
+        return 'js-module';
     },
     getDestSuffixes: function() {
         return ['js'];
@@ -12,11 +12,14 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     getSourceSuffixes: function() {
         return ['js'];
     },
-    getBuildResult: function(sourceFiles, suffix) {
-        var res = sourceFiles.map(function(file) {
+    _buildChunks: function(sourceFiles) {
+        return sourceFiles.map(function(file) {
             return fs.readFileSync(file.fullname, "utf8");
         });
-        var amdFilename = this.node.resolvePath(this.node.getTargetName('amd.js'));
+    },
+    getBuildResult: function(sourceFiles, suffix) {
+        var res = this._buildChunks(sourceFiles);
+            amdFilename = this.node.resolvePath(this.node.getTargetName('amd.js'));
         if (fs.existsSync(amdFilename)) {
             this.wrapModule(res, vm.runInThisContext(fs.readFileSync(amdFilename, 'utf-8')));
         } else {

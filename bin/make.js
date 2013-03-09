@@ -11,7 +11,7 @@ makePlatform.init(cdir).then((function() {
     if (!argv['cache']) {
         makePlatform.dropCache();
     }
-    return makePlatform.build(argv._[0])
+    return makePlatform.build(argv._.map(function(s) { return s.toString(); }))
 })).then(null, function(err) {
     console.error(err.stack);
     process.exit(1);

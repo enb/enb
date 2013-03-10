@@ -1,7 +1,8 @@
 var fs = require('fs'),
     Vow = require('vow'),
     inherit = require('inherit'),
-    childProcess = require('child_process');
+    childProcess = require('child_process'),
+    Vow = require('vow');
 
 module.exports = inherit({
     __constructor: function(sourceSuffix, destSuffix, options) {
@@ -34,8 +35,10 @@ module.exports = inherit({
             xslFile = options.xslFile;
 
         if (options.xslSource) {
-            xslFile = this.node.resolvePath(options.xslSource);
-            sources.push(options.xslSource);
+            var xslSource = options.xslSource;
+            xslSource = xslSource.replace(/\?/g, this.node.getTargetName());
+            xslFile = this.node.resolvePath(xslSource);
+            sources.push(xslSource);
         }
 
         function saveFile(text) {
@@ -73,17 +76,10 @@ module.exports = inherit({
         });
         return promise;
     },
-
-
     clean: function() {
-        return this.cleanTarget(this.node.getTargetName(this._destSuffix));
-    },
-
-    cleanTarget: function(target) {
-        var targetPath = this.node.resolvePath(target);
-        if (fs.existsSync(targetPath)) {
-            fs.unlinkSync(this.node.resolvePath(target));
-            this.node.getLogger().logClean(target);
-        }
+        var _this = this;
+        return Vow.all(this.getTargets().map(function(target) {
+            _this.node.cleanTargetFile(target);
+        }));
     }
 });

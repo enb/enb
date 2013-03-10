@@ -89,7 +89,7 @@ Dep.prototype.getBlockDepFiles = function(blockName, modName, modVal) {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         block = _ref[_i];
         if (modName) {
-            if (!(block.mods[modName] && (files = block.mods[modName][modVal]))) {
+            if (!(block.mods[modName] && (files = block.mods[modName][modVal].files))) {
                 files = [];
             }
         } else {
@@ -112,7 +112,7 @@ Dep.prototype.getElemDepFiles = function(blockName, elemName, modName, modVal) {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         elem = _ref[_i];
         if (modName) {
-            if (!(elem.mods[modName] && (files = elem.mods[modName][modVal]))) {
+            if (!(elem.mods[modName] && (files = elem.mods[modName][modVal].files))) {
                 files = [];
             }
         } else {
@@ -207,10 +207,13 @@ Dep.prototype.normalizeDeps = function(deps, blockName) {
 Dep.prototype.getDeps = function(decl) {
     var dep, file, files, key, mustDecl, mustDepIndex, mustDeps, nd, shouldDepIndex, shouldDeps, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
     if (decl.elem) {
-        files = this.getElemDepFiles(decl.name, decl.elem, decl.modName, decl.modVal);
+        files = this.levels.getElemFiles(decl.name, decl.elem, decl.modName, decl.modVal);
     } else {
-        files = this.getBlockDepFiles(decl.name, decl.modName, decl.modVal);
+        files = this.levels.getBlockFiles(decl.name, decl.modName, decl.modVal);
     }
+    files = files.filter(function(file) {
+        return file.suffix == 'deps.js';
+    });
     mustDepIndex = {};
     shouldDepIndex = {};
     mustDeps = [];

@@ -1,54 +1,49 @@
-    var fs = require('fs'),
-            Vow = require('vow'),
-            FileList = require('../lib/file-list');
+var fs = require('fs'),
+    Vow = require('vow'),
+    FileList = require('../lib/file-list'),
+    inherit = require('inherit');
 
-function FilesTech() {}
-
-FilesTech.prototype = {
+module.exports = inherit({
     getName: function() {
         return 'files';
     },
-
     init: function(node) {
         this.node = node;
     },
-
     getTargets: function() {
-        return [this.node.getTargetName('files')];
+        return [
+            this.node.getTargetName('files'),
+            this.node.getTargetName('dirs'),
+            this.node.getTargetName('files-and-dirs')
+        ];
     },
-
     build: function() {
-        var promise = Vow.promise(), _this = this;
-        try {
-            var target = this.node.getTargetName('files');
-            this.node.requireSources([this.node.getTargetName('deps.js'), this.node.getTargetName('levels')])
-                .spread((function(deps, levels) {
-                    try {
-                        var files = new FileList();
-                        for (var i = 0, l = deps.length; i < l; i++) {
-                            var dep = deps[i];
-                            if (dep.elem) {
-                                files.addFiles(levels.getElemFiles(dep.block, dep.elem, dep.mod, dep.val));
-                            } else {
-                                files.addFiles(levels.getBlockFiles(dep.block, dep.mod, dep.val));
-                            }
-                        }
-                        _this.node.getLogger().logAction('files', files.items.length);
-                        _this.node.resolveTarget(target, files);
-                        return promise.fulfill();
-                    } catch (err) {
-                        return promise.reject(err);
+        var _this = this,
+            filesTarget = this.node.getTargetName('files'),
+            dirsTarget = this.node.getTargetName('dirs'),
+            filesAndDirsTarget = this.node.getTargetName('files-and-dirs');
+        return this.node.requireSources([this.node.getTargetName('deps.js'), this.node.getTargetName('levels')])
+            .spread(function(deps, levels) {
+                var files = new FileList(), dirs = new FileList(), filesAndDirs = new FileList();
+                for (var i = 0, l = deps.length; i < l; i++) {
+                    var dep = deps[i], entities;
+                    if (dep.elem) {
+                        entities = levels.getElemEntities(dep.block, dep.elem, dep.mod, dep.val);
+                    } else {
+                        entities = levels.getBlockEntities(dep.block, dep.mod, dep.val);
                     }
-                }), function(err) {
-                    return promise.reject(err);
-                });
-        } catch (e) {
-            promise.reject(e);
-        }
-        return promise;
+                    files.addFiles(entities.files);
+                    dirs.addFiles(entities.dirs);
+                    filesAndDirs.addFiles(entities.files);
+                    filesAndDirs.addFiles(entities.dirs);
+                }
+                console.log(dirs);
+                _this.node.getLogger().logAction('files', files.items.length);
+                _this.node.resolveTarget(filesTarget, files);
+                _this.node.resolveTarget(dirsTarget, dirs);
+                _this.node.resolveTarget(filesAndDirsTarget, filesAndDirs);
+            });
     },
 
     clean: function() {}
-};
-
-module.exports = FilesTech;
+});

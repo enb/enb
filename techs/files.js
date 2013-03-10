@@ -37,7 +37,6 @@ module.exports = inherit({
                     filesAndDirs.addFiles(entities.files);
                     filesAndDirs.addFiles(entities.dirs);
                 }
-                console.log(dirs);
                 _this.node.getLogger().logAction('files', files.items.length);
                 _this.node.resolveTarget(filesTarget, files);
                 _this.node.resolveTarget(dirsTarget, dirs);

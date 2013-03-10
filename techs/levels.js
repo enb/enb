@@ -1,5 +1,5 @@
 var FileList = require('../lib/file-list'),
-    Level = require('../lib/level'),
+    Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),
     fs = require('fs'),
     Vow = require('vow');
@@ -59,7 +59,7 @@ LevelsTech.prototype = {
                         return level.load();
                     })).then((function() {
                         levelsToCache.forEach(function(level) {
-                            cache.set(level.path, level.getBlocks());
+                            cache.set(level.getPath(), level.getBlocks());
                         });
                         _this.node.resolveTarget(target, new Levels(levelList));
                         return promise.fulfill();

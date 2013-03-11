@@ -13,7 +13,6 @@ module.exports = inherit(require('./css'), {
     },
     getBuildResult: function(sourceFiles, suffix) {
         var _this = this,
-            evaluator = new stylus.Evaluator({}),
             promise = Vow.promise();
 
         var css = sourceFiles.map(function(file) {

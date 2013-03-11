@@ -82,107 +82,43 @@ function Dep(levels) {
     this.declarationIndex = {};
 }
 
-Dep.prototype.getBlockDepFiles = function(blockName, modName, modVal) {
-    var block, deps, file, files, _i, _j, _len, _len1, _ref;
-    deps = [];
-    _ref = this.levels.getBlocks(blockName);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        block = _ref[_i];
-        if (modName) {
-            if (!(block.mods[modName] && (files = block.mods[modName][modVal].files))) {
-                files = [];
-            }
-        } else {
-            files = block.files;
-        }
-        for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
-            file = files[_j];
-            if (file.suffix === 'deps.js') {
-                deps.push(file);
-            }
-        }
-    }
-    return deps;
-};
-
-Dep.prototype.getElemDepFiles = function(blockName, elemName, modName, modVal) {
-    var deps, elem, file, files, _i, _j, _len, _len1, _ref;
-    deps = [];
-    _ref = this.levels.getElems(blockName, elemName);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        elem = _ref[_i];
-        if (modName) {
-            if (!(elem.mods[modName] && (files = elem.mods[modName][modVal].files))) {
-                files = [];
-            }
-        } else {
-            files = elem.files;
-        }
-        for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
-            file = files[_j];
-            if (file.suffix === 'deps.js') {
-                deps.push(file);
-            }
-        }
-    }
-    return deps;
-};
-
 Dep.prototype.normalizeDep = function(dep, blockName) {
-    var elem, elems, modName, modVals, res, val, _i, _j, _k, _len, _len1, _len2;
     if (typeof dep === 'string') {
-        return [
-            {
-                name: dep
-            }
-        ];
+        return [{ name: dep }];
     } else {
-        res = [];
-        elems = dep.elems || dep.elem;
-        if (elems) {
+        var res = [];
+        if (dep.elem) {
+            if (dep.mods) {
+                Object.keys(dep.mods).forEach(function(modName) {
+                    var modVals = dep.mods[modName];
+                    if (!Array.isArray(modVals)) {
+                        modVals = [modVals];
+                    }
+                    res = res.concat(modVals.map(function(modVal) {
+                        return { name: dep.block || blockName, elem: dep.elem, modName: modName, modVal: modVal };
+                    }));
+                });
+            } else {
+                res.push({ name: dep.block || blockName, elem: dep.elem });
+            }
+        } else if (dep.mods) {
+            Object.keys(dep.mods).forEach(function(modName) {
+                    var modVals = dep.mods[modName];
+                    if (!Array.isArray(modVals)) {
+                        modVals = [modVals];
+                    }
+                    res = res.concat(modVals.map(function(modVal) {
+                        return { name: dep.block || blockName, modName: modName, modVal: modVal };
+                    }));
+            });
+        } else if (dep.elems) {
+            var elems = dep.elems;
             if (!Array.isArray(elems)) {
                 elems = [elems];
             }
-            for (_i = 0, _len = elems.length; _i < _len; _i++) {
-                elem = elems[_i];
-                if (dep.mods) {
-                    for (modName in dep.mods) {
-                        modVals = dep.mods[modName];
-                        if (!Array.isArray(modVals)) {
-                            modVals = [modVals];
-                        }
-                        for (_j = 0, _len1 = modVals.length; _j < _len1; _j++) {
-                            val = modVals[_j];
-                            res.push({
-                                name: dep.block || blockName,
-                                elem: elem,
-                                modName: modName,
-                                modVal: val
-                            });
-                        }
-                    }
-                } else {
-                    res.push({
-                        name: dep.block || blockName,
-                        elem: elem
-                    });
-                }
-            }
-        } else if (dep.mods) {
-            for (modName in dep.mods) {
-                modVals = dep.mods[modName];
-                if (!Array.isArray(modVals)) {
-                    modVals = [modVals];
-                }
-                for (_k = 0, _len2 = modVals.length; _k < _len2; _k++) {
-                    val = modVals[_k];
-                    res.push({
-                        name: dep.block || blockName,
-                        modName: modName,
-                        modVal: val
-                    });
-                }
-            }
+            res = res.concat(elems.map(function(elem) {
+                return { name: dep.block || blockName, elem: elem };
+            }));
         } else {
             res = [{ name: dep.block || blockName }];
         }
@@ -351,7 +287,10 @@ Dep.prototype.resolve = function() {
         items = newItems;
     }
     if (items.length) {
-        throw Error('Unresolved deps: ', items);
+        var errorMessage = items.map(function(item) {
+            return item.key + ' <- ' + Object.keys(item.deps).join(', ');
+        });
+        throw Error('Unresolved deps: \n' + errorMessage.join('\n'));
     }
     return result;
 };

@@ -101,18 +101,17 @@ Dep.prototype.normalizeDep = function(dep, blockName) {
             } else {
                 res.push({ name: dep.block || blockName, elem: dep.elem });
             }
-        } else if (dep.mods) {
-            Object.keys(dep.mods).forEach(function(modName) {
-                    var modVals = dep.mods[modName];
-                    if (!Array.isArray(modVals)) {
-                        modVals = [modVals];
-                    }
-                    res = res.concat(modVals.map(function(modVal) {
-                        return { name: dep.block || blockName, modName: modName, modVal: modVal };
-                    }));
+        } else if (dep.mods || dep.elems) {
+            Object.keys(dep.mods || {}).forEach(function(modName) {
+                var modVals = dep.mods[modName];
+                if (!Array.isArray(modVals)) {
+                    modVals = [modVals];
+                }
+                res = res.concat(modVals.map(function(modVal) {
+                    return { name: dep.block || blockName, modName: modName, modVal: modVal };
+                }));
             });
-        } else if (dep.elems) {
-            var elems = dep.elems;
+            var elems = dep.elems || [];
             if (!Array.isArray(elems)) {
                 elems = [elems];
             }

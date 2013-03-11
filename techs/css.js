@@ -26,7 +26,7 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     _processUrls: function(data, filename) {
         var _this = this;
         return data
-            .replace(/(?:@import\s*)?url\(["']?([^"'\)]+)["']?\)/, function(s, url) {
+            .replace(/(?:@import\s*)?url\(["']?([^"'\)]+)["']?\)/g, function(s, url) {
                 if (s.indexOf('@import') === 0) {
                     return s;
                 }
@@ -34,7 +34,7 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             });
     },
     _resolveCssUrl: function(url, filename) {
-        if (url.substr(0, 2) == '//' || ~url.indexOf('http://') || ~url.indexOf('https://')) {
+        if (url.substr(0, 5) === 'data:' || url.substr(0, 2) === '//' || ~url.indexOf('http://') || ~url.indexOf('https://')) {
             return url;
         } else {
             var urlFilename = path.resolve(path.dirname(filename), url);

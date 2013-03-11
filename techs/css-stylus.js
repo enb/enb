@@ -1,8 +1,7 @@
 var inherit = require('inherit'),
     fs = require('fs'),
     Vow = require('vow'),
-    stylus = require('stylus'),
-    vowFs = require('vow-fs');
+    stylus = require('stylus');
 
 module.exports = inherit(require('./css'), {
     getName: function() {
@@ -30,7 +29,7 @@ module.exports = inherit(require('./css'), {
             });
 
         return promise.then(function(css) {
-            return _this._processIncludes(css);
+            return _this._processIncludes(css, _this.node.resolvePath(_this.getTargetName(suffix)));
         });
     }
 });

@@ -1,11 +1,9 @@
 var inherit = require('inherit'),
-    FileList = require('../lib/file-list'),
     fs = require('fs'),
     Vow = require('vow');
 
 module.exports = inherit({
-    __constructor: function(keysetsPath, laguages) {
-        this._keysetsPath = keysetsPath;
+    __constructor: function(laguages) {
         this._languages = laguages;
     },
     getName: function() {
@@ -40,17 +38,13 @@ module.exports = inherit({
                     var result = {};
                     langKeysetFiles.forEach(function(keysetFile) {
                         var keysets = require(keysetFile.fullname);
-                        for (var keysetName in keysets) {
-                            if (keysets.hasOwnProperty(keysetName)) {
-                                var keyset = keysets[keysetName];
-                                result[keysetName] = (result[keysetName] || {});
-                                for (var keyName in keyset) {
-                                    if (keyset.hasOwnProperty(keyName)) {
-                                        result[keysetName][keyName] = keyset[keyName];
-                                    }
-                                }
-                            }
-                        }
+                        Object.keys(keysets).forEach(function(keysetName) {
+                            var keyset = keysets[keysetName];
+                            result[keysetName] = (result[keysetName] || {});
+                            Object.keys(keyset).forEach(function(keyName) {
+                                result[keysetName][keyName] = keyset[keyName];
+                            });
+                        });
                     });
                     fs.writeFileSync(targetPath, 'module.exports = ' + JSON.stringify(result) + ';');
                     cache.cacheFileInfo('file', targetPath);

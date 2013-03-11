@@ -1,5 +1,4 @@
-var FileList = require('../lib/file-list'),
-    Level = require('../lib/level-sync'),
+var Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),
     fs = require('fs'),
     Vow = require('vow');

@@ -10,7 +10,8 @@ module.exports = inherit(require('./js'), {
     },
     getBuildResult: function(sourceFiles, suffix) {
         return sourceFiles.map(function(file) {
-            return fs.readFileSync(file.fullname, "utf8");
+//            return fs.readFileSync(file.fullname, "utf8");
+            return 'include("' + file.fullname + '");';
         }).join('\n')
         + '\nBEM.I18N = function(keyset, key) {return key;};';
     }

@@ -18,13 +18,15 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
         });
     },
     getBuildResult: function(sourceFiles, suffix) {
-        var res = this._buildChunks(sourceFiles);
-            amdFilename = this.node.resolvePath(this.node.getTargetName('amd.js'));
+        var res = this._buildChunks(sourceFiles),
+            amdFilename = this.node.resolvePath(this.node.getTargetName('amd.js')),
+            amd = {};
         if (fs.existsSync(amdFilename)) {
-            this.wrapModule(res, vm.runInThisContext(fs.readFileSync(amdFilename, 'utf-8')));
+            amd = vm.runInThisContext(fs.readFileSync(amdFilename, 'utf-8'));
         } else {
             this.node.getLogger().logWarningAction('notFound', this.node.getPath() + '/' + this.node.getTargetName('amd.js'));
         }
+        this.wrapModule(res, amd);
         return res.join('\n')
     },
     wrapModule: function(res, amd) {

@@ -4,6 +4,7 @@ var fs = require('fs'),
     childProcess = require('child_process'),
     Vow = require('vow');
 
+// TODO: кэширование
 module.exports = inherit({
     __constructor: function(sourceSuffix, destSuffix, options) {
         this._options = options || {};

@@ -9,6 +9,7 @@
         "stylus": "*",
         "mkdirp": "*",
         "optimist": "*",
-        "inherit": "*"
+        "inherit": "*",
+        "dom-js": "*"
     }
 }

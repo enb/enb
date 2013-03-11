@@ -21,9 +21,12 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
         }).join('\n'), node.resolvePath(this.getTargetName(suffix)));
     },
     _processCss: function(data, filename) {
+        return this._processIncludes(this._processUrls(data, filename), filename);
+    },
+    _processUrls: function(data, filename) {
         var _this = this;
         return data
-            .replace(/(?:@import\s*)?url\(([^\)]+)\)/, function(s, url) {
+            .replace(/(?:@import\s*)?url\(["']?([^"'\)]+)["']?\)/, function(s, url) {
                 if (s.indexOf('@import') === 0) {
                     return s;
                 }
@@ -33,16 +36,19 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
                     var urlFilename = path.resolve(path.dirname(filename), url);
                     return 'url(' + _this.node.relativePath(urlFilename) + ')';
                 }
-            })
-            .replace(/@import\s*(?:["']|url\()([^"'\)]+)["'\)]\s*;/g, function(s, url){
-                var importFilename = path.resolve(path.dirname(filename), url);
-                var rootRelImportFilename = importFilename.slice(1);
-                pre = '/* ' + rootRelImportFilename + ': begin */ /**/\n'
-                post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n'
-               return pre + 
-                    '    ' + _this._processCss(fs.readFileSync(importFilename, "utf8"), importFilename)
-                        .replace(/\n/g, '\n    ')
-                     + post;
             });
+    },
+    _processIncludes: function(data, filename) {
+        var _this = this;
+        return data.replace(/@import\s*(?:["']|url\()([^"'\)]+)["'\)]\s*;/g, function(s, url){
+            var importFilename = path.resolve(path.dirname(filename), url),
+                rootRelImportFilename = importFilename.slice(1),
+                pre = '/* ' + rootRelImportFilename + ': begin */ /**/\n',
+                post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n';
+            return pre +
+                '    ' + _this._processCss(fs.readFileSync(importFilename, "utf8"), importFilename)
+                    .replace(/\n/g, '\n    ')
+                 + post;
+        });
     }
 });

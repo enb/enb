@@ -22,29 +22,42 @@ module.exports = inherit({
         });
     },
     build: function() {
-        var _this = this,
-            keysetFileList = new FileList();
-        keysetFileList.loadFromDirSync(this._keysetsPath, true);
-        this._languages.forEach(function(lang) {
-            var target = _this.node.getTargetName('keysets.' + lang + '.js'),
-                cache = _this.node.getNodeCache(target),
-                langKeysetFiles = keysetFileList.getByName(lang + '.js'),
-                targetPath = _this.node.resolvePath(target);
-            if (cache.needRebuildFile('file', targetPath) || cache.needRebuildFileList('file-list', langKeysetFiles)) {
-                var result = {};
-                langKeysetFiles.forEach(function(keysetFile) {
-                    var keyset = require(keysetFile.fullname);
-                    for (var keysetName in keyset) {
-                        if (keyset.hasOwnProperty(keysetName)) {
-                            result[keysetName] = keyset[keysetName];
+        var _this = this;
+        return this.node.requireSources([this.node.getTargetName('dirs')]).spread(function(dirs) {
+            var langKeysetDirs = dirs.getBySuffix('i18n'),
+                allLangKeysetFiles = [].concat.apply([], langKeysetDirs.map(function(dir) {
+                    return dir.files;
+                }));
+
+            _this._languages.forEach(function(lang) {
+                var target = _this.node.getTargetName('keysets.' + lang + '.js'),
+                    targetPath = _this.node.resolvePath(target),
+                    cache = _this.node.getNodeCache(target),
+                    langKeysetFiles = allLangKeysetFiles.filter(function(file) {
+                        return file.name == lang + '.js';
+                    });
+                if (cache.needRebuildFile('file', targetPath) || cache.needRebuildFileList('file-list', langKeysetFiles)) {
+                    var result = {};
+                    langKeysetFiles.forEach(function(keysetFile) {
+                        var keysets = require(keysetFile.fullname);
+                        for (var keysetName in keysets) {
+                            if (keysets.hasOwnProperty(keysetName)) {
+                                var keyset = keysets[keysetName];
+                                result[keysetName] = (result[keysetName] || {});
+                                for (var keyName in keyset) {
+                                    if (keyset.hasOwnProperty(keyName)) {
+                                        result[keysetName][keyName] = keyset[keyName];
+                                    }
+                                }
+                            }
                         }
-                    }
-                });
-                fs.writeFileSync(targetPath, 'module.exports = ' + JSON.stringify(result) + ';')
-                cache.cacheFileInfo('file', targetPath);
-                cache.cacheFileList('file-list', langKeysetFiles);
-            }
-            _this.node.resolveTarget(target);
+                    });
+                    fs.writeFileSync(targetPath, 'module.exports = ' + JSON.stringify(result) + ';');
+                    cache.cacheFileInfo('file', targetPath);
+                    cache.cacheFileList('file-list', langKeysetFiles);
+                }
+                _this.node.resolveTarget(target);
+            });
         });
     },
     clean: function() {

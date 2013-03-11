@@ -12,26 +12,26 @@ module.exports = inherit(require('./css'), {
         return ['css', 'styl'];
     },
     getBuildResult: function(sourceFiles, suffix) {
-        var _this = this;
-        return Vow.all(sourceFiles.map(function(file) {
-            if (file.suffix == 'styl') {
-                return vowFs.read(file.fullname, "utf8").then(function(stylusFileContent) {
-                    var promise = Vow.promise();
-                    stylus(stylusFileContent)
-                        .set('filename', file.fullname)
-                        .render(function(err, css) {
-                            if (err) return promise.reject(err);
-                            return promise.fulfill(_this._processUrls(css, file.fullname));
-                        });
-                    return promise;
-                });
-            } else {
-                return vowFs.read(file.fullname, "utf8").then(function(cssFileContent) {
-                    return _this._processCss(cssFileContent, file.fullname);
-                });
-            }
-        })).then(function(results) {
-            return results.join('\n');
+        var _this = this,
+            evaluator = new stylus.Evaluator({}),
+            promise = Vow.promise();
+
+        var css = sourceFiles.map(function(file) {
+            return '@import "' + file.fullname + '";';
+        }).join('\n');
+
+        stylus(css)
+            .define('url', function(url){
+                return new stylus.nodes.Literal('url(' + _this._resolveCssUrl(url.val, url.filename) + ')');
+            })
+            .set('filename', _this.node.resolvePath(_this.getTargetName(suffix)))
+            .render(function(err, css) {
+                if (err) promise.reject(err);
+                promise.fulfill(css);
+            });
+
+        return promise.then(function(css) {
+            return _this._processIncludes(css);
         });
     }
 });

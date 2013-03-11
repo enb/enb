@@ -30,13 +30,16 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
                 if (s.indexOf('@import') === 0) {
                     return s;
                 }
-                if (url.substr(0, 2) == '//' || ~url.indexOf('http://') || ~url.indexOf('https://')) {
-                    return s;
-                } else {
-                    var urlFilename = path.resolve(path.dirname(filename), url);
-                    return 'url(' + _this.node.relativePath(urlFilename) + ')';
-                }
+                return 'url(' + _this._resolveCssUrl(url, filename) + ')';
             });
+    },
+    _resolveCssUrl: function(url, filename) {
+        if (url.substr(0, 2) == '//' || ~url.indexOf('http://') || ~url.indexOf('https://')) {
+            return url;
+        } else {
+            var urlFilename = path.resolve(path.dirname(filename), url);
+            return this.node.relativePath(urlFilename);
+        }
     },
     _processIncludes: function(data, filename) {
         var _this = this;

@@ -37,7 +37,7 @@ module.exports = inherit({
 
         if (options.xslSource) {
             var xslSource = options.xslSource;
-            xslSource = xslSource.replace(/\?/g, this.node.getTargetName());
+            xslSource = this.node.unmaskTargetName(xslSource);
             xslFile = this.node.resolvePath(xslSource);
             sources.push(xslSource);
         }
@@ -62,13 +62,15 @@ module.exports = inherit({
                         if (code === 0) {
                             saveFile(output);
                         } else {
-                            promise.reject('xmllint exited with code ' + code);
+                            var err = new Error('xmllint exited with code ' + code);
+                            promise.reject(err);
+                            _this.node.rejectTarget(target, err);
                         }
                     });
                     xmlLintProcess.stdout.on('data', function(data) {
                         output += data;
                     });
-                    xmlLintProcess.stdin.write(xsltStdout)
+                    xmlLintProcess.stdin.write(xsltStdout);
                     xmlLintProcess.stdin.end();
                 } else {
                     saveFile(xsltStdout);
@@ -77,6 +79,7 @@ module.exports = inherit({
         });
         return promise;
     },
+
     clean: function() {
         var _this = this;
         return Vow.all(this.getTargets().map(function(target) {

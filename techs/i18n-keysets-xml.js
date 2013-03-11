@@ -1,7 +1,8 @@
 var inherit = require('inherit'),
     fs = require('fs'),
     vowFs = require('vow-fs'),
-    domjs = require('dom-js');
+    domjs = require('dom-js'),
+    Vow = require('vow');
 
 // TODO: кэширование
 module.exports = inherit({
@@ -21,9 +22,6 @@ module.exports = inherit({
         return this._languages.map(function(lang) {
             return _this.node.getTargetName('keysets.' + lang + '.xml');
         });
-    },
-    getSourceSuffixes: function() {
-        return [];
     },
     build: function() {
         var _this = this,
@@ -68,5 +66,11 @@ module.exports = inherit({
     },
     _getAppendXml: function(lang) {
         return '\n</tanker>';
+    },
+    clean: function() {
+        var _this = this;
+        return Vow.all(this.getTargets().map(function(target) {
+            _this.node.cleanTargetFile(target);
+        }));
     }
 });

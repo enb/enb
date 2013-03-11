@@ -9,7 +9,7 @@ BemdeclTech.prototype = {
     },
 
     init: function(node) {
-      this.node = node;
+        this.node = node;
     },
 
     getTargets: function() {

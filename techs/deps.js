@@ -86,6 +86,9 @@ Dep.prototype.normalizeDep = function(dep, blockName) {
     if (typeof dep === 'string') {
         return [{ name: dep }];
     } else {
+        if (!dep) {
+            console.log(blockName, dep);
+        }
         var res = [];
         if (dep.elem) {
             if (dep.mods) {
@@ -140,7 +143,7 @@ Dep.prototype.normalizeDeps = function(deps, blockName) {
 };
 
 Dep.prototype.getDeps = function(decl) {
-    var dep, file, files, key, mustDecl, mustDepIndex, mustDeps, nd, shouldDepIndex, shouldDeps, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    var dep, _this = this, files, key, mustDecl, mustDepIndex, mustDeps, shouldDepIndex, shouldDeps;
     if (decl.elem) {
         files = this.levels.getElemFiles(decl.name, decl.elem, decl.modName, decl.modVal);
     } else {
@@ -163,32 +166,48 @@ Dep.prototype.getDeps = function(decl) {
         mustDeps.push(mustDecl);
     }
     shouldDeps = [];
-    for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
+    files.forEach(function(file) {
         dep = vm.runInThisContext(fs.readFileSync(file.fullname, "utf8"));
         if (dep.mustDeps) {
-            _ref = this.normalizeDeps(dep.mustDeps, decl.name);
-            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-                nd = _ref[_j];
+            _this.normalizeDeps(dep.mustDeps, decl.name).forEach(function(nd) {
                 key = declKey(nd);
                 if (!mustDepIndex[key]) {
                     mustDepIndex[key] = true;
                     nd.key = key;
                     mustDeps.push(nd);
                 }
-            }
+            });
         }
         if (dep.shouldDeps) {
-            _ref1 = this.normalizeDeps(dep.shouldDeps, decl.name);
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-                nd = _ref1[_k];
+            _this.normalizeDeps(dep.shouldDeps, decl.name).forEach(function(nd) {
                 key = declKey(nd);
                 if (!shouldDepIndex[key]) {
                     shouldDepIndex[key] = true;
+                    nd.key = key;
                     shouldDeps.push(nd);
                 }
-            }
+            });
         }
+        if (dep.noDeps) {
+            _this.normalizeDeps(dep.noDeps, decl.name).forEach(function(nd) {
+                key = declKey(nd);
+                nd.key = key;
+                removeFromDeps(nd, mustDepIndex, mustDeps);
+                removeFromDeps(nd, shouldDepIndex, shouldDeps);
+            });
+        }
+    });
+    function removeFromDeps(decl, index, list) {
+        if (index[decl.key]) {
+            for (var i = 0, l = list.length; i < l; i++) {
+                if (list[i].key == decl.key) {
+                    return list.splice(i, 1);
+                }
+            }
+        } else {
+            index[decl.key] = true;
+        }
+        return null;
     }
     return [mustDeps, shouldDeps];
 };

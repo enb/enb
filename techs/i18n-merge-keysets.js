@@ -11,7 +11,7 @@ module.exports = inherit({
     },
     init: function(node) {
         this.node = node;
-        this._languages = this._languages || node.getLanguages() || [];
+        this._languages = ['all'].concat(this._languages || node.getLanguages() || []);
     },
     getTargets: function() {
         var _this = this;
@@ -38,12 +38,19 @@ module.exports = inherit({
                     var result = {};
                     langKeysetFiles.forEach(function(keysetFile) {
                         var keysets = require(keysetFile.fullname);
+                        if (lang === 'all') { // XXX: Why the hell they break the pattern?
+                            keysets = keysets['all'] || {};
+                        }
                         Object.keys(keysets).forEach(function(keysetName) {
                             var keyset = keysets[keysetName];
                             result[keysetName] = (result[keysetName] || {});
-                            Object.keys(keyset).forEach(function(keyName) {
-                                result[keysetName][keyName] = keyset[keyName];
-                            });
+                            if (typeof keyset !== 'string') {
+                                Object.keys(keyset).forEach(function(keyName) {
+                                    result[keysetName][keyName] = keyset[keyName];
+                                });
+                            } else {
+                                result[keysetName] = keyset;
+                            }
                         });
                     });
                     fs.writeFileSync(targetPath, 'module.exports = ' + JSON.stringify(result) + ';');

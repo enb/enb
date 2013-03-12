@@ -1,8 +1,8 @@
 var fs = require('fs'),
-    Vow = require('vow'),
     inherit = require('inherit'),
     childProcess = require('child_process'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    vowFs = require('vow-fs');
 
 // TODO: кэширование
 module.exports = inherit({
@@ -32,6 +32,7 @@ module.exports = inherit({
             sourcePath = this.node.resolvePath(source),
             target = this.node.getTargetName(this._destSuffix),
             targetPath = this.node.resolvePath(target),
+            cache = this.node.getNodeCache(target),
             sources = [source],
             xslFile = options.xslFile;
 
@@ -42,40 +43,28 @@ module.exports = inherit({
             sources.push(xslSource);
         }
 
-        function saveFile(text) {
-            fs.writeFile(targetPath, text, "utf8", function(err) {
-                if (err) return promise.reject(err);
-                _this.node.resolveTarget(target);
-                promise.fulfill();
-            });
-        }
-
         this.node.requireSources(sources).then(function() {
             var args = (options.args || []).concat([xslFile, sourcePath]);
-            childProcess.execFile('/usr/bin/xsltproc', args, {}, function(err, xsltStdout, stderr) {
-                if (err) return promise.reject(err);
-                if (options.xmlLint) {
-                    var xmlLintArgs = (options.xmlLintArgs || []).concat(['-']),
-                        xmlLintProcess = childProcess.spawn('/usr/bin/xmllint', xmlLintArgs),
-                        output = '';
-                    xmlLintProcess.on('exit', function(code) {
-                        if (code === 0) {
-                            saveFile(output);
-                        } else {
-                            var err = new Error('xmllint exited with code ' + code);
-                            promise.reject(err);
-                            _this.node.rejectTarget(target, err);
-                        }
+            // TODO: XSL Include deps tree.
+            if (cache.needRebuildFile('target-file', targetPath)
+                    || cache.needRebuildFile('source-file', sourcePath)
+                    || cache.needRebuildFile('xsl-file', xslFile)) {
+                childProcess.execFile('/usr/bin/xsltproc', args, {}, function(err, xsltStdout, stderr) {
+                    if (err) return promise.reject(err);
+                    vowFs.write(targetPath, xsltStdout, "utf8").then(function() {
+                        cache.cacheFileInfo('target-file', targetPath);
+                        cache.cacheFileInfo('source-file', sourcePath);
+                        cache.cacheFileInfo('xsl-file', xslFile);
+                        _this.node.resolveTarget(target);
+                        promise.fulfill();
                     });
-                    xmlLintProcess.stdout.on('data', function(data) {
-                        output += data;
-                    });
-                    xmlLintProcess.stdin.write(xsltStdout);
-                    xmlLintProcess.stdin.end();
-                } else {
-                    saveFile(xsltStdout);
-                }
-            });
+                    return null;
+                });
+            } else {
+                _this.node.getLogger().isValid(target);
+                _this.node.resolveTarget(target);
+                promise.fulfill();
+            }
         });
         return promise;
     },

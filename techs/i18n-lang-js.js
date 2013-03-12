@@ -1,8 +1,8 @@
 var inherit = require('inherit'),
     fs = require('fs'),
     vowFs = require('vow-fs'),
-    domjs = require('dom-js'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    tanker = require('../exlib/tanker');
 
 // TODO: кэширование
 module.exports = inherit({
@@ -11,18 +11,19 @@ module.exports = inherit({
         this._languages = options.languages;
     },
     getName: function() {
-        return 'i18n-keysets-xml';
+        return 'i18n-lang-js';
     },
     init: function(node) {
         this.node = node;
-        this._languages = this._languages || node.getLanguages() || [];
+        this._languages = ['all'].concat(this._languages || node.getLanguages() || []);
     },
     getTargets: function() {
         var _this = this;
         return this._languages.map(function(lang) {
-            return _this.node.getTargetName('keysets.' + lang + '.xml');
+            return _this.node.getTargetName('lang.' + lang + '.js');
         });
     },
+    // TODO: сделать кэширование, добавить зависимость кэша от keysets.js
     build: function() {
         var _this = this,
             sources = this._languages.map(function(lang) {
@@ -30,29 +31,27 @@ module.exports = inherit({
             });
         return this.node.requireSources(sources).then(function() {
             return Vow.all(_this._languages.map(function(lang) {
-                var target = _this.node.getTargetName('keysets.' + lang + '.xml'),
+                var target = _this.node.getTargetName('lang.' + lang + '.js'),
                     keysets = require(_this.node.resolvePath(_this.node.getTargetName('keysets.' + lang + '.js'))),
                     res = [];
                 Object.keys(keysets).sort().map(function(keysetName) {
                     var keyset = keysets[keysetName];
-                    res.push('<keyset id="' + keysetName + '">');
-                    Object.keys(keyset).map(function(key) {
-                        var value = keyset[key], dom = new domjs.DomJS();
-                        try {
-                            dom.parse('<root>' + value + '</root>', function() {});
-                        } catch(e) {
-                            value = domjs.escape(value);
-                        }
-                        res.push('<key id="' + key + '">');
-                        res.push('<value>' + value + '</value>');
-                        res.push('</key>');
+                    if (keysetName === '') {
+                        res.push(keyset);
+                        return;
+                    }
+                    res.push("\nBEM.I18N.decl('" + keysetName + "', {");
+                    Object.keys(keyset).map(function(key, i, arr) {
+                        tanker.xmlToJs(keyset[key], function(js) {
+                            res.push('    ' + JSON.stringify(key) + ': ' + js + (i === arr.length - 1 ? '' : ','));
+                        });
                     });
-                    res.push('</keyset>');
+                    res.push('}, {\n"lang": "' + lang + '"\n});\n');
                 });
-                var xml = _this._getPrependXml(lang) + res.join('\n') + _this._getAppendXml(lang);
+                var js = _this._getPrependJs(lang) + res.join('\n') + _this._getAppendJs(lang);
                 return vowFs.write(
                         _this.node.resolvePath(target),
-                        xml,
+                        js,
                         "utf8"
                     ).then(function() {
                         _this.node.resolveTarget(target);
@@ -60,12 +59,11 @@ module.exports = inherit({
             }));
         });
     },
-    _getPrependXml: function(lang) {
-        return '<?xml version="1.0" encoding="utf-8"?>\n' +
-            '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:i18n="urn:yandex-functions:internationalization">\n';
+    _getPrependJs: function(lang) {
+        return '';
     },
-    _getAppendXml: function(lang) {
-        return '\n</tanker>';
+    _getAppendJs: function(lang) {
+        return lang === 'all' ? '' : "\nBEM.I18N.lang('" + lang + "');\n";
     },
     clean: function() {
         var _this = this;

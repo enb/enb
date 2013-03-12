@@ -1,6 +1,7 @@
 var Vow = require('vow'),
     fs = require('fs'),
-    vm = require('vm');
+    vm = require('vm'),
+    vowFs = require('vow-fs');
 
 
 function DepsTech() {}
@@ -19,14 +20,18 @@ DepsTech.prototype = {
     },
 
     build: function() {
-        var depsTarget, depsTargetPath, promise,
-            _this = this;
-        promise = Vow.promise();
-        depsTarget = this.node.getTargetName('deps.js');
-        depsTargetPath = this.node.resolvePath(depsTarget);
-        this.node.requireSources([this.node.getTargetName('bemdecl.js'), this.node.getTargetName('levels')]).spread((function(bemdecl, levels) {
-            try {
-                var bemdecl = require(_this.node.resolvePath(_this.node.getTargetName('bemdecl.js'))),
+        var _this = this,
+            depsTarget = this.node.getTargetName('deps.js'),
+            depsTargetPath = this.node.resolvePath(depsTarget),
+            cache = this.node.getNodeCache(depsTarget),
+            bemdeclSource = this.node.getTargetName('bemdecl.js'),
+            bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
+        return this.node.requireSources([this.node.getTargetName('levels'), bemdeclSource]).spread(function(levels) {
+            var depFiles = levels.getFilesBySuffix('deps.js');
+            if (cache.needRebuildFile('deps-file', depsTargetPath)
+                    || cache.needRebuildFile('bemdecl-file', bemdeclSourcePath)
+                    || cache.needRebuildFileList('deps-file-list', depFiles)) {
+                var bemdecl = require(bemdeclSourcePath),
                     dep = new Dep(levels);
                 bemdecl.blocks.forEach(function(block) {
                     dep.addBlock(block.name);
@@ -46,28 +51,22 @@ DepsTech.prototype = {
                     }
                 });
                 var resolvedDeps = dep.resolve();
-                fs.writeFileSync(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps) + ';');
-                _this.node.resolveTarget(depsTarget, resolvedDeps);
-                return promise.fulfill();
-            } catch (err) {
-                return promise.reject(err);
+                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps) + ';', 'utf8').then(function() {
+                    cache.cacheFileInfo('deps-file', depsTargetPath);
+                    cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
+                    cache.cacheFileList('deps-file-list', depFiles);
+                    _this.node.resolveTarget(depsTarget, resolvedDeps);
+                });
+            } else {
+                _this.node.getLogger().isValid(depsTarget);
+                _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
+                return null;
             }
-        }), function(err) {
-            return promise.reject(err);
         });
-        return promise;
     },
 
     clean: function() {
-        return this.cleanTarget(this.node.getTargetName('deps.js'));
-    },
-
-    cleanTarget: function(target) {
-        var targetPath = this.node.resolvePath(target);
-        if (fs.existsSync(targetPath)) {
-            fs.unlinkSync(this.node.resolvePath(target));
-            this.node.getLogger().logClean(target);
-        }
+        return this.node.cleanTargetFile(this.node.getTargetName('deps.js'));
     }
 };
 

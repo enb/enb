@@ -5,17 +5,12 @@ var inherit = require('inherit'),
     tanker = require('../exlib/tanker');
 
 // TODO: кэширование
-module.exports = inherit({
-    __constructor: function(options) {
-        options = options || {};
-        this._languages = options.languages;
-    },
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'i18n-lang-js';
     },
-    init: function(node) {
-        this.node = node;
-        this._languages = ['all'].concat(this._languages || node.getLanguages() || []);
+    configure: function() {
+        this._languages = ['all'].concat(this.getOption('languages', this.node.getLanguages() || []));
     },
     getTargets: function() {
         var _this = this;
@@ -64,11 +59,5 @@ module.exports = inherit({
     },
     _getAppendJs: function(lang) {
         return lang === 'all' ? '' : "\nBEM.I18N.lang('" + lang + "');\n";
-    },
-    clean: function() {
-        var _this = this;
-        return Vow.all(this.getTargets().map(function(target) {
-            _this.node.cleanTargetFile(target);
-        }));
     }
 });

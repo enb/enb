@@ -1,17 +1,14 @@
 var fs = require('fs'), Vow = require('vow'), vowFs = require('vow-fs'), inherit = require('inherit');
 
-module.exports = inherit({
-    __constructor: function(symlinkTarget, fileTarget) {
-        this._symlinkTarget = symlinkTarget;
-        this._fileTarget = fileTarget;
-    },
-
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'symlink';
     },
 
     init: function(node) {
-        this.node = node;
+        this.__base(node);
+        this._symlinkTarget = this.getRequiredOption('symlinkTarget');
+        this._fileTarget = this.getRequiredOption('fileTarget');
     },
 
     getTargets: function() {
@@ -38,12 +35,5 @@ module.exports = inherit({
                 }
             });
         });
-    },
-
-    clean: function() {
-        var _this = this;
-        return Vow.all(this.getTargets().map(function(target) {
-            _this.node.cleanTargetFile(target);
-        }));
     }
 });

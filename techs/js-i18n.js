@@ -1,6 +1,7 @@
 var inherit = require('inherit'),
     fs = require('fs');
 
+// TODO: доделать
 module.exports = inherit(require('./js'), {
     getName: function() {
         return 'js-i18n';

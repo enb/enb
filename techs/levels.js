@@ -1,19 +1,17 @@
 var Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),
     fs = require('fs'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    inherit = require('inherit');
 
-function LevelsTech(levelConfig) {
-    this.levelConfig = levelConfig;
-}
-
-LevelsTech.prototype = {
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'levels';
     },
 
     init: function(node) {
-        this.node = node;
+        this.__base.apply(this, arguments);
+        this._levelConfig = this.getRequiredOption('levels');
     },
 
     getTargets: function() {
@@ -28,8 +26,8 @@ LevelsTech.prototype = {
                 levelList = [],
                 levelsToCache = [],
                 cache = this.node.getNodeCache(target);
-            for (var i = 0, l = this.levelConfig.length; i < l; i++) {
-                var levelInfo = this.levelConfig[i];
+            for (var i = 0, l = this._levelConfig.length; i < l; i++) {
+                var levelInfo = this._levelConfig[i];
                 levelInfo = typeof levelInfo == 'object' ? levelInfo : {path: levelInfo};
                 var
                     levelPath = levelInfo.path,
@@ -76,6 +74,4 @@ LevelsTech.prototype = {
     },
 
     clean: function() {}
-};
-
-module.exports = LevelsTech;
+});

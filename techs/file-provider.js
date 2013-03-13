@@ -1,28 +1,23 @@
 var fs = require('fs'), Vow = require('vow'), inherit = require('inherit');
 
-module.exports = inherit({
-
-    __constructor: function(suffix) {
-        this._suffix = suffix;
-    },
-
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'file-provider';
     },
 
-    init: function(node) {
-        this.node = node;
+    configure: function() {
+        this._target = this.getRequiredOption('target');
     },
 
     getTargets: function() {
-        return [this.node.getTargetName(this._suffix)];
+        return [this.node.unmaskTargetName(this._target)];
     },
 
     build: function() {
         var promise, target, targetPath,
             _this = this;
         promise = Vow.promise();
-        target = this.node.getTargetName(this._suffix);
+        target = this.node.unmaskTargetName(this._target);
         targetPath = this.node.resolvePath(target);
         fs.exists(targetPath, function(exists) {
             if (exists) {

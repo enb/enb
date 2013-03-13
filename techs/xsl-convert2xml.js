@@ -2,9 +2,9 @@ var inherit = require('inherit'),
     fs = require('fs');
 
 module.exports = inherit(require('./xsl'), {
-    __constructor: function(transformXslFile) {
-        this.__base();
-        this._transformXslFile = transformXslFile;
+    init: function() {
+        this.__base.apply(this, arguments);
+        this._transformXslFile = this.getRequiredOption('transformXslFile');
     },
     getName: function() {
         return 'xsl-convert2xml';

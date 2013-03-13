@@ -2,13 +2,9 @@ var inherit = require('inherit'),
     fs = require('fs');
 
 module.exports = inherit(require('./xsl'), {
-    __constructor: function(options) {
-        options = options || {};
-        this._languages = options.languages;
-    },
     init: function(node) {
-        this.node = node;
-        this._languages = this._languages || node.getLanguages() || [];
+        this.__base(node);
+        this._languages = this.getOption('languages', node.getLanguages() || []);
     },
     getName: function() {
         return 'xsl-i18n';

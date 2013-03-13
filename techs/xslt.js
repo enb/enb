@@ -4,33 +4,28 @@ var fs = require('fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs');
 
-// TODO: кэширование
-module.exports = inherit({
-    __constructor: function(sourceSuffix, destSuffix, options) {
-        this._options = options || {};
-        this._sourcePrefix = sourceSuffix;
-        this._destSuffix = destSuffix;
-    },
-
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'xslt';
     },
 
     init: function(node) {
-        this.node = node;
+        this.__base.apply(this, arguments);
+        this._sourceTarget = this.getRequiredOption('sourceTarget');
+        this._destTarget = this.getRequiredOption('destTarget');
     },
 
     getTargets: function() {
-        return [this.node.getTargetName(this._destSuffix)];
+        return [this.node.unmaskTargetName(this._destTarget)];
     },
 
     build: function() {
         var _this = this,
             options = this._options,
             promise = Vow.promise(),
-            source = this.node.getTargetName(this._sourcePrefix),
+            source = this.node.unmaskTargetName(this._sourceTarget),
             sourcePath = this.node.resolvePath(source),
-            target = this.node.getTargetName(this._destSuffix),
+            target = this.node.unmaskTargetName(this._destTarget),
             targetPath = this.node.resolvePath(target),
             cache = this.node.getNodeCache(target),
             sources = [source],
@@ -67,12 +62,5 @@ module.exports = inherit({
             }
         });
         return promise;
-    },
-
-    clean: function() {
-        var _this = this;
-        return Vow.all(this.getTargets().map(function(target) {
-            _this.node.cleanTargetFile(target);
-        }));
     }
 });

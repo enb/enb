@@ -3,12 +3,9 @@ var fs = require('fs'),
     FileList = require('../lib/file-list'),
     inherit = require('inherit');
 
-module.exports = inherit({
+module.exports = inherit(require('../lib/tech/base-tech.js'), {
     getName: function() {
         return 'files';
-    },
-    init: function(node) {
-        this.node = node;
     },
     getTargets: function() {
         return [

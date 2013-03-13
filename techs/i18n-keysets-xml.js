@@ -5,17 +5,12 @@ var inherit = require('inherit'),
     Vow = require('vow');
 
 // TODO: кэширование
-module.exports = inherit({
-    __constructor: function(options) {
-        options = options || {};
-        this._languages = options.languages;
-    },
+module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'i18n-keysets-xml';
     },
-    init: function(node) {
-        this.node = node;
-        this._languages = this._languages || node.getLanguages() || [];
+    configure: function() {
+        this._languages = this.getOption('languages', this.node.getLanguages() || []);
     },
     getTargets: function() {
         var _this = this;
@@ -66,11 +61,5 @@ module.exports = inherit({
     },
     _getAppendXml: function(lang) {
         return '\n</tanker>';
-    },
-    clean: function() {
-        var _this = this;
-        return Vow.all(this.getTargets().map(function(target) {
-            _this.node.cleanTargetFile(target);
-        }));
     }
 });

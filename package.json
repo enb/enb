@@ -1,15 +1,19 @@
 {
-    "author" : "",
+    "author" : "Marat Dulin <mdevils@yandex.ru>",
+    "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.0.1",
+    "version" : "0.5.1",
     "dependencies" : {
         "vow": ">=0.1.12",
         "vow-fs": "*",
         "colors": ">=0.6.0",
         "stylus": "*",
-        "optimist": "*",
         "inherit": "*",
         "dom-js": "*",
-        "express": "*"
+        "express": "*",
+        "commander": "*"
+    },
+    "bin" : {
+        "enb" : "./bin/enb"
     }
 }

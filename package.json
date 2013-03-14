@@ -1,6 +1,6 @@
 {
     "author" : "",
-    "name" : "altbuild",
+    "name" : "enb",
     "version" : "0.0.1",
     "dependencies" : {
         "vow": ">=0.1.12",

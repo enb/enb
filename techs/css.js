@@ -11,9 +11,6 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     getSourceSuffixes: function() {
         return ['css'];
     },
-    getTargetName: function(suffix) {
-        return '_' + this.node.getTargetName(suffix);
-    },
     getBuildResult: function(sourceFiles, suffix) {
         var node = this.node;
         return this._processCss(sourceFiles.map(function(file) {

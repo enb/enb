@@ -5,8 +5,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         return 'symlink';
     },
 
-    init: function(node) {
-        this.__base(node);
+    configure: function() {
         this._symlinkTarget = this.getRequiredOption('symlinkTarget');
         this._fileTarget = this.getRequiredOption('fileTarget');
     },

@@ -4,24 +4,27 @@ var fs = require('fs'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech.js'), {
+    configure: function() {
+        this._depsTarget = this.node.unmaskTargetName(this.getOption('depsTarget', '?.deps.js'));
+        this._filesTarget = this.node.unmaskTargetName(this.getOption('filesTarget', '?.files'));
+        this._dirsTarget = this.node.unmaskTargetName(this.getOption('dirsTarget', '?.dirs'));
+    },
     getName: function() {
         return 'files';
     },
     getTargets: function() {
         return [
-            this.node.getTargetName('files'),
-            this.node.getTargetName('dirs'),
-            this.node.getTargetName('files-and-dirs')
+            this._filesTarget,
+            this._dirsTarget
         ];
     },
     build: function() {
         var _this = this,
-            filesTarget = this.node.getTargetName('files'),
-            dirsTarget = this.node.getTargetName('dirs'),
-            filesAndDirsTarget = this.node.getTargetName('files-and-dirs');
-        return this.node.requireSources([this.node.getTargetName('deps.js'), this.node.getTargetName('levels')])
+            filesTarget = this._filesTarget,
+            dirsTarget = this._dirsTarget;
+        return this.node.requireSources([this._depsTarget, this.node.getTargetName('levels')])
             .spread(function(deps, levels) {
-                var files = new FileList(), dirs = new FileList(), filesAndDirs = new FileList();
+                var files = new FileList(), dirs = new FileList();
                 for (var i = 0, l = deps.length; i < l; i++) {
                     var dep = deps[i], entities;
                     if (dep.elem) {
@@ -31,13 +34,10 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
                     }
                     files.addFiles(entities.files);
                     dirs.addFiles(entities.dirs);
-                    filesAndDirs.addFiles(entities.files);
-                    filesAndDirs.addFiles(entities.dirs);
                 }
                 _this.node.getLogger().logAction('files', files.items.length);
                 _this.node.resolveTarget(filesTarget, files);
                 _this.node.resolveTarget(dirsTarget, dirs);
-                _this.node.resolveTarget(filesAndDirsTarget, filesAndDirs);
             });
     },
 

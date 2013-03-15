@@ -11,7 +11,9 @@
         "inherit": "*",
         "dom-js": "*",
         "express": "*",
-        "commander": "*"
+        "commander": "*",
+        "ometajs": "*",
+        "xjst": "*"
     },
     "bin" : {
         "enb" : "./bin/enb"

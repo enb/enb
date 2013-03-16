@@ -5,8 +5,27 @@ module.exports = inherit(require('./js-module'), {
     getName: function() {
         return 'js-i18n-module';
     },
+    configure: function() {
+        this._languages = this.getOption('languages', this.node.getLanguages() || []);
+    },
     getDestSuffixes: function() {
-        return ['ru.js', 'en.js'];
+        return this._languages.map(function(lang) {
+            return lang + '.js'
+        });
+    },
+    isRebuildRequired: function(suffix) {
+        var lang = suffix.split('.')[0],
+            langTarget = this.node.getTargetName('lang.' + lang + '.js'),
+            target = this.getTargetName(suffix);
+        return this.__base(suffix)
+            || this.node.getNodeCache(target).needRebuildFile('lang-file', this.node.resolvePath(langTarget));
+    },
+    cacheSuffixInfo: function(suffix) {
+        var lang = suffix.split('.')[0],
+            langTarget = this.node.getTargetName('lang.' + lang + '.js'),
+            target = this.getTargetName(suffix);
+        this.__base(suffix);
+        this.node.getNodeCache(target).cacheFileInfo('lang-file', this.node.resolvePath(langTarget));
     },
     _buildChunks: function(sourceFiles, suffix) {
         var _this = this,

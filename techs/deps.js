@@ -35,7 +35,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     || cache.needRebuildFileList('deps-file-list', depFiles)) {
                 var bemdecl = require(bemdeclSourcePath),
                     dep = new DepsResolver(levels);
-                bemdecl.blocks.forEach(function(block) {
+
+                bemdecl.blocks && bemdecl.blocks.forEach(function(block) {
                     dep.addBlock(block.name);
                     if (block.mods) {
                         block.mods.forEach(function(mod) {
@@ -61,6 +62,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                         });
                     }
                 });
+
+                bemdecl.deps && dep.normalizeDeps(bemdecl.deps).forEach(function(decl) {
+                    dep.addDecl(decl);
+                });
+
                 var resolvedDeps = dep.resolve();
                 return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps) + ';', 'utf8').then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);

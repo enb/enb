@@ -1,7 +1,8 @@
 var inherit = require('inherit'),
     fs = require('fs'),
     vm = require('vm'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    vowFs = require('vow-fs');
 
 module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     getName: function() {
@@ -14,9 +15,9 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
         return ['js'];
     },
     _buildChunks: function(sourceFiles, suffix) {
-        return sourceFiles.map(function(file) {
-            return fs.readFileSync(file.fullname, "utf8");
-        });
+        return Vow.all(sourceFiles.map(function(file) {
+            return vowFs.read(file.fullname, 'utf8');
+        }));
     },
     getBuildResult: function(sourceFiles, suffix) {
         var _this = this;
@@ -24,20 +25,21 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             var amdFilename = _this.node.resolvePath(_this.node.getTargetName('amd.js')),
                 amd = {};
             if (fs.existsSync(amdFilename)) {
-                amd = vm.runInThisContext(fs.readFileSync(amdFilename, 'utf-8'));
+                amd = vm.runInThisContext(fs.readFileSync(amdFilename, 'utf8'));
             } else {
                 _this.node.getLogger().logWarningAction('notFound', _this.node.getPath() + '/' + _this.node.getTargetName('amd.js'));
             }
-            _this.wrapModule(chunks, amd);
+            _this.__self.wrapModule(_this.node.getTargetName(), chunks, amd);
             return chunks.join('\n');
         });
-    },
-    wrapModule: function(res, amd) {
+    }
+}, {
+    wrapModule: function(moduleName, res, amd) {
         var modules = [],
             args = [],
             provides = [];
         provides.push({
-            module: this.node.getTargetName(),
+            module: moduleName,
             value: 'true'
         });
         amd.requires && amd.requires.forEach(function(item) {
@@ -52,5 +54,5 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             return res.push('require.provide(\'' + provide.module + '\', ' + provide.value + ');\n');
         });
         return res.push('\n});');
-    }    
+    }
 });

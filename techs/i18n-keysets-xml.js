@@ -25,8 +25,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             });
         return this.node.requireSources(sources).then(function() {
             return Vow.all(_this._languages.map(function(lang) {
+                var keysetsPath = _this.node.resolvePath(_this.node.getTargetName('keysets.' + lang + '.js'));
+                delete require.cache[keysetsPath];
                 var target = _this.node.getTargetName('keysets.' + lang + '.xml'),
-                    keysets = require(_this.node.resolvePath(_this.node.getTargetName('keysets.' + lang + '.js'))),
+                    keysets = require(keysetsPath),
                     res = [];
                 Object.keys(keysets).sort().map(function(keysetName) {
                     var keyset = keysets[keysetName];

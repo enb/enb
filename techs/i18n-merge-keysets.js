@@ -1,6 +1,6 @@
 var inherit = require('inherit'),
-    fs = require('fs'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    vowFs = require('vow-fs');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -23,7 +23,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     return dir.files;
                 }));
 
-            _this._languages.forEach(function(lang) {
+            return Vow.all(_this._languages.map(function(lang) {
                 var target = _this.node.getTargetName('keysets.' + lang + '.js'),
                     targetPath = _this.node.resolvePath(target),
                     cache = _this.node.getNodeCache(target),
@@ -33,6 +33,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 if (cache.needRebuildFile('file', targetPath) || cache.needRebuildFileList('file-list', langKeysetFiles)) {
                     var result = {};
                     langKeysetFiles.forEach(function(keysetFile) {
+                        delete require.cache[keysetFile.fullname];
                         var keysets = require(keysetFile.fullname);
                         if (lang === 'all') { // XXX: Why the hell they break the pattern?
                             keysets = keysets['all'] || {};
@@ -49,12 +50,17 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                             }
                         });
                     });
-                    fs.writeFileSync(targetPath, 'module.exports = ' + JSON.stringify(result) + ';');
-                    cache.cacheFileInfo('file', targetPath);
-                    cache.cacheFileList('file-list', langKeysetFiles);
+                    return vowFs.write(targetPath, 'module.exports = ' + JSON.stringify(result) + ';').then(function() {
+                        cache.cacheFileInfo('file', targetPath);
+                        cache.cacheFileList('file-list', langKeysetFiles);
+                        _this.node.resolveTarget(target);
+                    });
+                } else {
+                    _this.node.getLogger().isValid(target);
+                    _this.node.resolveTarget(target);
+                    return null;
                 }
-                _this.node.resolveTarget(target);
-            });
+            }));
         });
     }
 });

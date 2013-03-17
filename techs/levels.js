@@ -32,7 +32,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var
                     levelPath = levelInfo.path,
                     levelKey = 'level:' + levelPath;
-                if (!this.node.buildCache[levelKey]) {
+                if (!this.node.buildState[levelKey]) {
                     var level = new Level(levelPath);
                     if (levelInfo.check === false) {
                         var blocks = cache.get(levelPath);
@@ -43,9 +43,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                             levelsToCache.push(level);
                         }
                     }
-                    this.node.buildCache[levelKey] = level;
+                    this.node.buildState[levelKey] = level;
                 }
-                levelList.push(this.node.buildCache[levelKey]);
+                levelList.push(this.node.buildState[levelKey]);
             }
             fs.exists(this.node.resolvePath('blocks'), function(res) {
                 try {

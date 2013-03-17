@@ -49,6 +49,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
             } else {
                 _this.node.getLogger().isValid(depsTarget);
+                delete require.cache[depsTargetPath];
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;
             }

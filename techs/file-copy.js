@@ -1,12 +1,14 @@
-var fs = require('fs'), Vow = require('vow'), vowFs = require('vow-fs'), inherit = require('inherit');
+var fs = require('fs'),
+    Vow = require('vow'),
+    vowFs = require('vow-fs'),
+    inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'file-copy';
     },
 
-    init: function(node) {
-        this.__base(node);
+    configure: function() {
         this._source = this.getRequiredOption('sourceTarget');
         this._target = this.getRequiredOption('destTarget');
     },

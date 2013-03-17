@@ -18,7 +18,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     getTargets: function() {
-        return [this.node.unmaskTargetName(this._target)];
+        return [this._target];
     },
 
     build: function() {
@@ -33,6 +33,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             if (cache.needRebuildFile('deps-file', depsTargetPath)
                     || cache.needRebuildFile('bemdecl-file', bemdeclSourcePath)
                     || cache.needRebuildFileList('deps-file-list', depFiles)) {
+                delete require.cache[bemdeclSourcePath];
                 var bemdecl = require(bemdeclSourcePath),
                     dep = new DepsResolver(levels);
 
@@ -68,7 +69,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
 
                 var resolvedDeps = dep.resolve();
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps) + ';', 'utf8').then(function() {
+                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8').then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
                     cache.cacheFileList('deps-file-list', depFiles);
@@ -76,6 +77,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
             } else {
                 _this.node.getLogger().isValid(depsTarget);
+                delete require.cache[depsTargetPath];
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;
             }

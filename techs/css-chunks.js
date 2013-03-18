@@ -6,7 +6,7 @@ var inherit = require('inherit'),
     crypto = require('crypto'),
     CssPreprocessor = require('../lib/preprocess/css-preprocessor');
 
-module.exports = inherit(require('../lib/tech/chunks.js'), {
+module.exports = inherit(require('../lib/tech/chunks'), {
     getName: function() {
         return 'css-chunks';
     },

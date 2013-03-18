@@ -29,7 +29,7 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             preprocessCss = new CssPreprocessor();
         preprocessCss.setCssRelativeUrlBuilder(function(url, filename) {
             var urlFilename = path.resolve(path.dirname(filename), url);
-            return _this.node.relativePath(urlFilename);
+            return _this.node.wwwRootPath(urlFilename);
         });
         return preprocessCss;
     }

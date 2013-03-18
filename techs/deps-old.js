@@ -6,7 +6,7 @@ var Vow = require('vow'),
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
-        return 'deps';
+        return 'deps-old';
     },
 
     configure: function() {

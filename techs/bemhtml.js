@@ -24,16 +24,23 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             return vowFs.read(file.fullname, 'utf8');
         }))
         .then(function(sources) {
-            sources = sources.join('\n');
-
-            // --- (C) Original BEM Tools
-            // Someone PLEASE rewrite BEMHTML from OmetaJS to normal, pure JS.
-            // TODO: Write lexer.
-            // TODO: Build per-file AST-Cache.
-
             _this.node.getLogger().log('Calm down, OmetaJS is running...');
+            var bemhtmlProcessor = BemhtmlProcessor.fork();
+            return bemhtmlProcessor.process(sources.join('\n')).then(function(res) {
+                bemhtmlProcessor.dispose();
+                return res;
+            });
+        });
+    }
+});
 
-            var BEMHTML = require('../exlib/bemhtml');
+var BemhtmlProcessor = require('sibling').declare({
+    process: function(sources) {
+        // --- (C) Original BEM Tools
+        // Someone PLEASE rewrite BEMHTML from OmetaJS to normal, pure JS.
+        // TODO: Write lexer.
+        // TODO: Build per-file AST-Cache.
+        var BEMHTML = require('../exlib/bemhtml');
             try {
                 var tree = BEMHTML.BEMHTMLParser.matchAll(
                     sources,
@@ -73,8 +80,6 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
 
             return 'var BEMHTML = ' + xjstJS + '\n'
                 + 'BEMHTML = (function(xjst) { return function() { return xjst.apply.call([this]); }; }(BEMHTML));\n'
-                + 'typeof exports === "undefined" || (exports.BEMHTML = BEMHTML);';
-
-        });
+                + 'typeof exports === "undefined" || (exports.BEMHTML = BEMHTML);'
     }
 });

@@ -2,7 +2,7 @@ var inherit = require('inherit'),
     fs = require('fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),
-    JsBorschikPreprocessor = require('../lib/preprocess/js-borschik-preprocessor');
+    BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 
 module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     configure: function() {
@@ -31,11 +31,17 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
     },
     getBuildResult: function(sourceFiles, suffix) {
         var _this = this,
+            target = this.getTargetName(suffix),
             bemhtmlPromise = this.node.requireSources([this._bemhtmlTarget]),
-            jsBorschikPreprocessor = new JsBorschikPreprocessor();
+            jsBorschikPreprocessor = new BorschikPreprocessor();
         return Vow.all(sourceFiles.map(function(file) {
-            return vowFs.read(file.fullname, "utf8").then(function(data) {
-                return jsBorschikPreprocessor.preprocess(data, file.fullname);
+            return _this.node.createTmpFileForTarget(target).then(function(tmpfile) {
+                return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile).then(function() {
+                    return vowFs.read(tmpfile, "utf8").then(function(data) {
+                        vowFs.remove(tmpfile);
+                        return data;
+                    });
+                });
             });
         })).then(function(res) {
             return bemhtmlPromise.then(function() {

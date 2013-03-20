@@ -33,7 +33,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     || cache.needRebuildFile('bemdecl-file', bemdeclSourcePath)
                     || cache.needRebuildFileList('deps-file-list', depFiles)) {
                 var bemdecl = require(bemdeclSourcePath);
-                new OldDeps(bemdecl.blocks || bemdecl.deps).expandByFS({
+                return (new OldDeps(bemdecl.blocks || bemdecl.deps)).expandByFS({
                     levels: levels
                 }).then(function(resolvedDeps) {
                     resolvedDeps = resolvedDeps.getDeps();

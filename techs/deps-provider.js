@@ -7,12 +7,12 @@ var Vow = require('vow'),
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
-        return 'deps-subtract';
+        return 'deps-provider';
     },
 
     configure: function() {
-        this._subtractWhatTarget = this.getRequiredOption('subtractWhatTarget');
-        this._subtractFromTarget = this.getRequiredOption('subtractFromTarget');
+        this._sourceNodePath = this.getRequiredOption('sourceNodePath');
+        this._sourceTarget = this.getOption('sourceTarget', '?.deps.js');
         this._target = this.node.unmaskTargetName(this.getOption('depsTarget', '?.deps.js'));
     },
 
@@ -22,16 +22,18 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     build: function() {
         var _this = this,
-            depsTarget = this.node.unmaskTargetName(this._target),
+            depsTarget = this._target,
             depsTargetPath = this.node.resolvePath(depsTarget),
+            fromNode = this._sourceNodePath,
             cache = this.node.getNodeCache(depsTarget),
-            sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
-        return this.node.requireSources(sourceTargets).spread(function(subtractFrom, subtractWhat) {
+            requirements = {};
+        requirements[fromNode] = [this._sourceTarget];
+        return this.node.requireNodeSources(requirements).then(function(results) {
+            var deps = results[fromNode][0];
             if (cache.needRebuildFile('deps-file', depsTargetPath)) {
-                var subtractedDeps = deps.subtract(subtractFrom, subtractWhat);
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';').then(function() {
+                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';').then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
-                    _this.node.resolveTarget(depsTarget, subtractedDeps);
+                    _this.node.resolveTarget(depsTarget, deps);
                 });
             } else {
                 _this.node.getLogger().isValid(depsTarget);

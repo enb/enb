@@ -36,8 +36,8 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             jsBorschikPreprocessor = new BorschikPreprocessor();
         return Vow.all(sourceFiles.map(function(file) {
             return _this.node.createTmpFileForTarget(target).then(function(tmpfile) {
-                return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile).then(function() {
-                    return vowFs.read(tmpfile, "utf8").then(function(data) {
+                return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile, false, false).then(function() {
+                    return vowFs.read(tmpfile, 'utf8').then(function(data) {
                         vowFs.remove(tmpfile);
                         return data;
                     });

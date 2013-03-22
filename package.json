@@ -2,7 +2,7 @@
     "author" : "Marat Dulin <mdevils@yandex.ru>",
     "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.6.6",
+    "version" : "0.6.7",
     "contributors": [
         {
             "name": "Marat Dulin",
@@ -18,7 +18,7 @@
     },
     "dependencies" : {
         "vow": ">=0.1.12",
-        "vow-fs": ">=0.1.6",
+        "vow-fs": ">=0.1.7",
         "colors": ">=0.6.0",
         "stylus": "0.32.1",
         "inherit": "1.0.4",

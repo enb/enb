@@ -56,7 +56,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 2. Инициализируются ноды, участвующие в сборке указанных таргетов. В процессе инициализации каждая нода спрашивает у технологий (которые регистрировались в рамках ноды) список таргетов.
 3. Запускаются технологии, которые отвечают за те таргеты, которые необходимо билдить.
 4. В процессе выполнения технология может потребовать у ноды другие таргеты, необходимые для сборки (с помощью метода `requireSources`). В таком случае технология приостанавливается, нода запускает технологии, отвечающие за требуемые таргеты (если они не запущены) и после того, как технологии заканчивают сборку нужных таргетов, продолжает свою работу искомая технология.
-5. После того, как технология выполнила свою работу по сборке таргета, она оповещает об этом ноде (с помощью метода `resolveTarget`).
+5. После того, как технология выполнила свою работу по сборке таргета, она оповещает об этом ноду (с помощью метода `resolveTarget`).
 6. Сборка завершается после того, как все необходимые таргеты собраны.
 
 Как собрать проект (пошаговое руководство)
@@ -748,7 +748,7 @@ nodeConfig.addTech(new (require('enb/techs/js'))());
 js-bundle-component
 -------------------
 
-Собирает `?.bembundle.js` из `?.css-chunks.js` и `?.js-chunks.js`.
+Собирает `?.bembundle.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
 
 Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
 
@@ -763,6 +763,7 @@ js-bundle-component
 ```javascript
 nodeConfig.addTechs([
   new (require('enb/techs/levels'))({ levels: /* ... */ }),
+  new (require('enb/techs/files'))(),
   new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
   new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
   new (require('enb/techs/deps-subtract'))({
@@ -774,4 +775,321 @@ nodeConfig.addTechs([
   new (require('enb/techs/js-chunks'))(),
   new (require('enb/techs/js-bundle-component'))()
 ]);
+```
+
+js-bembundle-component-i18n
+---------------------------
+
+Собирает `?.bembundle.<язык>.js`-файлы из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
+
+Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+
+Имена результирующих файлов в данный момент не настраиваются (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
+* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTechs([
+  new (require('enb/techs/levels'))({ levels: /* ... */ }),
+  new (require('enb/techs/files'))(),
+  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
+  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
+  new (require('enb/techs/deps-subtract'))({
+    subtractWhatTarget: 'index.deps.js',
+    subtractFromTarget: 'router.tmp.deps.js',
+    depsTarget: 'router.deps.js'
+  }),
+  new (require('enb/techs/css-chunks'))(),
+  new (require('enb/techs/js-chunks'))(),
+  new (require('enb/techs/i18n-merge-keysets'))(),
+  new (require('enb/techs/i18n-lang-js-chunks'))(),
+  new (require('enb/techs/js-bembundle-component-i18n'))()
+]);
+```
+
+js-bundle-page
+--------------
+
+Собирает страничный `?.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
+
+Результирующий файл готов к догрузке кода из бандлов (JS и CSS, приходящий из бандлов, повторно не выполняется на странице).
+
+**Опции**
+
+* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
+* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.js`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTechs([
+  /* ... */
+  new (require('enb/techs/css-chunks'))(),
+  new (require('enb/techs/js-chunks'))(),
+  new (require('enb/techs/js-bundle-page'))()
+]);
+```
+
+js-bembundle-page-i18n
+----------------------
+
+Собирает страничные `?.<язык>.js`-файлы из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
+
+Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+
+Имена результирующих файлов в данный момент не настраиваются (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
+* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTechs([
+  /* ... */
+  new (require('enb/techs/css-chunks'))(),
+  new (require('enb/techs/js-chunks'))(),
+  new (require('enb/techs/i18n-merge-keysets'))(),
+  new (require('enb/techs/i18n-lang-js-chunks'))(),
+  new (require('enb/techs/js-bembundle-page-i18n'))()
+]);
+```
+
+js-chunks
+---------
+
+Из *js*-файлов по deps'ам, собирает `js-chunks.js`-файл.
+
+`js-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/js-chunks'))());
+```
+
+js-expand-includes
+------------------
+
+Обрабатывает инклуды в исходном `js`-файле и собирает результирующий файл. При раскрытии инклудов, если имя подключенного файла является таргетом, то ждет его выполнения.
+
+**Опции**
+
+* *String* **sourceTarget** — Исходный JS-таргет. Обязательная опция.
+* *String* **destTarget** — Результирующий JS-таргет. Обязательная опция.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/js-expand-includes'))({ sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' }));
+```
+
+js-i18n
+-------
+
+Собирает `js`-файлы по deps'ам и добавляет в результат таргет `?.lang.<язык>.js`. Используется с технологией `i18n-lang-js`.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/js-i18n'))({ languages: ['ru', 'en'] }));
+```
+
+js-includes
+-----------
+
+Собирает *js*-файлы по deps'ам инклудами, сохраняет в виде `?.js`. Может пригодиться в паре с ycssjs (как fastcgi-модуль).
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/js-includes'))());
+```
+
+levels
+------
+
+Собирает информацию об уровнях переопределения проекта, предоставляет `?.levels`. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`.
+
+Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`. Например, для ноды `pages/index` — `pages/index/blocks`.
+
+**Опции**
+
+* *(String|Object)[]* **levels** — Уровни переопределения. Полные пути к папкам с уровнями переопределения. Вместо строки с уровнем может использоваться объект вида `{path: '/home/user/www/proj/lego/blocks-desktop', check: false}` для того, чтобы закэшировать содержимое тех уровней переопределения, которые не модифицируются в рамках проекта.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/levels'))({
+  levels: [
+    {path: 'lego/blocks-desktop', check: false},
+    'desktop.blocks'
+  ].map(function(level) { return config.resolvePath(level); })
+}));
+```
+
+priv-js
+-------
+
+Собирает `?.priv.js` по deps'ам, обрабатывая Борщиком, добавляет BEMHTML в начало.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **bemhtmlTarget** — Имя `bemhtml.js`-таргета. По умолчанию — `?.bemhtml.js`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/priv-js'))());
+```
+
+symlink
+-------
+
+Создает симлинк из одного таргета в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
+
+**Опции**
+
+* *String* **fileTarget** — Исходный таргет. Обязательная опция.
+* *String* **symlinkTarget** — Результирующий таргет. Обязательная опция.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/symlink'))({
+  fileTarget: '?.css',
+  symlinkTarget: '_?.css'
+}));
+```
+
+xsl
+---
+
+Собирает `?.xsl` по deps'ам для HTML5-страницы.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/xsl'))());
+```
+
+xsl-2lego
+---------
+
+Собирает `?.2lego.xsl` по deps'ам.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/2lego.xsl'))());
+```
+
+xsl-convert2xml
+---------------
+
+Собирает `?.convert2xml.xsl` по deps'ам.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **transformXslFile** — Путь к convert2xml.xsl из lego/tools.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(
+  new (require('enb/techs/xsl-convert2xml'))({
+    transformXslFile: config.resolvePath('blocks/lego/tools/convert2xml.xsl')
+  })
+);
+```
+
+xsl-i18n
+--------
+
+Собирает `?.<язык>.xsl`-файлы по deps'ам, добавляя `?.lang.<язык>.xsl`-файлы.
+
+Имена результирующих файлоы в данный момент не настраиваются (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('xsl-18n'))({ languages: ['ru', 'en' ]}));
+```
+
+xslt
+----
+
+Выполняет XSLT-преобразование.
+
+**Опции**
+
+* *String* **sourceTarget** — Исходный таргет. Обязательная опция.
+* *String* **destTarget** — Результирующий таргет. Обязательная опция.
+* *String* **xslSource** — XSL-Таргет, с помощью которого производится трансформация.
+* *String* **xslFile** — XSL-Файл, с помощью которого производится трансформация (используется, если XSL-файл не является таргетом).
+* *String[]* **args** — Аргументы для xsltproc. По умолчанию — `[]`.
+
+**Пример**
+
+```javascript
+config.getLanguages().forEach(function(lang) {
+  nodeConfig.addTech(new (require('enb/techs/xslt'))({
+      sourceTarget: '?.keysets.' + lang + '.xml',
+      destTarget: '?.lang.' + lang + '.xsl',
+      xslFile: config.resolvePath('blocks/lego/tools/tanker/tools/generate/i18n.xsl.xsl'),
+      args: ['--xinclude']
+  }));
+});
 ```

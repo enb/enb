@@ -36,6 +36,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * Дмитрию Ковалю (http://staff.yandex-team.ru/smith). За помощь в сборке тестов, production-режима и здоровый скептицизм.
 * Александру Тармолову (http://staff.yandex-team.ru/hevil). За помощь с `git`, `modules`, поддержку и полезные ссылки.
 * Сергею Бережному (http://staff.yandex-team.ru/veged). За `borschik`, советы и правильные вопросы.
+* Вениамину Клещенкову (http://staff.yandex-team.ru/benjamin). За помощь в отладке и доработке ENB, поддержку, советы и ревью.
 * Команде разработчиков bem-tools. За часть заимствованного кода.
 
 Терминология
@@ -493,7 +494,7 @@ nodeConfig.addTech(new (require('enb/techs/deps'))({
 }));
 ```
 
-bemdecl-merge
+deps-merge
 -------------
 
 Формирует *deps* с помощью объединения других deps-файлов.
@@ -556,10 +557,69 @@ deps-provider
 nodeConfig.addTech(new (require('enb/techs/deps-provider'))({
   sourceNodePath: 'bundles/router',
   sourceTarget: 'router.deps.js',
-  bemdeclTarget: 'router.deps.js'
+  depsTarget: 'router.deps.js'
 }));
 ```
 
 deps-subtract
 -------------
+
+Формирует *deps* с помощью вычитания одного deps-файла из другого. Может применяться в паре с `deps-provider` для получения deps для bembundle.
+
+**Опции**
+
+* *String* **subtractFromTarget** — Таргет, из которого вычитать. Обязательная опция.
+* *String* **subtractWhatTarget** — Таргет, который вычитать. Обязательная опция.
+* *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTechs([
+  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
+  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
+  new (require('enb/techs/deps-subtract'))({
+    subtractWhatTarget: 'index.deps.js',
+    subtractFromTarget: 'router.tmp.deps.js',
+    depsTarget: 'router.deps.js'
+  })
+]);
+```
+
+file-copy
+---------
+
+Копирует один таргет в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
+
+**Опции**
+
+* *String* **sourceTarget** — Исходный таргет. Обязательная опция.
+* *String* **destTarget** — Результирующий таргет. Обязательная опция.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/file-copy'))({
+  sourceTarget: '?.css',
+  destTarget: '_?.css'
+}));
+```
+
+file-provider
+-------------
+
+Предоставляет существующий файл для make-платформы. Может, например, использоваться для предоставления исходного *bemdecl*-файла.
+
+**Опции**
+
+* *String* **target** — Таргет. Обязательная опция.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }));
+```
+
+files
+-----
 

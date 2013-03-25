@@ -1231,9 +1231,7 @@ var
   vowFs = require('vow-fs');
 
 modules.exports = inherit(require('enb/lib/tech/base-tech'), {
-  init: function(node) {
-    this.node = node;
-  }
+  // init наследуем от base-tech, где node записывается в this.node.
   getName: function() {
     return 'hello-world-tech';
   },
@@ -1249,6 +1247,6 @@ modules.exports = inherit(require('enb/lib/tech/base-tech'), {
       _this.node.resolveTarget(targetName);
     });
   }
-  // clean наследуем от base-tech, который просто удаляет все файлы на основе результата getTargets().
+  // clean наследуем от base-tech, где просто удаляются все файлы на основе результата getTargets().
 });
 ```

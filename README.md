@@ -242,6 +242,82 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 
 11. Сборка js и css работает. Если в вашем проекте присутствуют другие цели или мультиязычность, то можно продолжить чтение данной документации в поисках информации о небходимых технологиях.
 
+Настройка сборки
+================
+
+```javascript
+module.exports = function(config) {
+
+  // Языки для проекта.
+  config.setLanguages(['ru', 'en']);
+
+  // Добавление ноды в сборку.
+  config.node('pages/index');
+
+  // Добавление ноды в сборку + конфигурирование ноды.
+  config.node('pages/index', function(nodeConfig) {
+    // Переопределение языков для конкретной ноды.
+    nodeConfig.setLanguages(['ru']);
+    // Добавление одной технологии.
+    nodeConfig.addTech(new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }));
+    // Добавление нескольких технологий.
+    nodeConfig.addTechs([
+      new (require('enb/techs/levels'))({ 
+        levels: [
+          'common.blocks',
+          'desktop.blocks'
+        ].map(function(config) { return config.resolvePath(level); } // Резолвинг путей от корня проекта.
+      )}),
+      new (require('enb/techs/deps'))(),
+      new (require('enb/techs/files'))(),
+      new (require('enb/techs/js'))(),
+      new (require('enb/techs/css'))()
+    ]);
+    // Добавление одного таргета.
+    nodeConfig.addTarget('?.css');
+    // Добавление нескольких таргетов.
+    nodeConfig.addTargets(['?.css', '?.js']);
+  });
+  
+  // Настройки для режима development.
+  config.mode('development', function() {
+    // Настройка нод по маске (regex).
+    config.nodeMask(/pages\/.*/, function(nodeConfig) {
+      nodeConfig.addTechs([
+        new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css'}),
+        new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js'})
+      ]);
+    });
+  });
+
+  // Настройки для режима production.
+  config.mode('production', function() {
+    // Настройка нод по маске (regex).
+    config.nodeMask(/pages\/.*/, function(nodeConfig) {
+      nodeConfig.addTechs([
+        new (require('enb/techs/borschik'))({ sourceTarget: '?.css', destTarget: '_?.css'}),
+        new (require('enb/techs/borschik'))({ sourceTarget: '?.js', destTarget: '_?.js'})
+      ]);
+    });
+  });
+
+  // Регистрация таска.
+  config.task('i18n.get', function(task) {
+    // Выполнение shell-команды.
+    return task.shell('./blocks/lego/tools/get-tanker.js');
+  });
+
+  // Установка переменных среды для shell-команд.
+  config.setEnv({
+      PRJ_ROOT        : config.resolvePath(), // Получение абсолютного пути к папке с проектом.
+      TANKER_HOST     : 'tanker-test.yandex-team.ru',
+      TANKER_PRJ      : 'super-project',
+      TANKER_PRJ_REV  : 'master'
+  });
+};
+```
+
+
 Подробное описание актуальных технологий
 ========================================
 

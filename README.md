@@ -63,16 +63,16 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   };
   ```
 5. Проверить, что ENB работает. Команда `node_modules/.bin/enb make` должна выполниться без ошибок.
-6.
+6. 
   Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
   ```javascript
   module.exports = function(config) {
-    config.node('pages/index', function(nodeConfig) {
-    });
+      config.node('pages/index', function(nodeConfig) {
+      });
   };
   ```
   Так объявляется нода в рамках make-платформы. В данный момент она не настроена, а лишь объявлена.
-7.
+7. 
   Объявим таргеты, которые надо собрать для ноды:
   ```javascript
   module.exports = function(config) {
@@ -82,29 +82,29 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   };
   ```
   Таргеты объявлены, но при попытке выполнить `node_modules/.bin/enb make` будет ошибка, т.к. не зарегистрированы технологии, которые могут предоставить таргеты.
-8.
+8. 
   Зарегистрируем базовые технологии:
   ```javascript
   module.exports = function(config) {
-    config.node('pages/index', function(nodeConfig) {
-      nodeConfig.addTechs([
-        new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-        new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-        new (require('enb/techs/deps-old'))(),
-        new (require('enb/techs/files'))()
-      ]);
-      nodeConfig.addTargets(['_?.js', '_?.css']);
-    });
+      config.node('pages/index', function(nodeConfig) {
+        nodeConfig.addTechs([
+          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
+          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
+          new (require('enb/techs/deps-old'))(),
+          new (require('enb/techs/files'))()
+        ]);
+        nodeConfig.addTargets(['_?.js', '_?.css']);
+      });
   };
   function getLevels(config) {
-    return [
-      {path: 'bem-bl/blocks-common', check: false},
-      {path: 'bem-bl/blocks-desktop', check: false},
-      {path: 'lego/blocks-common', check: false},
-      {path: 'lego/blocks-desktop', check: false},
-      'common.blocks',
-      'desktop.blocks'
-    ].map(function(levelPath) { return config.resolvePath(levelPath); });
+      return [
+        {path: 'bem-bl/blocks-common', check: false},
+        {path: 'bem-bl/blocks-desktop', check: false},
+        {path: 'lego/blocks-common', check: false},
+        {path: 'lego/blocks-desktop', check: false},
+        'common.blocks',
+        'desktop.blocks'
+      ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
   Чтобы не засорять конфиг ноды, функцию `getLevels` мы выносим в нижнюю часть файла.
@@ -116,106 +116,106 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   **enb/techs/deps-old** — собирает `?.deps.js` (`index.deps.js`) на основе `index.bemdecl.js` и `index.levels`. Почему `deps-old`? В lego не хватает ряда зависимостей, поэтому ваш проект может не собраться с более быстрый технологией `deps` без модификации lego. Технология `deps-old` повторяет алгоритм сборки из `bem-tools` и нехватка зависимостей становится незаметной, как раньше.
   **enb/techs/files** — собирает полный список файлов со всех уровней переопределения в том порядке, в котором они идут в финальном `index.deps.js`. Результат этой технологии может использоваться, например, в технологии `enb/techs/js`.
 
-9.
+9. 
   Регистрируем технологии, необходимые для сборки js и css.
   ```javascript
   module.exports = function(config) {
-    config.node('pages/index', function(nodeConfig) {
-      nodeConfig.addTechs([
-        new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-        new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-        new (require('enb/techs/deps-old'))(),
-        new (require('enb/techs/files'))(),
-        new (require('enb/techs/js'))(),
-        new (require('enb/techs/css'))()
-      ]);
-      nodeConfig.addTargets(['_?.js', '_?.css']);
-    });
+      config.node('pages/index', function(nodeConfig) {
+        nodeConfig.addTechs([
+          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
+          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
+          new (require('enb/techs/deps-old'))(),
+          new (require('enb/techs/files'))(),
+          new (require('enb/techs/js'))(),
+          new (require('enb/techs/css'))()
+        ]);
+        nodeConfig.addTargets(['_?.js', '_?.css']);
+      });
   };
   function getLevels(config) {
-    return [
-      {path: 'bem-bl/blocks-common', check: false},
-      {path: 'bem-bl/blocks-desktop', check: false},
-      {path: 'lego/blocks-common', check: false},
-      {path: 'lego/blocks-desktop', check: false},
-      'common.blocks',
-      'desktop.blocks'
-    ].map(function(levelPath) { return config.resolvePath(levelPath); });
+      return [
+        {path: 'bem-bl/blocks-common', check: false},
+        {path: 'bem-bl/blocks-desktop', check: false},
+        {path: 'lego/blocks-common', check: false},
+        {path: 'lego/blocks-desktop', check: false},
+        'common.blocks',
+        'desktop.blocks'
+      ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
   Теперь файлы `index.js` и `index.css` могут собираться с помощью технологий `enb/techs/js` и `enb/techs/css` соответственно.
   Но мы регистрировали иные таргеты: `_?.js` (`_index.js`) и `_?.css` (`_index.css`). Для их сборки воспользуемся технологией `enb/techs/file-copy`.
   ```javascript
   module.exports = function(config) {
-    config.node('pages/index', function(nodeConfig) {
-      nodeConfig.addTechs([
-        new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-        new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-        new (require('enb/techs/deps-old'))(),
-        new (require('enb/techs/files'))(),
-        new (require('enb/techs/js'))(),
-        new (require('enb/techs/css'))(),
-        new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
-        new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
-      ]);
-      nodeConfig.addTargets(['_?.js', '_?.css']);
-    });
+      config.node('pages/index', function(nodeConfig) {
+        nodeConfig.addTechs([
+          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
+          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
+          new (require('enb/techs/deps-old'))(),
+          new (require('enb/techs/files'))(),
+          new (require('enb/techs/js'))(),
+          new (require('enb/techs/css'))(),
+          new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
+          new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
+        ]);
+        nodeConfig.addTargets(['_?.js', '_?.css']);
+      });
   };
   function getLevels(config) {
-    return [
-      {path: 'bem-bl/blocks-common', check: false},
-      {path: 'bem-bl/blocks-desktop', check: false},
-      {path: 'lego/blocks-common', check: false},
-      {path: 'lego/blocks-desktop', check: false},
-      'common.blocks',
-      'desktop.blocks'
-    ].map(function(levelPath) { return config.resolvePath(levelPath); });
+      return [
+        {path: 'bem-bl/blocks-common', check: false},
+        {path: 'bem-bl/blocks-desktop', check: false},
+        {path: 'lego/blocks-common', check: false},
+        {path: 'lego/blocks-desktop', check: false},
+        'common.blocks',
+        'desktop.blocks'
+      ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
   Теперь можно выполнить команду `node_modules/.bin/enb make` и в папке `pages/index` будут столь нужные нам `_index.js` и `_index.css`.
   Окей, мы получили результат, с которым можно работать. Но как же production-режим?
 
-10.
+10. 
   Разделяем сборку финальных файлов для разных режимов.
   ```javascript
   module.exports = function(config) {
-    config.node('pages/index', function(nodeConfig) {
-      nodeConfig.addTechs([
-        new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-        new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-        new (require('enb/techs/deps-old'))(),
-        new (require('enb/techs/files'))(),
-        new (require('enb/techs/js'))(),
-        new (require('enb/techs/css'))()
-      ]);
-      nodeConfig.addTargets(['_?.js', '_?.css']);
-    });
-    config.mode('development', function() {
       config.node('pages/index', function(nodeConfig) {
         nodeConfig.addTechs([
-          new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
-          new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
+          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
+          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
+          new (require('enb/techs/deps-old'))(),
+          new (require('enb/techs/files'))(),
+          new (require('enb/techs/js'))(),
+          new (require('enb/techs/css'))()
         ]);
+        nodeConfig.addTargets(['_?.js', '_?.css']);
       });
-    });
-    config.mode('production', function() {
-      config.node('pages/index', function(nodeConfig) {
-        nodeConfig.addTechs([
-          new (require('enb/techs/borschik'))({ sourceTarget: '?.js', destTarget: '_?.js', minify: true }),
-          new (require('enb/techs/borschik'))({ sourceTarget: '?.css', destTarget: '_?.css', minify: true })
-        ]);
+      config.mode('development', function() {
+        config.node('pages/index', function(nodeConfig) {
+          nodeConfig.addTechs([
+            new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
+            new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
+          ]);
+        });
       });
-    });
+      config.mode('production', function() {
+        config.node('pages/index', function(nodeConfig) {
+          nodeConfig.addTechs([
+            new (require('enb/techs/borschik'))({ sourceTarget: '?.js', destTarget: '_?.js', minify: true }),
+            new (require('enb/techs/borschik'))({ sourceTarget: '?.css', destTarget: '_?.css', minify: true })
+          ]);
+        });
+      });
   };
   function getLevels(config) {
-    return [
-      {path: 'bem-bl/blocks-common', check: false},
-      {path: 'bem-bl/blocks-desktop', check: false},
-      {path: 'lego/blocks-common', check: false},
-      {path: 'lego/blocks-desktop', check: false},
-      'common.blocks',
-      'desktop.blocks'
-    ].map(function(levelPath) { return config.resolvePath(levelPath); });
+      return [
+        {path: 'bem-bl/blocks-common', check: false},
+        {path: 'bem-bl/blocks-desktop', check: false},
+        {path: 'lego/blocks-common', check: false},
+        {path: 'lego/blocks-desktop', check: false},
+        'common.blocks',
+        'desktop.blocks'
+      ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
   Теперь для production-режима (который запускается командой `YENV=production node_modules/.bin/enb make`) конечные файлы обрабатываются Борщиком (https://github.com/veged/borschik).

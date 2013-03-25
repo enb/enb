@@ -1199,3 +1199,46 @@ config.getLanguages().forEach(function(lang) {
   }));
 });
 ```
+
+Как написать свою технологию
+============================
+
+Каждая технология должна иметь методы:
+
+```javascript
+{undefined|Promise} init(Node node)
+{String} getName()
+{String[]|Promise} getTargets()
+{undefined|Promise} build()
+{undefined|Promise} clean()
+```
+
+Пример технологии:
+
+```javascript
+var 
+  inherit = require('inherit'),
+  vowFs = require('vow-fs');
+
+modules.exports = inherit(require('enb/lib/tech/base-tech'), {
+  init: function(node) {
+    this.node = node;
+  }
+  getName: function() {
+    return 'hello-world-tech';
+  },
+  getTargets: function() {
+    return this.node.unmaskTargetName('?.js');
+  },
+  build: function() {
+    var
+      _this = this,
+      targetName = this.node.unmaskTargetName('?.js'),
+      targetPath = this.node.resolvePath(targetName);
+    return vowFs.write(targetPath, 'alert("Hello World");', 'utf8').then(function() {
+      _this.node.resolveTarget(targetName);
+    });
+  }
+  // clean наследуем от base-tech, который просто удаляет все файлы на основе результата getTargets().
+})
+```

@@ -623,3 +623,155 @@ nodeConfig.addTech(new (require('enb/techs/file-provider'))({ target: '?.bemdecl
 files
 -----
 
+Собирает список исходных файлов для сборки на основе *deps* и *levels*, предоставляет `?.files` и `?.dirs`. Используется многими технологиями, которые объединяют множество файлов из различных уровней переопределения в один.
+
+**Опции**
+
+* *String* **depsTarget** — Исходный deps-таргет. По умолчанию — `?.deps.js`.
+* *String* **filesTarget** — Результирующий files-таргет. По умолчанию — `?.files`.
+* *String* **filesTarget** — Результирующий dirs-таргет. По умолчанию — `?.dirs`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/files'))());
+```
+
+html-from-bemjson
+-----------------
+
+Собирает *html*-файл с помощью *bemjson* и *bemhtml*.
+
+**Опции**
+
+* *String* **bemhtmlTarget** — Исходный BEMHTML-файл. По умолчанию — `?.bemhtml.js`.
+* *String* **bemjsonTarget** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
+* *String* **destTarget** — Результирующий HTML-файл. По умолчанию — `?.html`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/html-from-bemjson'))());
+```
+
+i18n-keysets-xml
+----------------
+
+Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
+
+Используется для локализации xml-страниц, работающих в XScript (насколько я понимаю).
+
+Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
+
+**Опции**
+
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('i18n-keysets-xml'))({ languages: ['ru', 'en' ]}));
+```
+
+i18n-lang-js
+------------
+
+Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
+
+Используется для локализации в JS с помощью BEM.I18N.
+
+Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
+
+**Опции**
+
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('i18n-lang-js'))({ languages: ['ru', 'en' ]}));
+```
+
+i18n-lang-js-chunks
+-------------------
+
+Собирает `?.js-chunks.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
+
+Используется для локализации в JS с помощью BEM.I18N при сборке bembundle.
+
+Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
+
+**Опции**
+
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('i18n-lang-js-chunks'))({ languages: ['ru', 'en' ]}));
+```
+
+i18n-merge-keysets
+------------------
+
+Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
+
+Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
+
+**Опции**
+
+* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('i18n-merge-keysets'))({ languages: ['ru', 'en' ]}));
+```
+
+js
+--
+
+Склеивает *js*-файлы по deps'ам, сохраняет в виде `?.js`.
+
+Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+
+**Опции**
+
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/js'))());
+```
+
+js-bundle-component
+-------------------
+
+Собирает `?.bembundle.js` из `?.css-chunks.js` и `?.js-chunks.js`.
+
+Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+
+**Опции**
+
+* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
+* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.js`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTechs([
+  new (require('enb/techs/levels'))({ levels: /* ... */ }),
+  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
+  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
+  new (require('enb/techs/deps-subtract'))({
+    subtractWhatTarget: 'index.deps.js',
+    subtractFromTarget: 'router.tmp.deps.js',
+    depsTarget: 'router.deps.js'
+  }),
+  new (require('enb/techs/css-chunks'))(),
+  new (require('enb/techs/js-chunks'))(),
+  new (require('enb/techs/js-bundle-component'))()
+]);
+```

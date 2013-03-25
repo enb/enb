@@ -1240,5 +1240,5 @@ modules.exports = inherit(require('enb/lib/tech/base-tech'), {
     });
   }
   // clean наследуем от base-tech, который просто удаляет все файлы на основе результата getTargets().
-})
+});
 ```

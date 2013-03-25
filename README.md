@@ -29,6 +29,15 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * ENB сложнее настроить для проекта. В нем нет готовых шаблонов make-файлов.
 * В рамках ENB одна и та же технология может быть использована с разными опциями. Например, можно построить несколько разных `deps.js` в рамках одной ноды на основе различных `bemdecl.js`.
 
+Благодарности
+-------------
+
+* Дмитрию Филатову (http://staff.yandex-team.ru/dfilatov). За `vow`, `vow-fs`, `inherit`, советы, поддержку и мотивацию.
+* Дмитрию Ковалю (http://staff.yandex-team.ru/smith). За помощь в сборке тестов, production-режима и здоровый скептицизм.
+* Александру Тармолову (http://staff.yandex-team.ru/hevil). За помощь с `git`, `modules`, поддержку и полезные ссылки.
+* Сергею Бережному (http://staff.yandex-team.ru/veged). За `borschik`, советы и правильные вопросы.
+* Команде разработчиков bem-tools. За часть заимствованного кода.
+
 Терминология
 ------------
 
@@ -252,7 +261,7 @@ bemdecl-merge
 
 **Опции**
 
-* *Array<String>* **bemdeclSources** — Исходные bemdecl-таргеты. Обязательная опция.
+* *String[]* **bemdeclSources** — Исходные bemdecl-таргеты. Обязательная опция.
 * *String* **bemdeclTarget** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
 
 **Пример**
@@ -491,7 +500,7 @@ bemdecl-merge
 
 **Опции**
 
-* *Array<String>* **depsSources** — Исходные deps-таргеты. Обязательная опция.
+* *String[]* **depsSources** — Исходные deps-таргеты. Обязательная опция.
 * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
 
 **Пример**
@@ -529,4 +538,28 @@ nodeConfig.addTech(new (require('enb/techs/deps-old'))({
   depsTarget: 'search.deps.js'
 }));
 ```
+
+deps-provider
+-------------
+
+Копирует *deps* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения deps'ов.
+
+**Опции**
+
+* *String* **sourceNodePath** — Путь исходной ноды с нужным deps'ом. Обязательная опция.
+* *String* **sourceTarget** — Исходный deps, который будет копироваться. По умолчанию — `?.deps.js` (демаскируется в рамках исходной ноды).
+* *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js` (демаскируется в рамках текущей ноды).
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(new (require('enb/techs/deps-provider'))({
+  sourceNodePath: 'bundles/router',
+  sourceTarget: 'router.deps.js',
+  bemdeclTarget: 'router.deps.js'
+}));
+```
+
+deps-subtract
+-------------
 

@@ -426,6 +426,26 @@ css-ie
 nodeConfig.addTech(new (require('enb/techs/css-ie'))());
 ```
 
+css-ie6
+-------
+
+По аналогии с css-ie.
+
+css-ie7
+-------
+
+По аналогии с css-ie.
+
+css-ie8
+-------
+
+По аналогии с css-ie.
+
+css-ie9
+-------
+
+По аналогии с css-ie.
+
 css-ie-includes
 ---------------
 

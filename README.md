@@ -39,8 +39,8 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * Дмитрию Филатову (@dfilatov). За `vow`, `vow-fs`, `inherit`, советы, поддержку и мотивацию.
 * Дмитрию Ковалю (@smith). За помощь в сборке тестов, production-режима и здоровый скептицизм.
 * Александру Тармолову (@hevil). За помощь с `git`, `modules`, поддержку и полезные ссылки.
-* Сергею Бережному (@veged). За `borschik`, советы и правильные вопросы.
 * Вениамину Клещенкову (@benjamin). За помощь в отладке и доработке ENB, поддержку, советы и ревью.
+* Сергею Бережному (@veged). За `borschik`, советы и правильные вопросы.
 * Команде разработчиков bem-tools. За часть заимствованного кода.
 
 Содержание
@@ -1210,11 +1210,11 @@ config.getLanguages().forEach(function(lang) {
 Каждая технология должна иметь методы:
 
 ```javascript
-{undefined|Promise} init(Node node)
-{String} getName()
-{String[]|Promise} getTargets()
-{undefined|Promise} build()
-{undefined|Promise} clean()
+{undefined|Promise} init(Node node) // Инициализирует технологию для указанной ноды.
+{String} getName() // Возвращает имя технологии.
+{String[]|Promise} getTargets() // Возвращает таргеты, которые технология собирается сбилдить в рамках ноды.
+{undefined|Promise} build() // Билдит таргеты.
+{undefined|Promise} clean() // Удаляет таргеты.
 ```
 
 Пример технологии:
@@ -1244,3 +1244,187 @@ modules.exports = inherit(require('enb/lib/tech/base-tech'), {
   // clean наследуем от base-tech, где просто удаляются все файлы на основе результата getTargets().
 });
 ```
+
+Node API
+========
+
+Каждой технологии в `init` приходит инстанция ноды, для которой необходимо собирать таргеты. Через ноду технология взаимодействует с процессом сборки.
+
+Основные методы класса Node:
+
+node.getTargetName
+------------------
+
+```javascript
+// Возвращает имя таргета ноды без суффикса. Например, для ноды 'pages/index' результат — index.
+String Node::getTargetName()
+// Возвращает имя таргета ноды с суффиксом. Например, для ноды 'pages/index' с суффиксом 'js' результат — 'index.js'.
+String Node::getTargetName(String suffix)
+```
+
+node.unmaskTargetName
+---------------------
+
+```javascript
+// Демаскирует имя таргета ноды. Например, для ноды 'pages/index' и maskedTargetName='?.css', результат — 'index.css'.
+String Node::unmaskTargetName(String maskedTargetName)
+```
+
+node.resolvePath
+----------------
+
+```javascript
+// Возвращает абсолютный путь к таргету.
+String Node::resolvePath(String targetName)
+```
+
+**Пример**
+
+```javascript
+var fs = require('fs');
+fs.writeFileSync(this.node.resolvePath(this.node.getTargetName('js')), 'alert("Hello World!");', 'utf8');
+```
+
+node.resolveTarget
+------------------
+
+```javascript
+// Оповещает ноду о том, что таргет собран. Опционально принимает результат сборки.
+// Результатом может быть любой объект, который может быть полезен другим технологиям для продолжения сборки.
+undefined Node::resolveTarget(String targetName[, Object result])
+```
+
+**Примеры**
+
+```javascript
+// #1
+this.node.resolveTarget('index.css');
+
+// #2 Получаем имя таргета динамически с помощью суффикса.
+this.node.resolveTarget(this.node.getTargetName('css'));
+
+// #3 Получаем имя таргета путем демаскирования таргета.
+this.node.resolveTarget(this.node.unmaskTargetName('?.css'));
+
+// #4 Передаем значение.
+var target = this.node.unmaskTargetName('?.deps.js'),
+    targetPath = this.node.resolvePath(target);
+delete require.cache[targetPath]; // Избавляемся от кэширования в nodejs.
+this.node.resolveTarget(target, require(targetPath));
+```
+
+node.rejectTarget
+------------------
+
+```javascript
+// Оповещает ноду о том, что таргет не может быть собран из-за ошибки.
+undefined Node::rejectTarget(String targetName, Error error)
+```
+
+**Примеры**
+
+```javascript
+// #1
+this.node.rejectTarget('index.css', new Error('Could not find CSS Tools.'));
+
+// #2 Получаем имя таргета динамически с помощью суффикса.
+this.node.rejectTarget(this.node.getTargetName('css'), new Error('Could not find CSS Tools.'));
+```
+
+node.requireSources
+-------------------
+
+```javascript
+// Требует у ноды таргеты для дальнейшей сборки, возвращает промис. 
+// Промис выполняется, возвращая массив результатов, которыми резолвились требуемые таргеты.
+// ВАЖНО: Не все технологии резолвят таргеты с результатом.
+// В данный момент резолвят с результатом технологии: levels, deps*, files.
+Promise(Object[]) Node::requireSources(String[] targetNames)
+```
+
+**Пример**
+
+Например, нам надо объединить в один файл `index.css` и `index.ie.css` и записать в `index.all.css`.
+
+```javascript
+var vowFs = require('vow-fs');
+// ...
+  build: function() {
+    var _this = this;
+    return this.node.requireSources(['index.css', 'index.ie.css']).then(function() {
+      return Vow.all([vowFs.read(_this.node.resolvePath('index.css'), 'utf8'), vowFs.read(_this.node.resolvePath('index.ie.css'), 'utf8')]).then(function(res) {
+        return vowFs.write(_this.node.resolvePath('index.all.css'), res.join('\n'), 'utf8').then(function() {
+          _this.node.resolveTarget('index.all.css');
+        });
+      });
+    });
+  }
+// ...
+```
+
+Пример использования: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L31)
+
+node.relativePath
+-----------------
+
+```javascript
+// Возвращает относительный путь к таргету относительно ноды.
+String Node::relativePath(String targetName)
+```
+
+Пример использования: [Технология css-includes](/mdevils/enb/blob/master/techs/css-includes.js#L16)
+
+node.getDir
+-----------
+
+```javascript
+// Возвращает полный путь к папке ноды.
+String Node::getDir()
+```
+
+node.getRoot
+------------
+
+```javascript
+// Возвращает полный путь к корневой папке проекта.
+String Node::getRoot()
+```
+
+node.getLogger
+--------------
+
+[Logger](/mdevils/enb/blob/master/lib/logger.js)
+
+```javascript
+// Возвращает инстанцию логгера для ноды.
+Logger Node::getLogger()
+```
+
+**Пример**
+
+```javascript
+this.node.getLogger().log('Hello World');
+```
+
+Пример использования: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L79)
+
+node.getNodeCache
+-----------------
+
+[Cache](/mdevils/enb/blob/master/lib/cache/cache.js)
+
+```javascript
+// Возвращает инстанцию кэша для таргета ноды.
+Cache Node::getNodeCache()
+```
+
+Кеширование необходимо для того, чтобы избегать повторной сборки файлов, для которых сборка не требуется. Кэшируется время изменения исходных и конечных файлов после окончания сборки каждой технологии. Логика кэширования реализуется в каждой технологии индивидуально для максимальной гибкости.
+
+С помощью методов `Boolean needRebuildFile(String cacheKey, String filePath)` и `Boolean needRebuildFileList(String cacheKey, FileInfo[] files)` производится валидация кэша.
+
+С помощью методов `undefined cacheFileInfo(String cacheKey, String filePath)` и `undefined cacheFileList(String cacheKey, FileInfo[] files)` производится сохранение информации о файлах в кэш.
+
+Пример использования:
+
+* Валидация кэша: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L33)
+* Кеширование результатов сборки: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L73)

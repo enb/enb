@@ -740,7 +740,7 @@ files
 
 * *String* **depsTarget** — Исходный deps-таргет. По умолчанию — `?.deps.js`.
 * *String* **filesTarget** — Результирующий files-таргет. По умолчанию — `?.files`.
-* *String* **filesTarget** — Результирующий dirs-таргет. По умолчанию — `?.dirs`.
+* *String* **dirsTarget** — Результирующий dirs-таргет. По умолчанию — `?.dirs`.
 
 **Пример**
 

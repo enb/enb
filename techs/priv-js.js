@@ -4,35 +4,14 @@ var inherit = require('inherit'),
     vowFs = require('vow-fs'),
     BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 
-module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
-    configure: function() {
-        this._bemhtmlTarget = this.node.unmaskTargetName(this.getOption('bemhtmlTarget', '?.bemhtml.js'));
-    },
-    getName: function() {
-        return 'priv-js';
-    },
-    getDestSuffixes: function() {
-        return ['priv.js'];
-    },
-    getSourceSuffixes: function() {
-        return ['priv.js'];
-    },
-    isRebuildRequired: function(suffix) {
-        var bemhtmlTarget = this._bemhtmlTarget,
-            target = this.getTargetName(suffix);
-        return this.__base(suffix)
-            || this.node.getNodeCache(target).needRebuildFile('bemhtml-file', this.node.resolvePath(bemhtmlTarget));
-    },
-    cacheSuffixInfo: function(suffix) {
-        var bemhtmlTarget = this._bemhtmlTarget,
-            target = this.getTargetName(suffix);
-        this.__base(suffix);
-        this.node.getNodeCache(target).cacheFileInfo('bemhtml-file', this.node.resolvePath(bemhtmlTarget));
-    },
-    getBuildResult: function(sourceFiles, suffix) {
+module.exports = require('../lib/build-flow').create()
+    .name('priv-js')
+    .target('target', '?.priv.js')
+    .useFileList('priv.js')
+    .useSourceText('bemhtmlTarget', '?.bemhtml.js')
+    .builder(function(sourceFiles, bemhtml) {
         var _this = this,
-            target = this.getTargetName(suffix),
-            bemhtmlPromise = this.node.requireSources([this._bemhtmlTarget]),
+            target = this._target,
             jsBorschikPreprocessor = new BorschikPreprocessor();
         return Vow.all(sourceFiles.map(function(file) {
             return _this.node.createTmpFileForTarget(target).then(function(tmpfile) {
@@ -44,12 +23,6 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
                 });
             });
         })).then(function(res) {
-            return bemhtmlPromise.then(function() {
-                var bemhtmlTargetPath = _this.node.resolvePath(_this._bemhtmlTarget);
-                return vowFs.read(bemhtmlTargetPath, 'utf8').then(function(bemhtml) {
-                    return bemhtml + '\n' + res.join('\n');
-                });
-            });
+            return bemhtml + '\n' + res.join('\n');
         });
-    }
-});
+    });

@@ -263,21 +263,21 @@ module.exports = function(config) {
   config.node('pages/index', function(nodeConfig) {
     // Переопределение языков для конкретной ноды.
     nodeConfig.setLanguages(['ru']);
-    // Добавление одной технологии.
-    nodeConfig.addTech(new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }));
+    // Добавление одной технологии с опциями.
+    nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
     // Добавление нескольких технологий.
     nodeConfig.addTechs([
-      new (require('enb/techs/levels'))({ 
+      [ require('enb/techs/levels'), {
         levels: [
           'common.blocks',
           'desktop.blocks'
-        ].map(function(config) { return config.resolvePath(level); } // Резолвинг путей от корня проекта.
-      )}),
+        ].map(function(config) { return config.resolvePath(level); }) // Резолвинг путей от корня проекта.
+      }],
       require('enb/techs/deps'),
       require('enb/techs/files'),
       // Добавление технологии с опциями
       [ require('enb/techs/js'), { target: '?.new.js' } ],
-      new (require('enb/techs/css'))()
+      require('enb/techs/css')
     ]);
     // Добавление одного таргета.
     nodeConfig.addTarget('?.css');
@@ -329,7 +329,7 @@ module.exports = function(config) {
 
 В алфавитном порядке.
 
-Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из make-файла с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде созданием инстанции: `nodeConfig.addTech(new (require('enb/techs/<tech-name>'))({/* [options] */}));`.
+Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из make-файла с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
 
 bemdecl-from-bemjson
 --------------------
@@ -360,10 +360,10 @@ bemdecl-merge
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/bemdecl-merge'))({
+nodeConfig.addTech([ require('enb/techs/bemdecl-merge'), {
   bemdeclSources: ['search.bemdecl.js', 'router.bemdecl.js'],
   bemdeclTarget: 'all.bemdecl.js'
-}));
+} ]);
 ```
 
 bemdecl-provider
@@ -380,11 +380,11 @@ bemdecl-provider
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/bemdecl-provider'))({
+nodeConfig.addTech([ require('enb/techs/bemdecl-provider'), {
   sourceNodePath: 'bundles/router',
   sourceTarget: 'router.bemdecl.js',
   bemdeclTarget: 'router.bemdecl.js'
-}));
+}]);
 ```
 
 bemhtml
@@ -403,7 +403,7 @@ bemhtml
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/bemhtml'))());
+nodeConfig.addTech(require('enb/techs/bemhtml'));
 ```
 
 borschik
@@ -423,12 +423,12 @@ borschik
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/borschik'))({
+nodeConfig.addTech([ require('enb/techs/borschik'), {
   sourceTarget: '?.css',
   destTarget: '_?.css',
   minify: true,
   freeze: true
-}));
+} ]);
 ```
 
 css
@@ -445,7 +445,7 @@ css
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css'))());
+nodeConfig.addTech(require('enb/techs/css'));
 ```
 
 css-borschik-chunks
@@ -466,10 +466,10 @@ css-borschik-chunks
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-borschik-chunks'))({
+nodeConfig.addTech([ require('enb/techs/css-borschik-chunks'), {
   minify: true,
   freeze: true
-}));
+} ]);
 ```
 
 css-chunks
@@ -488,7 +488,7 @@ css-chunks
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-chunks'))());
+nodeConfig.addTech(require('enb/techs/css-chunks'));
 ```
 
 css-ie
@@ -505,7 +505,7 @@ css-ie
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-ie'))());
+nodeConfig.addTech(require('enb/techs/css-ie'));
 ```
 
 css-ie6
@@ -542,7 +542,7 @@ css-ie-includes
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-ie-includes'))());
+nodeConfig.addTech(require('enb/techs/css-ie-includes'));
 ```
 
 css-includes
@@ -559,7 +559,7 @@ css-includes
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-includes'))());
+nodeConfig.addTech(require('enb/techs/css-includes'));
 ```
 
 css-stylus
@@ -576,7 +576,7 @@ css-stylus
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/css-stylus'))());
+nodeConfig.addTech(require('enb/techs/css-stylus'));
 ```
 
 deps
@@ -595,15 +595,15 @@ deps
 
 Обычное использование:
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps'))());
+nodeConfig.addTech(require('enb/techs/deps'));
 ```
 
 Сборка специфического deps:
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps'))({
+nodeConfig.addTech([ require('enb/techs/deps'), {
   bemdeclTarget: 'search.bemdecl.js',
   depsTarget: 'search.deps.js'
-}));
+} ]);
 ```
 
 deps-merge
@@ -619,10 +619,10 @@ deps-merge
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps-merge'))({
+nodeConfig.addTech([ require('enb/techs/deps-merge'))({
   depsSources: ['search.deps.js', 'router.deps.js'],
   depsTarget: 'all.deps.js'
-}));
+} ]);
 ```
 
 deps-old
@@ -641,15 +641,15 @@ deps-old
 
 Обычное использование:
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps-old'))());
+nodeConfig.addTech(require('enb/techs/deps-old'));
 ```
 
 Сборка специфического deps:
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps-old'))({
+nodeConfig.addTech([ require('enb/techs/deps-old'), {
   bemdeclTarget: 'search.bemdecl.js',
   depsTarget: 'search.deps.js'
-}));
+} ]);
 ```
 
 deps-provider
@@ -666,11 +666,11 @@ deps-provider
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/deps-provider'))({
+nodeConfig.addTech([ require('enb/techs/deps-provider'), {
   sourceNodePath: 'bundles/router',
   sourceTarget: 'router.deps.js',
   depsTarget: 'router.deps.js'
-}));
+} ]);
 ```
 
 deps-subtract
@@ -688,13 +688,13 @@ deps-subtract
 
 ```javascript
 nodeConfig.addTechs([
-  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
-  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
-  new (require('enb/techs/deps-subtract'))({
+  [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
+  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }],
+  [ require('enb/techs/deps-subtract'), {
     subtractWhatTarget: 'index.deps.js',
     subtractFromTarget: 'router.tmp.deps.js',
     depsTarget: 'router.deps.js'
-  })
+  } ]
 ]);
 ```
 
@@ -711,10 +711,10 @@ file-copy
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/file-copy'))({
+nodeConfig.addTech([ require('enb/techs/file-copy'), {
   sourceTarget: '?.css',
   destTarget: '_?.css'
-}));
+} ]);
 ```
 
 file-provider
@@ -729,7 +729,7 @@ file-provider
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }));
+nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
 ```
 
 files
@@ -746,7 +746,7 @@ files
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/files'))());
+nodeConfig.addTech(require('enb/techs/files'));
 ```
 
 html-from-bemjson
@@ -763,7 +763,7 @@ html-from-bemjson
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/html-from-bemjson'))());
+nodeConfig.addTech(require('enb/techs/html-from-bemjson'));
 ```
 
 i18n-keysets-xml
@@ -777,12 +777,13 @@ i18n-keysets-xml
 
 **Опции**
 
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('i18n-keysets-xml'))({ languages: ['ru', 'en' ]}));
+nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
 ```
 
 i18n-lang-js
@@ -796,12 +797,16 @@ i18n-lang-js
 
 **Опции**
 
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('i18n-lang-js'))({ languages: ['ru', 'en' ]}));
+nodeConfig.addTechs([
+  [ require('i18n-lang-js'), { lang: 'all'} ],
+  [ require('i18n-lang-js'), { lang: '{lang}'} ],
+]);
 ```
 
 i18n-lang-js-chunks
@@ -815,12 +820,16 @@ i18n-lang-js-chunks
 
 **Опции**
 
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.js-chunks.lang.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('i18n-lang-js-chunks'))({ languages: ['ru', 'en' ]}));
+nodeConfig.addTechs([
+  [ require('i18n-lang-js-chunks'), { lang: 'all' } ],
+  [ require('i18n-lang-js-chunks'), { lang: '{lang}' } ],
+]);
 ```
 
 i18n-merge-keysets
@@ -832,12 +841,16 @@ i18n-merge-keysets
 
 **Опции**
 
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('i18n-merge-keysets'))({ languages: ['ru', 'en' ]}));
+nodeConfig.addTechs([
+  [ require('i18n-merge-keysets'), { lang: 'all' } ],
+  [ require('i18n-merge-keysets'), { lang: '{lang}' } ]
+]);
 ```
 
 js
@@ -845,16 +858,15 @@ js
 
 Склеивает *js*-файлы по deps'ам, сохраняет в виде `?.js`.
 
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
 **Опции**
 
+* *String* **target** — Результирующий таргет. По умолчанию — `?.js`.
 * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/js'))());
+nodeConfig.addTech(require('enb/techs/js'));
 ```
 
 js-bundle-component
@@ -866,33 +878,33 @@ js-bundle-component
 
 **Опции**
 
-* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
-* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
+* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
 * *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.js`.
 
 **Пример**
 
 ```javascript
 nodeConfig.addTechs([
-  new (require('enb/techs/levels'))({ levels: /* ... */ }),
-  new (require('enb/techs/files'))(),
-  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
-  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
-  new (require('enb/techs/deps-subtract'))({
+  [ require('enb/techs/levels'), { levels: /* ... */ } ],
+  require('enb/techs/files'),
+  [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
+  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
+  [ require('enb/techs/deps-subtract'), {
     subtractWhatTarget: 'index.deps.js',
     subtractFromTarget: 'router.tmp.deps.js',
     depsTarget: 'router.deps.js'
-  }),
-  new (require('enb/techs/css-chunks'))(),
-  new (require('enb/techs/js-chunks'))(),
-  new (require('enb/techs/js-bundle-component'))()
+  } ],
+  require('enb/techs/css-chunks'),
+  require('enb/techs/js-chunks'),
+  require('enb/techs/js-bundle-component')
 ]);
 ```
 
 js-bembundle-component-i18n
 ---------------------------
 
-Собирает `?.bembundle.<язык>.js`-файлы из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
+Собирает `?.bembundle.<язык>.js`-файл из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
 
 Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
 
@@ -900,28 +912,31 @@ js-bembundle-component-i18n
 
 **Опции**
 
-* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
-* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
+* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
 nodeConfig.addTechs([
-  new (require('enb/techs/levels'))({ levels: /* ... */ }),
-  new (require('enb/techs/files'))(),
-  new (require('enb/techs/deps'))({ depsTarget: 'router.tmp.deps.js' }),
-  new (require('enb/techs/deps-provider'))({ sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }),
-  new (require('enb/techs/deps-subtract'))({
+  [ require('enb/techs/levels'), { levels: /* ... */ } ],
+  require('enb/techs/files'),
+  [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
+  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
+  [ require('enb/techs/deps-subtract'), {
     subtractWhatTarget: 'index.deps.js',
     subtractFromTarget: 'router.tmp.deps.js',
     depsTarget: 'router.deps.js'
-  }),
-  new (require('enb/techs/css-chunks'))(),
-  new (require('enb/techs/js-chunks'))(),
-  new (require('enb/techs/i18n-merge-keysets'))(),
-  new (require('enb/techs/i18n-lang-js-chunks'))(),
-  new (require('enb/techs/js-bembundle-component-i18n'))()
+  } ],
+  require('enb/techs/css-chunks'),
+  require('enb/techs/js-chunks'),
+  [ require('enb/techs/i18n-merge-keysets'), { lang: 'all' } ],
+  [ require('enb/techs/i18n-merge-keysets'), { lang: '{lang}' } ],
+  [ require('enb/techs/i18n-lang-js-chunks'), { lang: 'all' } ],
+  [ require('enb/techs/i18n-lang-js-chunks'), { lang: '{lang}' } ],
+  [ require('enb/techs/js-bembundle-component-i18n'), { lang: '{lang}' } ]
 ]);
 ```
 
@@ -934,8 +949,8 @@ js-bundle-page
 
 **Опции**
 
-* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
-* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
+* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
+* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
 * *String* **target** — Результирующий таргет. По умолчанию — `?.js`.
 
 **Пример**
@@ -943,37 +958,38 @@ js-bundle-page
 ```javascript
 nodeConfig.addTechs([
   /* ... */
-  new (require('enb/techs/css-chunks'))(),
-  new (require('enb/techs/js-chunks'))(),
-  new (require('enb/techs/js-bundle-page'))()
+  require('enb/techs/css-chunks'),
+  require('enb/techs/js-chunks'),
+  require('enb/techs/js-bundle-page')
 ]);
 ```
 
 js-bembundle-page-i18n
 ----------------------
 
-Собирает страничные `?.<язык>.js`-файлы из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
+Собирает страничный `?.<язык>.js`-файл из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
 
 Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
 
-Имена результирующих файлов в данный момент не настраиваются (нет запросов на эту функцию).
-
 **Опции**
 
-* *String* **cssChunksTarget** — Имя `css-chunks.js`-таргета, который предоставляет CSS-чанки. По умолчанию — `?.css-chunks.js`.
-* *String* **jsChunksTarget** — Имя `js-chunks.js`-таргета, который предоставляет JS-чанки. По умолчанию — `?.js-chunks.js`.
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
+* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
 nodeConfig.addTechs([
   /* ... */
-  new (require('enb/techs/css-chunks'))(),
-  new (require('enb/techs/js-chunks'))(),
-  new (require('enb/techs/i18n-merge-keysets'))(),
-  new (require('enb/techs/i18n-lang-js-chunks'))(),
-  new (require('enb/techs/js-bembundle-page-i18n'))()
+  require('enb/techs/css-chunks'),
+  require('enb/techs/js-chunks'),
+  [ require('enb/techs/i18n-merge-keysets'), { lang: 'all' } ],
+  [ require('enb/techs/i18n-merge-keysets'), { lang: '{lang}' } ],
+  [ require('enb/techs/i18n-lang-js-chunks'), { lang: 'all' } ],
+  [ require('enb/techs/i18n-lang-js-chunks'), { lang: '{lang}' } ],
+  [ require('enb/techs/js-bembundle-page-i18n'), { lang: '{lang}' } ]
 ]);
 ```
 
@@ -984,16 +1000,15 @@ js-chunks
 
 `js-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
 
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
 **Опции**
 
 * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.js-chunks.js`.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/js-chunks'))());
+nodeConfig.addTech(require('enb/techs/js-chunks'));
 ```
 
 js-expand-includes
@@ -1009,33 +1024,30 @@ js-expand-includes
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/js-expand-includes'))({ sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' }));
+nodeConfig.addTech([ require('enb/techs/js-expand-includes'), { sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' } ]);
 ```
 
 js-i18n
 -------
 
-Собирает `js`-файлы по deps'ам и добавляет в результат таргет `?.lang.<язык>.js`. Используется с технологией `i18n-lang-js`.
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+Собирает `js`-файл по deps'ам и добавляет в результат таргет `?.lang.<язык>.js`. Используется с технологией `i18n-lang-js`.
 
 **Опции**
 
 * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String[]* **languages** — Языки. Влияет на результирующие таргеты. По умолчанию — языки из конфига make-файла.
+* *String* **target** — Результирующий таргет. По умолчанию — `?.{lang}.js`.
+* *String* **lang** — Язык, для которого небходимо собрать файл.
 
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/js-i18n'))({ languages: ['ru', 'en'] }));
+nodeConfig.addTech([ require('enb/techs/js-i18n'), { lang: '{lang}' } ]);
 ```
 
 js-includes
 -----------
 
 Собирает *js*-файлы по deps'ам инклудами, сохраняет в виде `?.js`. Может пригодиться в паре с ycssjs (как fastcgi-модуль).
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
 
 **Опции**
 
@@ -1061,12 +1073,12 @@ levels
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/levels'))({
+nodeConfig.addTech([ require('enb/techs/levels'), {
   levels: [
     {path: 'lego/blocks-desktop', check: false},
     'desktop.blocks'
   ].map(function(level) { return config.resolvePath(level); })
-}));
+} ]);
 ```
 
 priv-js
@@ -1084,7 +1096,7 @@ priv-js
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/priv-js'))());
+nodeConfig.addTech(require('enb/techs/priv-js'));
 ```
 
 symlink
@@ -1100,10 +1112,10 @@ symlink
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/symlink'))({
+nodeConfig.addTech([ require('enb/techs/symlink'), {
   fileTarget: '?.css',
   symlinkTarget: '_?.css'
-}));
+} ]);
 ```
 
 xsl
@@ -1120,7 +1132,7 @@ xsl
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/xsl'))());
+nodeConfig.addTech(require('enb/techs/xsl'));
 ```
 
 xsl-2lego
@@ -1137,7 +1149,7 @@ xsl-2lego
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/2lego.xsl'))());
+nodeConfig.addTech(require('enb/techs/2lego.xsl'));
 ```
 
 xsl-convert2xml
@@ -1155,11 +1167,9 @@ xsl-convert2xml
 **Пример**
 
 ```javascript
-nodeConfig.addTech(
-  new (require('enb/techs/xsl-convert2xml'))({
-    transformXslFile: config.resolvePath('blocks/lego/tools/convert2xml.xsl')
-  })
-);
+nodeConfig.addTech([ require('enb/techs/xsl-convert2xml'), {
+  transformXslFile: config.resolvePath('blocks/lego/tools/convert2xml.xsl')
+} ]);
 ```
 
 xsl-i18n
@@ -1177,7 +1187,7 @@ xsl-i18n
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('xsl-18n'))({ languages: ['ru', 'en' ]}));
+nodeConfig.addTech([ require('xsl-18n'), { languages: ['ru', 'en' ] } ]);
 ```
 
 xslt
@@ -1196,14 +1206,12 @@ xslt
 **Пример**
 
 ```javascript
-config.getLanguages().forEach(function(lang) {
-  nodeConfig.addTech(new (require('enb/techs/xslt'))({
-      sourceTarget: '?.keysets.' + lang + '.xml',
-      destTarget: '?.lang.' + lang + '.xsl',
-      xslFile: config.resolvePath('blocks/lego/tools/tanker/tools/generate/i18n.xsl.xsl'),
-      args: ['--xinclude']
-  }));
-});
+nodeConfig.addTech([ require('enb/techs/xslt'))({
+    sourceTarget: '?.keysets.{lang}.xml',
+    destTarget: '?.lang.{lang}.xsl',
+    xslFile: config.resolvePath('blocks/lego/tools/tanker/tools/generate/i18n.xsl.xsl'),
+    args: ['--xinclude']
+}]);
 ```
 
 Как написать свою технологию

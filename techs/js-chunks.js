@@ -1,13 +1,5 @@
-var inherit = require('inherit');
-
-module.exports = inherit(require('../lib/tech/chunks.js'), {
-    getName: function() {
-        return 'js-chunks';
-    },
-    getDestSuffixes: function() {
-        return ['js-chunks.js'];
-    },
-    getSourceSuffixes: function() {
-        return ['js'];
-    }
-});
+module.exports = require('../lib/tech/chunks').buildFlow()
+    .name('js-chunks')
+    .target('target', '?.js-chunks.js')
+    .useFileList('js')
+    .createTech();

@@ -3,49 +3,17 @@ var Vow = require('vow'),
     inherit = require('inherit'),
     vm = require('vm');
 
-module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
-        return 'bemdecl-from-bemjson';
-    },
-
-    configure: function() {
-        this._source = this.getOption('sourceTarget', this.node.getTargetName('bemjson.js'));
-        this._target = this.getOption('destTarget', this.node.getTargetName('bemdecl.js'));
-    },
-
-    getTargets: function() {
-        return [this.node.unmaskTargetName(this._target)];
-    },
-
-    build: function() {
-        var target = this.node.unmaskTargetName(this._target),
-            targetPath = this.node.resolvePath(target),
-            source = this.node.unmaskTargetName(this._source),
-            sourcePath = this.node.resolvePath(source),
-            _this = this,
-            cache = this.node.getNodeCache(target);
-        return this.node.requireSources([source]).then(function() {
-            if (cache.needRebuildFile('source-file', sourcePath)
-                    || cache.needRebuildFile('target-file', targetPath)) {
-                return vowFs.read(sourcePath, 'utf8').then(function(data) {
-                    var json = vm.runInThisContext(data),
-                        decl = [];
-                    iterateJson(json, getBuilder(decl));
-                    var bemdeclData = 'exports.blocks =     ' + JSON.stringify(mergeDecls([], decl), null, 4) + ';';
-                    return vowFs.write(targetPath, bemdeclData, 'utf8').then(function() {
-                        cache.cacheFileInfo('source-file', sourcePath);
-                        cache.cacheFileInfo('target-file', targetPath);
-                        _this.node.resolveTarget(target);
-                    });
-                });
-            } else {
-                _this.node.getLogger().isValid(target);
-                _this.node.resolveTarget(target);
-                return null;
-            }
-        });
-    }
-});
+module.exports = require('../lib/build-flow').create()
+    .name('bemdecl-from-bemjson')
+    .target('destTarget', '?.bemdecl.js')
+    .useSourceText('destTarget', '?.bemjson.js')
+    .builder(function(bemjsonText) {
+        var json = vm.runInThisContext(bemjsonText),
+            decl = [];
+        iterateJson(json, getBuilder(decl));
+        return 'exports.blocks = ' + JSON.stringify(mergeDecls([], decl), null, 4) + ';';
+    })
+    .createTech();
 
 // --- (C) Original BEM Tools
 

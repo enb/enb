@@ -1,17 +1,15 @@
-var inherit = require('inherit'),
-    Vow = require('vow'),
-    fs = require('fs'),
+var fs = require('fs'),
     vm = require('vm');
 
-module.exports = inherit(require('./js-bembundle-component-i18n'), {
-    getName: function() {
-        return 'js-bembundle-component-i18n-module';
-    },
-
-    _buildJsBody: function(jsChunks, target) {
-        var _this = this;
-        return Vow.when(this.__base(jsChunks, target)).then(function(js) {
-            var res = [js],
+module.exports = require('./js-bembundle-component-i18n').buildFlow()
+    .name('js-bembundle-component-i18n-module')
+    .methods({
+        buildJsBody: function(jsChunks) {
+            var _this = this,
+                res = [jsChunks.map(function(chunk) {
+                    return _this.__self.wrapWithOnceIf(chunk.data, chunk.fullname, chunk.hash);
+                }).join('\n')];
+            var
                 amdFilename = _this.node.resolvePath(_this.node.getTargetName('amd.js')),
                 amd = {};
             if (fs.existsSync(amdFilename)) {
@@ -21,7 +19,6 @@ module.exports = inherit(require('./js-bembundle-component-i18n'), {
             }
             require('./js-module').wrapModule(_this.node.getTargetName(), res, amd);
             return res.join('\n');
-        });
-    }
-
-});
+        }
+    })
+    .createTech();

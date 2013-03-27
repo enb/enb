@@ -4,33 +4,29 @@ var inherit = require('inherit'),
     Vow = require('vow'),
     crypto = require('crypto');
 
-// TODO: кэширование
-module.exports = inherit(require('./i18n-lang-js'), {
-    getName: function() {
-        return 'i18n-lang-js-chunks';
-    },
-    getTargetNameForLang: function(lang) {
-        return this.node.getTargetName('js-chunks.lang.' + lang + '.js');
-    },
-    _processChunk: function(chunkData, fullname) {
-        var hash = crypto.createHash('sha1');
-        hash.update(chunkData);
-        return {
-            fullname: fullname,
-            data: chunkData,
-            hash: hash.digest('base64')
-        };
-    },
-    _getBuildResult: function(keysets, lang) {
-        var fullname = this.node.resolvePath(this.node.getTargetName('js-chunks.lang.' + lang + '.js'));
-        var _this = this,
-            res = [];
-        Object.keys(keysets).sort().forEach(function(keysetName) {
-            res.push(_this._processChunk(
-                _this._getKeysetBuildResult(keysetName, keysets[keysetName], lang), fullname
-            ));
+var I18NLangJs = require('./i18n-lang-js');
+
+module.exports = require('../lib/tech/chunks').buildFlow()
+    .name('i18n-lang-js-chunks')
+    .defineRequiredOption('lang')
+    .target('target', '?.js-chunks.lang.{lang}.js')
+    .unuseFileList()
+    .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
+    .builder(function(keysetsFilename) {
+        delete require.cache[keysetsFilename];
+        var keysets = require(keysetsFilename),
+            _this = this,
+            filename = this.node.resolvePath(this._target),
+            lang = this._lang;
+        return Vow.fulfill().then(function() {
+            return Vow.all(Object.keys(keysets).sort().map(function(keysetName) {
+                return _this.processChunk(
+                    filename,
+                    I18NLangJs.getKeysetBuildResult(keysetName, keysets[keysetName], lang)
+                );
+            })).then(function(chunks) {
+                return 'module.exports = ' + JSON.stringify(chunks) + ';';
+            });
         });
-        res.push(this._processChunk(lang === 'all' ? '' : "BEM.I18N.lang('" + lang + "');", fullname));
-        return 'module.exports = ' + JSON.stringify(res, null, 4) + ';';
-    }
-});
+    })
+    .createTech();

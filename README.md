@@ -113,10 +113,10 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
         nodeConfig.addTechs([
-          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-          new (require('enb/techs/deps-old'))(),
-          new (require('enb/techs/files'))()
+          [ require('enb/techs/levels'), { levels: getLevels(config) } ],
+          [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
+          require('enb/techs/deps-old'),
+          require('enb/techs/files')
         ]);
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
@@ -147,12 +147,12 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
         nodeConfig.addTechs([
-          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-          new (require('enb/techs/deps-old'))(),
-          new (require('enb/techs/files'))(),
-          new (require('enb/techs/js'))(),
-          new (require('enb/techs/css'))()
+          [ require('enb/techs/levels'), { levels: getLevels(config) } ],
+          [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
+          require('enb/techs/deps-old'),
+          require('enb/techs/files'),
+          require('enb/techs/js'),
+          require('enb/techs/css')
         ]);
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
@@ -174,14 +174,14 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
         nodeConfig.addTechs([
-          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-          new (require('enb/techs/deps-old'))(),
-          new (require('enb/techs/files'))(),
-          new (require('enb/techs/js'))(),
-          new (require('enb/techs/css'))(),
-          new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
-          new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
+          [ require('enb/techs/levels'), { levels: getLevels(config) } ],
+          [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
+          require('enb/techs/deps-old'))(),
+          require('enb/techs/files'))(),
+          require('enb/techs/js'))(),
+          require('enb/techs/css'))(),
+          [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
+          [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
         ]);
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
@@ -206,28 +206,28 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
         nodeConfig.addTechs([
-          new (require('enb/techs/levels'))({ levels: getLevels(config) }),
-          new (require('enb/techs/file-provider'))({ target: '?.bemdecl.js' }),
-          new (require('enb/techs/deps-old'))(),
-          new (require('enb/techs/files'))(),
-          new (require('enb/techs/js'))(),
-          new (require('enb/techs/css'))()
+          [ require('enb/techs/levels'), { levels: getLevels(config) } ],
+          [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
+          require('enb/techs/deps-old'),
+          require('enb/techs/files'),
+          require('enb/techs/js'),
+          require('enb/techs/css')
         ]);
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
       config.mode('development', function() {
         config.node('pages/index', function(nodeConfig) {
           nodeConfig.addTechs([
-            new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js' }),
-            new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css' })
+            [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
+            [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
           ]);
         });
       });
       config.mode('production', function() {
         config.node('pages/index', function(nodeConfig) {
           nodeConfig.addTechs([
-            new (require('enb/techs/borschik'))({ sourceTarget: '?.js', destTarget: '_?.js', minify: true }),
-            new (require('enb/techs/borschik'))({ sourceTarget: '?.css', destTarget: '_?.css', minify: true })
+            [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js', minify: true } ],
+            [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css', minify: true } ]
           ]);
         });
       });
@@ -273,9 +273,10 @@ module.exports = function(config) {
           'desktop.blocks'
         ].map(function(config) { return config.resolvePath(level); } // Резолвинг путей от корня проекта.
       )}),
-      new (require('enb/techs/deps'))(),
-      new (require('enb/techs/files'))(),
-      new (require('enb/techs/js'))(),
+      require('enb/techs/deps'),
+      require('enb/techs/files'),
+      // Добавление технологии с опциями
+      [ require('enb/techs/js'), { target: '?.new.js' } ],
       new (require('enb/techs/css'))()
     ]);
     // Добавление одного таргета.
@@ -289,8 +290,8 @@ module.exports = function(config) {
     // Настройка нод по маске (regex).
     config.nodeMask(/pages\/.*/, function(nodeConfig) {
       nodeConfig.addTechs([
-        new (require('enb/techs/file-copy'))({ sourceTarget: '?.css', destTarget: '_?.css'}),
-        new (require('enb/techs/file-copy'))({ sourceTarget: '?.js', destTarget: '_?.js'})
+        [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css'} ],
+        [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js'} ]
       ]);
     });
   });
@@ -300,8 +301,8 @@ module.exports = function(config) {
     // Настройка нод по маске (regex).
     config.nodeMask(/pages\/.*/, function(nodeConfig) {
       nodeConfig.addTechs([
-        new (require('enb/techs/borschik'))({ sourceTarget: '?.css', destTarget: '_?.css'}),
-        new (require('enb/techs/borschik'))({ sourceTarget: '?.js', destTarget: '_?.js'})
+        [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css'} ],
+        [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js'} ]
       ]);
     });
   });
@@ -343,7 +344,7 @@ bemdecl-from-bemjson
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/bemdecl-from-bemjson'))());
+nodeConfig.addTech(require('enb/techs/bemdecl-from-bemjson'));
 ```
 
 bemdecl-merge

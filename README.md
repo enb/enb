@@ -1056,7 +1056,7 @@ js-includes
 **Пример**
 
 ```javascript
-nodeConfig.addTech(new (require('enb/techs/js-includes'))());
+nodeConfig.addTech(require('enb/techs/js-includes'));
 ```
 
 levels

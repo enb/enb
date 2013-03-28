@@ -18,10 +18,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget),
             symlinkTargetPath = this.node.resolvePath(symlinkTarget),
             fileTarget = this.node.unmaskTargetName(this._fileTarget),
-            fileTargetPath = this.node.resolvePath(fileTarget),
             _this = this;
         function createSymlink() {
-            return vowFs.symLink(fileTargetPath, symlinkTargetPath).then(function() {
+            return vowFs.symLink(fileTarget, symlinkTargetPath).then(function() {
                 _this.node.resolveTarget(symlinkTarget);
             });
         }

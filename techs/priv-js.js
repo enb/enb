@@ -25,4 +25,5 @@ module.exports = require('../lib/build-flow').create()
         })).then(function(res) {
             return bemhtml + '\n' + res.join('\n');
         });
-    });
+    })
+    .createTech();

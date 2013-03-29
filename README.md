@@ -3,6 +3,8 @@ ENB
 
 Инструментарий для работы с проектами, основанными на идеологии BEM.
 
+**ВАЖНО:** Конфигуратор для упрощения создания конфига: [http://mpro-enb-help.mdevils.alexa.maps.dev.yandex.ru/index.html](http://mpro-enb-help.mdevils.alexa.maps.dev.yandex.ru/index.html).
+
 **Возможности**
 
 * Сборка проекта и конкретных таргетов в разных режимах (с помощью ENV-переменной `YENV`).

@@ -317,7 +317,8 @@ var OldDeps = (function() {
         },
 
         getDeps: function() {
-            return this.serialize()[''][''];
+            var serializedData = this.serialize();
+            return (serializedData && serializedData[''] && serializedData['']['']) || [];
         }
 
     });

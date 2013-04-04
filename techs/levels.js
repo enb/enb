@@ -25,6 +25,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             var target = this.node.getTargetName('levels'),
                 levelList = [],
                 levelsToCache = [],
+                levelsIndex = {},
                 cache = this.node.getNodeCache(target);
             for (var i = 0, l = this._levelConfig.length; i < l; i++) {
                 var levelInfo = this._levelConfig[i];
@@ -32,6 +33,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var
                     levelPath = levelInfo.path,
                     levelKey = 'level:' + levelPath;
+                if (levelsIndex[levelPath]) continue;
+                levelsIndex[levelPath] = true;
                 if (!this.node.buildState[levelKey]) {
                     var level = new Level(levelPath);
                     if (levelInfo.check === false) {
@@ -47,10 +50,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 }
                 levelList.push(this.node.buildState[levelKey]);
             }
-            fs.exists(this.node.resolvePath('blocks'), function(res) {
+            var pageBlocksPath = this.node.resolvePath('blocks');
+            fs.exists(pageBlocksPath, function(res) {
                 try {
-                    if (res) {
-                        levelList.push(new Level(_this.node.resolvePath('blocks')));
+                    if (res && !levelsIndex[pageBlocksPath]) {
+                        levelsIndex[pageBlocksPath] = true;
+                        levelList.push(new Level(pageBlocksPath));
                     }
                     return Vow.all(levelList.map(function(level) {
                         return level.load();

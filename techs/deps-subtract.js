@@ -25,12 +25,19 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             depsTarget = this.node.unmaskTargetName(this._target),
             depsTargetPath = this.node.resolvePath(depsTarget),
             cache = this.node.getNodeCache(depsTarget),
+            substractFromTargetPath = this.node.resolvePath(this._subtractFromTarget),
+            subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget),
             sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
         return this.node.requireSources(sourceTargets).spread(function(subtractFrom, subtractWhat) {
-            if (cache.needRebuildFile('deps-file', depsTargetPath)) {
+            if (cache.needRebuildFile('deps-file', depsTargetPath)
+                || cache.needRebuildFile('deps-from-file', substractFromTargetPath)
+                || cache.needRebuildFile('deps-what-file', subtractWhatTargetPath)
+            ) {
                 var subtractedDeps = deps.subtract(subtractFrom, subtractWhat);
                 return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';').then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
+                    cache.cacheFileInfo('deps-from-file', substractFromTargetPath);
+                    cache.cacheFileInfo('deps-what-file', subtractWhatTargetPath);
                     _this.node.resolveTarget(depsTarget, subtractedDeps);
                 });
             } else {

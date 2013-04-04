@@ -10,9 +10,15 @@ module.exports = require('../lib/build-flow').create()
     .defineOption('amdTarget', '?.amd.js')
     .useFileList('js')
     .justJoinFilesWithComments()
+    .needRebuild(function(cache) {
+        return cache.needRebuildFile('amd-file', this.node.resolvePath(this.node.unmaskTargetName(this._amdTarget)));
+    })
+    .saveCache(function(cache) {
+        return cache.cacheFileInfo('amd-file', this.node.resolvePath(this.node.unmaskTargetName(this._amdTarget)));
+    })
     .wrapper(function(js) {
         var amdTarget = this.node.unmaskTargetName(this._amdTarget),
-            amdFilename = this.node.resolvePath(),
+            amdFilename = this.node.resolvePath(amdTarget),
             amd = {};
         if (fs.existsSync(amdFilename)) {
             amd = vm.runInThisContext(fs.readFileSync(amdFilename, 'utf8'));

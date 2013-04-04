@@ -3,6 +3,13 @@ var fs = require('fs'),
 
 module.exports = require('./js-bembundle-component-i18n').buildFlow()
     .name('js-bembundle-component-i18n-module')
+    .defineOption('amdTarget', '?.amd.js')
+    .needRebuild(function(cache) {
+        return cache.needRebuildFile('amd-file', this.node.resolvePath(this.node.unmaskTargetName(this._amdTarget)));
+    })
+    .saveCache(function(cache) {
+        return cache.cacheFileInfo('amd-file', this.node.resolvePath(this.node.unmaskTargetName(this._amdTarget)));
+    })
     .methods({
         buildJsBody: function(jsChunks) {
             var _this = this,
@@ -10,7 +17,7 @@ module.exports = require('./js-bembundle-component-i18n').buildFlow()
                     return _this.__self.wrapWithOnceIf(chunk.data, chunk.fullname, chunk.hash);
                 }).join('\n')];
             var
-                amdFilename = _this.node.resolvePath(_this.node.getTargetName('amd.js')),
+                amdFilename = _this.node.resolvePath(_this.node.unmaskTargetName(this._amdTarget)),
                 amd = {};
             if (fs.existsSync(amdFilename)) {
                 amd = vm.runInThisContext(fs.readFileSync(amdFilename, 'utf8'));

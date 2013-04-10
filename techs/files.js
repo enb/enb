@@ -8,6 +8,7 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
         this._depsTarget = this.node.unmaskTargetName(this.getOption('depsTarget', '?.deps.js'));
         this._filesTarget = this.node.unmaskTargetName(this.getOption('filesTarget', '?.files'));
         this._dirsTarget = this.node.unmaskTargetName(this.getOption('dirsTarget', '?.dirs'));
+        this._levelsTarget = this.node.unmaskTargetName(this.getOption('levelsTarget', '?.levels'));
     },
     getName: function() {
         return 'files';
@@ -22,7 +23,7 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
         var _this = this,
             filesTarget = this._filesTarget,
             dirsTarget = this._dirsTarget;
-        return this.node.requireSources([this._depsTarget, this.node.getTargetName('levels')])
+        return this.node.requireSources([this._depsTarget, this._levelsTarget])
             .spread(function(deps, levels) {
                 var files = new FileList(), dirs = new FileList();
                 for (var i = 0, l = deps.length; i < l; i++) {

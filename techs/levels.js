@@ -12,17 +12,18 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     init: function(node) {
         this.__base.apply(this, arguments);
         this._levelConfig = this.getRequiredOption('levels');
+        this._target = this.node.unmaskTargetName(this.getOption('target', '?.levels'));
     },
 
     getTargets: function() {
-        return [this.node.getTargetName('levels')];
+        return [this._target];
     },
 
     build: function() {
         var _this = this,
             promise = Vow.promise();
         try {
-            var target = this.node.getTargetName('levels'),
+            var target = this._target,
                 levelList = [],
                 levelsToCache = [],
                 levelsIndex = {},

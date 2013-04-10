@@ -15,6 +15,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             this.getOption('depsTarget', this.node.getTargetName('deps.js')));
         this._bemdeclTarget = this.node.unmaskTargetName(
             this.getOption('bemdeclTarget', this.node.getTargetName('bemdecl.js')));
+        this._levelsTarget = this.node.unmaskTargetName(
+            this.getOption('levelsTarget', this.node.getTargetName('levels')));
     },
 
     getTargets: function() {
@@ -28,7 +30,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             cache = this.node.getNodeCache(depsTarget),
             bemdeclSource = this._bemdeclTarget,
             bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
-        return this.node.requireSources([this.node.getTargetName('levels'), bemdeclSource]).spread(function(levels) {
+        return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function(levels) {
             var depFiles = levels.getFilesBySuffix('deps.js');
             if (cache.needRebuildFile('deps-file', depsTargetPath)
                     || cache.needRebuildFile('bemdecl-file', bemdeclSourcePath)

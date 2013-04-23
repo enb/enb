@@ -2,7 +2,7 @@
     "author" : "Marat Dulin <mdevils@yandex.ru>",
     "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.7.13",
+    "version" : "0.7.14",
     "contributors": [
         {
             "name": "Marat Dulin",

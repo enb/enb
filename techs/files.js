@@ -29,9 +29,9 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
                 for (var i = 0, l = deps.length; i < l; i++) {
                     var dep = deps[i], entities;
                     if (dep.elem) {
-                        entities = levels.getElemEntities(dep.block, dep.elem, dep.mod, dep.val);
+                        entities = levels.getElemEntities(dep.block, dep.elem, dep.mod, dep.val || '');
                     } else {
-                        entities = levels.getBlockEntities(dep.block, dep.mod, dep.val);
+                        entities = levels.getBlockEntities(dep.block, dep.mod, dep.val || '');
                     }
                     files.addFiles(entities.files);
                     dirs.addFiles(entities.dirs);

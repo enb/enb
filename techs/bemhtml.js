@@ -33,6 +33,12 @@ module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
             var bemhtmlProcessor = BemhtmlProcessor.fork();
             return bemhtmlProcessor.process(sources.join('\n'), _this._exportName, _this._devMode).then(function(res) {
                 bemhtmlProcessor.dispose();
+                _this.node.getLogger().logWarningAction(
+                    'deprecated',
+                    '\n\n' +
+                    '    Tech "enb/techs/bemhtml" is deprecated. Please install npm module "enb-bemhtml" and switch to "enb-bemhtml/techs/bemhtml" tech.\n' +
+                    '    BEMHTML support will be removed from "enb" package soon.\n'
+                );
                 return res;
             });
         });

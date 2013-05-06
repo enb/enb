@@ -23,10 +23,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    getBuildResult: function(target, bemhtml, bemjson) {
-        vm.runInThisContext(bemhtml);
-        // magic
-        return BEMHTML.apply(bemjson);
+    getBuildResult: function(target, bemhtmlFile, bemjson) {
+        delete require.cache[bemhtmlFile];
+        var bemhtml = require(bemhtmlFile);
+        return bemhtml.BEMHTML.apply(bemjson);
     },
 
     isRebuildRequired: function(target) {
@@ -59,18 +59,20 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     });
                 })).then(function() {
                     if (targetsToBuild.length) {
-                        return Vow.all([
-                                vowFs.read(_this.node.resolvePath(_this._bemhtmlSource), 'utf8'),
-                                vowFs.read(_this.node.resolvePath(_this._bemjsonSource), 'utf8')
-                            ]).spread(function(bemhtml, bemjson) {
+                        return vowFs.read(_this.node.resolvePath(_this._bemjsonSource), 'utf8')
+                            .then(function(bemjson) {
                                 bemjson = vm.runInThisContext(bemjson);
                                 return Vow.all(targetsToBuild.map(function(target) {
-                                    return Vow.when(_this.getBuildResult(target, bemhtml, bemjson)).then(function(res) {
-                                        return vowFs.write(_this.node.resolvePath(target), res, 'utf8');
-                                    }).then(function() {
-                                        _this.node.resolveTarget(target);
-                                        _this.storeCache(target);
-                                    });
+                                    return Vow.when(_this.getBuildResult(
+                                            target,
+                                            _this.node.resolvePath(_this._bemhtmlSource),
+                                            bemjson
+                                        )).then(function(res) {
+                                            return vowFs.write(_this.node.resolvePath(target), res, 'utf8');
+                                        }).then(function() {
+                                            _this.node.resolveTarget(target);
+                                            _this.storeCache(target);
+                                        });
                                 }));
                             });
                     }

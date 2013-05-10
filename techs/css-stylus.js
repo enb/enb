@@ -3,14 +3,10 @@ var inherit = require('inherit'),
     Vow = require('vow'),
     stylus = require('stylus');
 
-module.exports = inherit(require('./css'), {
-    getName: function() {
-        return 'css-stylus';
-    },
-    getSourceSuffixes: function() {
-        return ['css', 'styl'];
-    },
-    getBuildResult: function(sourceFiles, suffix) {
+module.exports = require('./css').buildFlow()
+    .name('css-stylus')
+    .useFileList(['css', 'styl'])
+    .builder(function (sourceFiles) {
         var _this = this,
             promise = Vow.promise();
 
@@ -18,18 +14,19 @@ module.exports = inherit(require('./css'), {
             return '@import "' + file.fullname + '";';
         }).join('\n');
 
+        var targetName = _this._target;
         stylus(css)
             .define('url', function(url){
                 return new stylus.nodes.Literal('url(' + _this._resolveCssUrl(url.val, url.filename) + ')');
             })
-            .set('filename', _this.node.resolvePath(_this.getTargetName(suffix)))
+            .set('filename', _this.node.resolvePath(targetName))
             .render(function(err, css) {
                 if (err) promise.reject(err);
                 promise.fulfill(css);
             });
 
         return promise.then(function(css) {
-            return _this._processIncludes(css, _this.node.resolvePath(_this.getTargetName(suffix)));
+            return _this._processIncludes(css, _this.node.resolvePath(targetName));
         });
-    }
-});
+    })
+    .createTech();

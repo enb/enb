@@ -1,19 +1,14 @@
 var inherit = require('inherit'),
     fs = require('fs');
-module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
-    getName: function() {
-        return 'css-includes';
-    },
-    getDestSuffixes: function() {
-        return ['css'];
-    },
-    getSourceSuffixes: function() {
-        return ['css'];
-    },
-    getBuildResult: function(sourceFiles, suffix) {
+
+module.exports = require('../lib/build-flow').create()
+    .name('css-includes')
+    .target('target', '?.css')
+    .useFileList('css')
+    .builder(function(cssFiles) {
         var node = this.node;
-        return sourceFiles.map(function(file) {
+        return cssFiles.map(function(file) {
             return '@import "' + node.relativePath(file.fullname) + '";';
         }).join('\n');
-    }
-});
+    })
+    .createTech();

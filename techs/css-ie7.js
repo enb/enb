@@ -1,14 +1,8 @@
 var inherit = require('inherit'),
     fs = require('fs');
 
-module.exports = inherit(require('./css'), {
-    getName: function() {
-        return 'css-ie7';
-    },
-    getDestSuffixes: function() {
-        return ['ie7.css'];
-    },
-    getSourceSuffixes: function() {
-        return ['ie7.css'];
-    }
-});
+module.exports = require('./css').buildFlow()
+    .name('css-ie7')
+    .target('target', '?.ie7.css')
+    .useFileList('ie7.css')
+    .createTech();

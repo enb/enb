@@ -6,7 +6,7 @@ var Vow = require('vow'),
 module.exports = require('../lib/build-flow').create()
     .name('bemdecl-from-bemjson')
     .target('destTarget', '?.bemdecl.js')
-    .useSourceText('destTarget', '?.bemjson.js')
+    .useSourceText('sourceTarget', '?.bemjson.js')
     .builder(function(bemjsonText) {
         var json = vm.runInThisContext(bemjsonText),
             decl = [];

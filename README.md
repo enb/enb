@@ -604,6 +604,7 @@ deps
 **Опции**
 
 * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
+* *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
 * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
 
 **Пример**
@@ -650,6 +651,7 @@ deps-old
 **Опции**
 
 * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
+* *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
 * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
 
 **Пример**

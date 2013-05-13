@@ -1,3 +1,7 @@
+/**
+ * bemdecl-merge
+ * =============
+ */
 var Vow = require('vow'),
     fs = require('fs'),
     vm = require('vm'),
@@ -5,6 +9,25 @@ var Vow = require('vow'),
     inherit = require('inherit'),
     deps = require('../lib/deps/deps');
 
+/**
+ * Формирует *bemdecl* с помощью объединения других bemdecl-файлов.
+ *
+ ***Опции**
+ *
+ ** *String[]* **bemdeclSources** — Исходные bemdecl-таргеты. Обязательная опция.
+ ** *String* **bemdeclTarget** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
+ *
+ ***Пример**
+ *
+ *```javascript
+ *nodeConfig.addTech([ require('enb/techs/bemdecl-merge'), {
+ *  bemdeclSources: ['search.bemdecl.js', 'router.bemdecl.js'],
+ *  bemdeclTarget: 'all.bemdecl.js'
+ *} ]);
+ *```
+ *
+ * @type {Tech}
+ */
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'bemdecl-merge';

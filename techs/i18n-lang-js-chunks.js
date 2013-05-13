@@ -1,3 +1,7 @@
+/**
+ * i18n-lang-js-chunks
+ * ===================
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     vowFs = require('vow-fs'),

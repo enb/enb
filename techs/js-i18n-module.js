@@ -1,3 +1,7 @@
+/**
+ * js-i18n-module
+ * ==============
+ */
 var inherit = require('inherit'),
     vm = require('vm'),
     fs = require('fs');

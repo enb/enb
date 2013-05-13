@@ -1,3 +1,7 @@
+/**
+ * js-module
+ * =========
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     vm = require('vm'),

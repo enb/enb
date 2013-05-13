@@ -1,3 +1,7 @@
+/**
+ * bemdecl-provider
+ * ================
+ */
 var Vow = require('vow'),
     fs = require('fs'),
     vm = require('vm'),
@@ -5,6 +9,26 @@ var Vow = require('vow'),
     inherit = require('inherit'),
     deps = require('../lib/deps/deps');
 
+/**
+ * Копирует *bemdecl* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения bemdecl'ов.
+ *
+ * **Опции**
+ *
+ * * *String* **sourceNodePath** — Путь исходной ноды с нужным bemdecl'ом. Обязательная опция.
+ * * *String* **sourceTarget** — Исходный bemdecl, который будет копироваться. По умолчанию — `?.bemdecl.js` (демаскируется в рамках исходной ноды).
+ * * *String* **bemdeclTarget** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js` (демаскируется в рамках текущей ноды).
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/bemdecl-provider'), {
+ *   sourceNodePath: 'bundles/router',
+ *   sourceTarget: 'router.bemdecl.js',
+ *   bemdeclTarget: 'router.bemdecl.js'
+ * }]);
+ * ```
+ * @type {Tech}
+ */
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'bemdecl-provider';

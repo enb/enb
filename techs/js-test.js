@@ -1,3 +1,7 @@
+/**
+ * js-test
+ * =======
+ */
 var Vow = require('vow'),
     vowFs = require('vow-fs'),
     FileList = require('../lib/file-list');
@@ -14,9 +18,7 @@ module.exports = require('../lib/build-flow').create()
                 return fileMask.test(file.fullname);
             });
         return Vow.all(testFiles.map(function(file) {
-            return vowFs.read(file.fullname, 'utf8').then(function(data) {
-                return data + '\nBEM.TEST.add(' + JSON.stringify(FileList.parseFilename(file.name).bem) + ');\n';
-            });
+            return vowFs.read(file.fullname, 'utf8');
         })).then(function(chunks) {
             return chunks.join('\n');
         });

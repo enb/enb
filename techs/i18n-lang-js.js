@@ -1,3 +1,7 @@
+/**
+ * i18n-lang-js
+ * ============
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     vowFs = require('vow-fs'),

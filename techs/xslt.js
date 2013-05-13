@@ -1,3 +1,7 @@
+/**
+ * xslt
+ * ====
+ */
 var fs = require('fs'),
     inherit = require('inherit'),
     childProcess = require('child_process'),

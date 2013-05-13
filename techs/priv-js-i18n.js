@@ -1,3 +1,7 @@
+/**
+ * priv-js-i18n
+ * ============
+ */
 module.exports = require('../lib/build-flow').create()
     .name('priv-js-i18n')
     .target('target', '?.{lang}.priv.js')

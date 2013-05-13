@@ -1,3 +1,7 @@
+/**
+ * js-bembundle-component
+ * ======================
+ */
 var Vow = require('vow');
 
 module.exports = require('../lib/build-flow').create()

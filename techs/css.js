@@ -1,8 +1,28 @@
+/**
+ * css
+ * ===
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     path = require('path'),
     CssPreprocessor = require('../lib/preprocess/css-preprocessor');
 
+/**
+ *
+ * Склеивает *css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
+ *
+ * **Опции**
+ *
+ * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech(require('enb/techs/css'));
+ * ```
+ * @type {Tech}
+ */
 module.exports = require('../lib/build-flow').create()
     .name('css')
     .target('target', '?.css')

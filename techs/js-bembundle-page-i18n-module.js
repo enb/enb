@@ -1,3 +1,7 @@
+/**
+ * js-bembundle-page-i18n-module
+ * =============================
+ */
 var fs = require('fs'),
     vm = require('vm');
 

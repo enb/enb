@@ -1,3 +1,7 @@
+/**
+ * levels
+ * ======
+ */
 var Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),
     fs = require('fs'),

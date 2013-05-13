@@ -1,3 +1,7 @@
+/**
+ * i18n-merge-keysets
+ * ==================
+ */
 var inherit = require('inherit'),
     Vow = require('vow'),
     vowFs = require('vow-fs');

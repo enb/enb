@@ -1,3 +1,7 @@
+/**
+ * xsl-html5-i18n
+ * ==============
+ */
 var inherit = require('inherit'),
     fs = require('fs');
 

@@ -1,3 +1,7 @@
+/**
+ * file-provider
+ * =============
+ */
 var fs = require('fs'), Vow = require('vow'), inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {

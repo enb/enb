@@ -1,3 +1,7 @@
+/**
+ * priv-js
+ * =======
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     Vow = require('vow'),

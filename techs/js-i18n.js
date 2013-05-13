@@ -1,3 +1,7 @@
+/**
+ * js-i18n
+ * =======
+ */
 module.exports = require('../lib/build-flow').create()
     .name('js-i18n')
     .target('target', '?.{lang}.js')

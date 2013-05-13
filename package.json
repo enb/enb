@@ -2,7 +2,7 @@
     "author" : "Marat Dulin <mdevils@yandex.ru>",
     "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.7.18",
+    "version" : "0.7.20",
     "contributors": [
         {
             "name": "Marat Dulin",
@@ -17,8 +17,9 @@
         "node": ">= 0.8.0"
     },
     "dependencies" : {
-        "vow": ">=0.1.12",
-        "vow-fs": ">=0.1.7",
+        "vow": ">=0.3.3",
+        "vow-fs": ">=0.1.11",
+        "inherit": ">=1.0.4",
         "colors": ">=0.6.0",
         "stylus": "0.32.1",
         "dom-js": "0.0.9",
@@ -30,11 +31,6 @@
         "sibling": ">=0.0.3",
         "borschik": "0.2.8",
         "bemc": "1.0.3"
-    },
-    "peerDependencies" : {
-        "vow": ">=0.1.12",
-        "vow-fs": ">=0.1.7",
-        "inherit": "1.0.4"
     },
     "bin" : {
         "enb" : "./bin/enb"

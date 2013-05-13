@@ -1,3 +1,7 @@
+/**
+ * deps-subtract
+ * =============
+ */
 var Vow = require('vow'),
     fs = require('fs'),
     vm = require('vm'),

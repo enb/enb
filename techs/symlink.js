@@ -1,3 +1,7 @@
+/**
+ * symlink
+ * =======
+ */
 var fs = require('fs'), Vow = require('vow'), vowFs = require('vow-fs'), inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {

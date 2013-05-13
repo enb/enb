@@ -1,3 +1,7 @@
+/**
+ * deps-merge
+ * ==========
+ */
 var Vow = require('vow'),
     fs = require('fs'),
     vm = require('vm'),
@@ -5,6 +9,25 @@ var Vow = require('vow'),
     inherit = require('inherit'),
     deps = require('../lib/deps/deps');
 
+/**
+ *
+ * Формирует *deps* с помощью объединения других deps-файлов.
+ *
+ * **Опции**
+ *
+ * * *String[]* **depsSources** — Исходные deps-таргеты. Обязательная опция.
+ * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/deps-merge'))({
+ *   depsSources: ['search.deps.js', 'router.deps.js'],
+ *   depsTarget: 'all.deps.js'
+ * } ]);
+ * ```
+ * @type {Tech}
+ */
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'deps-merge';

@@ -1,3 +1,7 @@
+/**
+ * files
+ * =====
+ */
 var fs = require('fs'),
     Vow = require('vow'),
     FileList = require('../lib/file-list'),

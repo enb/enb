@@ -1,3 +1,7 @@
+/**
+ * js-includes
+ * ===========
+ */
 var inherit = require('inherit'),
     fs = require('fs');
 

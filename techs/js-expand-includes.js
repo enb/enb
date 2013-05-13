@@ -1,3 +1,7 @@
+/**
+ * js-expand-includes
+ * ==================
+ */
 var fs = require('fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),inherit = require('inherit'),

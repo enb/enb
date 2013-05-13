@@ -1,3 +1,7 @@
+/**
+ * js-bembundle-page-i18n
+ * ======================
+ */
 var inherit = require('inherit');
 
 module.exports = require('./js-bembundle-page').buildFlow()

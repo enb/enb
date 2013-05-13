@@ -3,7 +3,7 @@ ENB
 
 Инструментарий для работы с проектами, основанными на идеологии BEM.
 
-**ВАЖНО:** Конфигуратор для упрощения создания конфига: [http://xxx-enb-help.mdevils.alexa.maps.dev.yandex.ru/index.html](http://xxx-enb-help.mdevils.alexa.maps.dev.yandex.ru/index.html).
+**ВАЖНО:** Конфигуратор для упрощения создания конфига: [http://enb-make.info/config/](http://enb-make.info/config/).
 
 **Возможности**
 

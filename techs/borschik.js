@@ -1,9 +1,38 @@
+/**
+ * borschik
+ * ========
+ */
 var fs = require('fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),
     BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 
+/**
+ * Обрабатывает файл Борщиком (раскрытие borschik-ссылок, минификация, фризинг).
+ *
+ * Настройки фризинга и путей описываются в конфиге Борщика (`.borschik`) в корне проекта (https://github.com/veged/borschik/blob/master/README.ru.md).
+ *
+ * **Опции**
+ *
+ * * *String* **sourceTarget** — Исходный таргет. Например, `?.js`. Обязательная опция.
+ * * *String* **destTarget** — Результирующий таргет. Например, `_?.js`. Обязательная опция.
+ * * *Boolean* **minify** — Минифицировать ли в процессе обработки. По умолчанию — `true`.
+ * * *Boolean* **freeze** — Использовать ли фризинг в процессе обработки. По умолчанию — `false`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/borschik'), {
+ *   sourceTarget: '?.css',
+ *   destTarget: '_?.css',
+ *   minify: true,
+ *   freeze: true
+ * } ]);
+ * ```
+ *
+ * @type {Tech}
+ */
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'borschik';

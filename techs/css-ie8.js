@@ -6,7 +6,7 @@ var inherit = require('inherit'),
     fs = require('fs');
 
 /**
- * Склеивает *ie8.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie8.css`.
+ * Склеивает *css* и *ie8.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie8.css`.
  *
  * **Опции**
  *
@@ -23,5 +23,5 @@ var inherit = require('inherit'),
 module.exports = require('./css').buildFlow()
     .name('css-ie8')
     .target('target', '?.ie8.css')
-    .useFileList('ie8.css')
+    .useFileList(['css', 'ie8.css'])
     .createTech();

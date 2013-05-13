@@ -178,10 +178,10 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
-          require('enb/techs/deps-old'))(),
-          require('enb/techs/files'))(),
-          require('enb/techs/js'))(),
-          require('enb/techs/css'))(),
+          require('enb/techs/deps-old')(),
+          require('enb/techs/files')(),
+          require('enb/techs/js')(),
+          require('enb/techs/css')(),
           [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
           [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
         ]);

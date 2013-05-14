@@ -1,13 +1,7 @@
 /**
  * bemdecl-from-bemjson
  * ====================
- */
-var Vow = require('vow'),
-    vowFs = require('vow-fs'),
-    inherit = require('inherit'),
-    vm = require('vm');
-
-/**
+ *
  * Формирует *bemdecl* на основе `?.bemjson.js`.
  *
  * **Опции**
@@ -21,6 +15,13 @@ var Vow = require('vow'),
  * nodeConfig.addTech(require('enb/techs/bemdecl-from-bemjson'));
  * ```
  *
+ */
+var Vow = require('vow'),
+    vowFs = require('vow-fs'),
+    inherit = require('inherit'),
+    vm = require('vm');
+
+/**
  * @type {Tech}
  */
 module.exports = require('../lib/build-flow').create()

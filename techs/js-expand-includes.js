@@ -57,10 +57,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     _processIncludes: function(data, filename) {
         var _this = this;
-        return data.replace(/include\(["']([^"']+)["']\);/g, function(s, url){
+        return data.replace(/([^\.]|^)include\(["']([^"']+)["']\);/g, function(s, preChar, url){
             var importFilename = path.resolve(path.dirname(filename), url),
                 rootRelImportFilename = importFilename.slice(1),
-                pre = '/* ' + rootRelImportFilename + ': begin */ /**/\n',
+                pre = preChar + '/* ' + rootRelImportFilename + ': begin */ /**/\n',
                 post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n';
             return pre +
                 '    ' + _this._processIncludes(fs.readFileSync(importFilename, "utf8"), importFilename)

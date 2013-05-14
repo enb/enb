@@ -1,6 +1,28 @@
 /**
  * deps-subtract
  * =============
+ *
+ * Формирует *deps* с помощью вычитания одного deps-файла из другого. Может применяться в паре с `deps-provider` для получения deps для bembundle.
+ *
+ * **Опции**
+ *
+ * * *String* **subtractFromTarget** — Таргет, из которого вычитать. Обязательная опция.
+ * * *String* **subtractWhatTarget** — Таргет, который вычитать. Обязательная опция.
+ * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTechs([
+ *   [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
+ *   [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }],
+ *   [ require('enb/techs/deps-subtract'), {
+ *     subtractWhatTarget: 'index.deps.js',
+ *     subtractFromTarget: 'router.tmp.deps.js',
+ *     depsTarget: 'router.deps.js'
+ *   } ]
+ * ]);
+ * ```
  */
 var Vow = require('vow'),
     fs = require('fs'),

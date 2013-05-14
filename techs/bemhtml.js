@@ -3,15 +3,7 @@
  * =======
  *
  * Технология устарела. Новая версия в пакете `enb-bemhtml`.
- */
-var inherit = require('inherit'),
-    fs = require('fs'),
-    path = require('path'),
-    Vow = require('vow'),
-    vowFs = require('vow-fs'),
-    bemc = require('bemc');
-
-/**
+ *
  * Склеивает *bemhtml*-файлы по deps'ам, обрабатывает BEMHTML-транслятором, сохраняет в виде `?.bemhtml.js`. Использует пакет `bemc` (https://github.com/bem/bemc).
  *
  * Имя результирующего файла в этой версии не настраивается.
@@ -27,8 +19,14 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/bemhtml'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs'),
+    path = require('path'),
+    Vow = require('vow'),
+    vowFs = require('vow-fs'),
+    bemc = require('bemc');
+
 module.exports = inherit(require('../lib/tech/file-assemble-tech'), {
 
     configure: function() {

@@ -1,13 +1,6 @@
 /**
  * css
  * ===
- */
-var inherit = require('inherit'),
-    fs = require('fs'),
-    path = require('path'),
-    CssPreprocessor = require('../lib/preprocess/css-preprocessor');
-
-/**
  *
  * Склеивает *css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
  *
@@ -21,6 +14,14 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css'));
  * ```
+ */
+var inherit = require('inherit'),
+    fs = require('fs'),
+    path = require('path'),
+    CssPreprocessor = require('../lib/preprocess/css-preprocessor');
+
+/**
+ *
  * @type {Tech}
  */
 module.exports = require('../lib/build-flow').create()

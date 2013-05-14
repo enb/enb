@@ -1,6 +1,18 @@
 /**
  * file-provider
  * =============
+ *
+ * Предоставляет существующий файл для make-платформы. Может, например, использоваться для предоставления исходного *bemdecl*-файла.
+ *
+ * **Опции**
+ *
+ * * *String* **target** — Таргет. Обязательная опция.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
+ * ```
  */
 var fs = require('fs'), Vow = require('vow'), inherit = require('inherit');
 

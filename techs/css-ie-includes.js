@@ -1,11 +1,7 @@
 /**
  * css-ie-includes
  * ===============
- */
-var inherit = require('inherit'),
-    fs = require('fs');
-
-/**
+ *
  * Собирает *css* и *ie.css*-файлы по deps'ам инклудами, сохраняет в виде `?.ie.css`. Может пригодиться в паре с ycssjs (как fastcgi-модуль).
  *
  * **Опции**
@@ -18,8 +14,10 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-ie-includes'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs');
+
 module.exports = require('./css-includes').buildFlow()
     .name('css-ie-includes')
     .target('target', '?.ie.css')

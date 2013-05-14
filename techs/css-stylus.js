@@ -1,13 +1,7 @@
 /**
  * css-stylus
  * ==========
- */
-var inherit = require('inherit'),
-    fs = require('fs'),
-    Vow = require('vow'),
-    stylus = require('stylus');
-
-/**
+ *
  * Собирает *css*-файлы вместе со *styl*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
  *
  * **Опции**
@@ -20,9 +14,12 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-stylus'));
  * ```
- *
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs'),
+    Vow = require('vow'),
+    stylus = require('stylus');
+
 module.exports = require('./css').buildFlow()
     .name('css-stylus')
     .useFileList(['css', 'styl'])

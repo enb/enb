@@ -1,15 +1,7 @@
 /**
  * bemdecl-merge
  * =============
- */
-var Vow = require('vow'),
-    fs = require('fs'),
-    vm = require('vm'),
-    vowFs = require('vow-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps');
-
-/**
+ *
  * Формирует *bemdecl* с помощью объединения других bemdecl-файлов.
  *
  ***Опции**
@@ -25,9 +17,14 @@ var Vow = require('vow'),
  *  bemdeclTarget: 'all.bemdecl.js'
  *} ]);
  *```
- *
- * @type {Tech}
  */
+var Vow = require('vow'),
+    fs = require('fs'),
+    vm = require('vm'),
+    vowFs = require('vow-fs'),
+    inherit = require('inherit'),
+    deps = require('../lib/deps/deps');
+
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'bemdecl-merge';

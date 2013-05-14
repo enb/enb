@@ -1,6 +1,24 @@
 /**
  * deps-provider
  * =============
+ *
+ * Копирует *deps* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения deps'ов.
+ *
+ * **Опции**
+ *
+ * * *String* **sourceNodePath** — Путь исходной ноды с нужным deps'ом. Обязательная опция.
+ * * *String* **sourceTarget** — Исходный deps, который будет копироваться. По умолчанию — `?.deps.js` (демаскируется в рамках исходной ноды).
+ * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js` (демаскируется в рамках текущей ноды).
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/deps-provider'), {
+ *   sourceNodePath: 'bundles/router',
+ *   sourceTarget: 'router.deps.js',
+ *   depsTarget: 'router.deps.js'
+ * } ]);
+ * ```
  */
 var Vow = require('vow'),
     fs = require('fs'),

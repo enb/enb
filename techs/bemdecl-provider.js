@@ -1,15 +1,7 @@
 /**
  * bemdecl-provider
  * ================
- */
-var Vow = require('vow'),
-    fs = require('fs'),
-    vm = require('vm'),
-    vowFs = require('vow-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps');
-
-/**
+ *
  * Копирует *bemdecl* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения bemdecl'ов.
  *
  * **Опции**
@@ -27,8 +19,14 @@ var Vow = require('vow'),
  *   bemdeclTarget: 'router.bemdecl.js'
  * }]);
  * ```
- * @type {Tech}
  */
+var Vow = require('vow'),
+    fs = require('fs'),
+    vm = require('vm'),
+    vowFs = require('vow-fs'),
+    inherit = require('inherit'),
+    deps = require('../lib/deps/deps');
+
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'bemdecl-provider';

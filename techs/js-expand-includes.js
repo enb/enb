@@ -1,6 +1,19 @@
 /**
  * js-expand-includes
  * ==================
+ *
+ * Обрабатывает инклуды в исходном `js`-файле и собирает результирующий файл. При раскрытии инклудов, если имя подключенного файла является таргетом, то ждет его выполнения.
+ *
+ * **Опции**
+ *
+ * * *String* **sourceTarget** — Исходный JS-таргет. Обязательная опция.
+ * * *String* **destTarget** — Результирующий JS-таргет. Обязательная опция.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/js-expand-includes'), { sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' } ]);
+ * ```
  */
 var fs = require('fs'),
     Vow = require('vow'),
@@ -30,7 +43,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             _this = this;
         return this.node.requireSources([source]).then(function() {
                 return vowFs.read(sourcePath, 'utf8').then(function(data) {
-                    Vow.when(_this._processIncludesPromised(data, targetPath)).then(function(data) {
+                    return Vow.when(_this._processIncludesPromised(data, targetPath)).then(function(data) {
                         return vowFs.write(targetPath, data, 'utf8').then(function() {
                             _this.node.resolveTarget(target);
                         });

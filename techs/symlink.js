@@ -1,6 +1,22 @@
 /**
  * symlink
  * =======
+ *
+ * Создает симлинк из одного таргета в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
+ *
+ * **Опции**
+ *
+ * * *String* **fileTarget** — Исходный таргет. Обязательная опция.
+ * * *String* **symlinkTarget** — Результирующий таргет. Обязательная опция.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/symlink'), {
+ *   fileTarget: '?.css',
+ *   symlinkTarget: '_?.css'
+ * } ]);
+ * ```
  */
 var fs = require('fs'), Vow = require('vow'), vowFs = require('vow-fs'), inherit = require('inherit');
 

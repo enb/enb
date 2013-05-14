@@ -1,6 +1,26 @@
 /**
  * levels
  * ======
+ *
+ * Собирает информацию об уровнях переопределения проекта, предоставляет `?.levels`. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`.
+ *
+ * Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`. Например, для ноды `pages/index` — `pages/index/blocks`.
+ *
+ * **Опции**
+ *
+ * * *String* **target** — Результирующий таргет. По умолчанию — `?.levels`.
+ * * *(String|Object)[]* **levels** — Уровни переопределения. Полные пути к папкам с уровнями переопределения. Вместо строки с уровнем может использоваться объект вида `{path: '/home/user/www/proj/lego/blocks-desktop', check: false}` для того, чтобы закэшировать содержимое тех уровней переопределения, которые не модифицируются в рамках проекта.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/levels'), {
+ *   levels: [
+ *     {path: 'lego/blocks-desktop', check: false},
+ *     'desktop.blocks'
+ *   ].map(function(level) { return config.resolvePath(level); })
+ * } ]);
+ * ```
  */
 var Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),

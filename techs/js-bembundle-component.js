@@ -1,6 +1,35 @@
 /**
  * js-bembundle-component
  * ======================
+ *
+ * Собирает `?.bembundle.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
+ *
+ * Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+ *
+ * **Опции**
+ *
+ * * *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
+ * * *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
+ * * *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.js`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTechs([
+ *   [ require('enb/techs/levels'), { levels: ... } ],
+ *   require('enb/techs/files'),
+ *   [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
+ *   [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
+ *   [ require('enb/techs/deps-subtract'), {
+ *     subtractWhatTarget: 'index.deps.js',
+ *     subtractFromTarget: 'router.tmp.deps.js',
+ *     depsTarget: 'router.deps.js'
+ *   } ],
+ *   require('enb/techs/css-chunks'),
+ *   require('enb/techs/js-chunks'),
+ *   require('enb/techs/js-bundle-component')
+ * ]);
+ * ```
  */
 var Vow = require('vow');
 

@@ -1,16 +1,7 @@
 /**
  * css-borschik-chunks
  * ===================
- */
-var inherit = require('inherit'),
-    fs = require('fs'),
-    Vow = require('vow'),
-    vowFs = require('vow-fs'),
-    path = require('path'),
-    crypto = require('crypto'),
-    BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
-
-/**
+ *
  * Из *css*-файлов по deps'ам, собирает `css-chunks.js`-файл, обрабатывая инклуды, ссылки. Умеет минифицировать и фризить.
  *
  * `css-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
@@ -30,8 +21,15 @@ var inherit = require('inherit'),
  *   freeze: true
  * } ]);
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs'),
+    Vow = require('vow'),
+    vowFs = require('vow-fs'),
+    path = require('path'),
+    crypto = require('crypto'),
+    BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
+
 module.exports = require('./css-chunks').buildFlow()
     .name('css-borschik-chunks')
     .defineOption('freeze', false)

@@ -1,6 +1,21 @@
 /**
  * priv-js
  * =======
+ *
+ * Собирает `?.priv.js` по deps'ам, обрабатывая Борщиком, добавляет BEMHTML в начало.
+ *
+ * Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+ *
+ * **Опции**
+ *
+ * * *String* **bemhtmlTarget** — Имя `bemhtml.js`-таргета. По умолчанию — `?.bemhtml.js`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech(require('enb/techs/priv-js'));
+ * ```
  */
 var inherit = require('inherit'),
     fs = require('fs'),

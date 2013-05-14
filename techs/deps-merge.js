@@ -1,15 +1,6 @@
 /**
  * deps-merge
  * ==========
- */
-var Vow = require('vow'),
-    fs = require('fs'),
-    vm = require('vm'),
-    vowFs = require('vow-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps');
-
-/**
  *
  * Формирует *deps* с помощью объединения других deps-файлов.
  *
@@ -26,8 +17,14 @@ var Vow = require('vow'),
  *   depsTarget: 'all.deps.js'
  * } ]);
  * ```
- * @type {Tech}
  */
+var Vow = require('vow'),
+    fs = require('fs'),
+    vm = require('vm'),
+    vowFs = require('vow-fs'),
+    inherit = require('inherit'),
+    deps = require('../lib/deps/deps');
+
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'deps-merge';

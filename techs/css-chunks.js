@@ -1,16 +1,6 @@
 /**
  * css-chunks
  * ==========
- */
-var inherit = require('inherit'),
-    fs = require('fs'),
-    Vow = require('vow'),
-    vowFs = require('vow-fs'),
-    path = require('path'),
-    crypto = require('crypto'),
-    CssPreprocessor = require('../lib/preprocess/css-preprocessor');
-
-/**
  *
  * Из *css*-файлов по deps'ам, собирает `css-chunks.js`-файл, обрабатывая инклуды, ссылки.
  *
@@ -26,8 +16,15 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-chunks'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs'),
+    Vow = require('vow'),
+    vowFs = require('vow-fs'),
+    path = require('path'),
+    crypto = require('crypto'),
+    CssPreprocessor = require('../lib/preprocess/css-preprocessor');
+
 module.exports = require('../lib/tech/chunks').buildFlow()
     .name('css-chunks')
     .target('target', '?.css-chunks.js')

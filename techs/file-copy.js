@@ -1,6 +1,22 @@
 /**
  * file-copy
  * =========
+ *
+ * Копирует один таргет в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
+ *
+ * **Опции**
+ *
+ * * *String* **sourceTarget** — Исходный таргет. Обязательная опция.
+ * * *String* **destTarget** — Результирующий таргет. Обязательная опция.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/file-copy'), {
+ *   sourceTarget: '?.css',
+ *   destTarget: '_?.css'
+ * } ]);
+ * ```
  */
 var fs = require('fs'),
     Vow = require('vow'),

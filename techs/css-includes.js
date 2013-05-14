@@ -1,11 +1,7 @@
 /**
  * css-includes
  * ============
- */
-var inherit = require('inherit'),
-    fs = require('fs');
-
-/**
+ *
  * Собирает *css*-файлы по deps'ам инклудами, сохраняет в виде `?.css`. Может пригодиться в паре с ycssjs (как fastcgi-модуль).
  *
  * **Опции**
@@ -18,8 +14,10 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-includes'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs');
+
 module.exports = require('../lib/build-flow').create()
     .name('css-includes')
     .target('target', '?.css')

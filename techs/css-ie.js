@@ -1,11 +1,7 @@
 /**
  * css-ie
  * ======
- */
-var inherit = require('inherit'),
-    fs = require('fs');
-
-/**
+ *
  * Склеивает *css* и *ie.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie.css`.
  *
  * **Опции**
@@ -18,8 +14,10 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-ie'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs');
+
 module.exports = require('./css').buildFlow()
     .name('css-ie')
     .target('target', '?.ie.css')

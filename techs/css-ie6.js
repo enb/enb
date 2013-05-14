@@ -1,11 +1,7 @@
 /**
  * css-ie6
  * =======
- */
-var inherit = require('inherit'),
-    fs = require('fs');
-
-/**
+ *
  * Склеивает *css* и *ie6.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie6.css`.
  *
  * **Опции**
@@ -18,8 +14,10 @@ var inherit = require('inherit'),
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/css-ie6'));
  * ```
- * @type {Tech}
  */
+var inherit = require('inherit'),
+    fs = require('fs');
+
 module.exports = require('./css').buildFlow()
     .name('css-ie6')
     .target('target', '?.ie6.css')

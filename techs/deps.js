@@ -1,16 +1,8 @@
 /**
  * deps
  * ====
- */
-var Vow = require('vow'),
-    fs = require('fs'),
-    vm = require('vm'),
-    vowFs = require('vow-fs'),
-    DepsResolver = require('../lib/deps/deps-resolver'),
-    inherit = require('inherit');
-
-/**
- * Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Следует использовать с осторожностью: в lego не хватает зависимостей, потому проект может собраться иначе, чем с помощью bem-tools.
+ *
+ * Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Следует использовать с осторожностью: в bem-bl не хватает зависимостей, потому проект может собраться иначе, чем с помощью bem-tools.
  *
  * Имя *levels*-таргета в данный момент не настраивается (нет запросов на эту функцию).
  *
@@ -34,8 +26,14 @@ var Vow = require('vow'),
  *   depsTarget: 'search.deps.js'
  * } ]);
  * ```
- * @type {Tech}
  */
+var Vow = require('vow'),
+    fs = require('fs'),
+    vm = require('vm'),
+    vowFs = require('vow-fs'),
+    DepsResolver = require('../lib/deps/deps-resolver'),
+    inherit = require('inherit');
+
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
         return 'deps';

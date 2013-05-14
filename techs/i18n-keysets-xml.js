@@ -1,3 +1,24 @@
+/**
+ * i18n-keysets-xml
+ * ================
+ *
+ * Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
+ *
+ * Используется для локализации xml-страниц.
+ *
+ * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
+ *
+ * **Опции**
+ *
+ * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
+ * * *String* **lang** — Язык, для которого небходимо собрать файл.
+ *
+ * **Пример**
+ *
+ * ```javascript
+ * nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
+ * ```
+ */
 var inherit = require('inherit'),
     fs = require('fs'),
     vowFs = require('vow-fs'),

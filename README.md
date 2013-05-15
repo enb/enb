@@ -367,6 +367,27 @@ bemdecl-from-bemjson
 nodeConfig.addTech(require('enb/techs/bemdecl-from-bemjson'));
 ```
 
+bemdecl-from-deps-by-tech
+-------------------------
+
+Формирует *bemdecl* на основе depsByTech-информации из `?.deps.js`.
+
+**Опции**
+
+* *String* **sourceTech** — Имя исходной технологии. Обязательная опция.
+* *String* **destTech** — Имя конечной технологии. Обязательная опция.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String* **target** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/bemdecl-from-deps-by-tech'), {
+    sourceTech: 'js',
+    destTech: 'bemhtml'
+});
+```
+
 bemdecl-merge
 -------------
 

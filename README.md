@@ -755,6 +755,26 @@ nodeConfig.addTech([ require('enb/techs/file-copy'), {
 } ]);
 ```
 
+file-merge
+----------
+
+Склеивает набор файлов в один.
+
+**Опции**
+
+* *String[]* **sources** — Список исходных таргетов. Обязательная опция.
+* *String* **target** — Результирующий таргет. Обязательная опция.
+* *String* **divider** — Строка для склеивания файлов. По умолчанию — "\n".
+
+**Пример**
+
+```javascript
+nodeConfig.addTech([ require('enb/techs/file-merge'), {
+    sources: ['?.bemhtml', '?.pre.js']
+    target: '?.js'
+} ]);
+```
+
 file-provider
 -------------
 

@@ -2,7 +2,7 @@
  * js-bembundle-page-i18n-module
  * =============================
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     vm = require('vm');
 
 module.exports = require('./js-bembundle-page-i18n').buildFlow()

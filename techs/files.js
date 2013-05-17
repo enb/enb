@@ -17,7 +17,7 @@
  * nodeConfig.addTech(require('enb/techs/files'));
  * ```
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     Vow = require('vow'),
     FileList = require('../lib/file-list'),
     inherit = require('inherit');

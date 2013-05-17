@@ -23,7 +23,7 @@
  * }]);
  * ```
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     inherit = require('inherit'),
     childProcess = require('child_process'),
     Vow = require('vow'),

@@ -21,7 +21,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     path = require('path'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),

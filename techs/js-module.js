@@ -3,7 +3,7 @@
  * =========
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     vm = require('vm'),
     Vow = require('vow'),
     vowFs = require('vow-fs');

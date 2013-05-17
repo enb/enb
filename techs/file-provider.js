@@ -14,7 +14,7 @@
  * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
  * ```
  */
-var fs = require('fs'), Vow = require('vow'), inherit = require('inherit');
+var fs = require('graceful-fs'), Vow = require('vow'), inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {

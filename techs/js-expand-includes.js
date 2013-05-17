@@ -15,7 +15,7 @@
  * nodeConfig.addTech([ require('enb/techs/js-expand-includes'), { sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' } ]);
  * ```
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),inherit = require('inherit'),
     path = require('path');

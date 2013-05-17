@@ -24,7 +24,7 @@
  */
 var Level = require('../lib/level-sync'),
     Levels = require('../lib/levels'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     Vow = require('vow'),
     inherit = require('inherit');
 

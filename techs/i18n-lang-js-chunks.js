@@ -23,7 +23,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     vowFs = require('vow-fs'),
     Vow = require('vow'),
     crypto = require('crypto');

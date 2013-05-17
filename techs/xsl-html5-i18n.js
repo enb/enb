@@ -19,7 +19,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs');
+    fs = require('graceful-fs');
 
 module.exports = require('./xsl-html5').buildFlow()
     .name('xsl-html5-i18n')

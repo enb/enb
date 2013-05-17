@@ -1,7 +1,7 @@
 var inherit = require('inherit'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     vm = require('vm'),
     FileList = require('../lib/file-list'),
     DepsResolver = require('../lib/deps/deps-resolver');

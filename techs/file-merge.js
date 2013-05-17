@@ -19,7 +19,7 @@
  * } ]);
  * ```
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs');
 

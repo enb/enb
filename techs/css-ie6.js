@@ -16,7 +16,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs');
+    fs = require('graceful-fs');
 
 module.exports = require('./css').buildFlow()
     .name('css-ie6')

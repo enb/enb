@@ -18,7 +18,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     Vow = require('vow');
 
 module.exports = require('../lib/build-flow').create()

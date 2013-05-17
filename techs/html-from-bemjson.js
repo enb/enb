@@ -16,7 +16,7 @@
  * nodeConfig.addTech(require('enb/techs/html-from-bemjson'));
  * ```
  */
-var fs = require('fs'),
+var fs = require('graceful-fs'),
     Vow = require('vow'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),

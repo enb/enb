@@ -16,7 +16,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     path = require('path'),
     CssPreprocessor = require('../lib/preprocess/css-preprocessor');
 

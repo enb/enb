@@ -20,7 +20,7 @@
  * ```
  */
 var inherit = require('inherit'),
-    fs = require('fs'),
+    fs = require('graceful-fs'),
     vowFs = require('vow-fs'),
     domjs = require('dom-js'),
     Vow = require('vow');

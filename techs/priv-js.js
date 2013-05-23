@@ -42,6 +42,7 @@ module.exports = require('../lib/build-flow').create()
                 });
             });
         })).then(function(res) {
+            res.push('\ntypeof exports === "undefined" || (exports.blocks = blocks);\n');
             return bemhtml + '\n' + res.join('\n');
         });
     })

@@ -1,5 +1,5 @@
 /**
- * html-from-bemjson
+ * html-from-bemjson-i18n
  * =================
  *
  * Собирает *html*-файл с помощью *bemjson*, *bemhtml*, *lang.all* и *lang.{lang}*.
@@ -15,7 +15,7 @@
  * **Пример**
  *
  * ```javascript
- * nodeConfig.addTech(require('enb/techs/html-from-bemjson'));
+ * nodeConfig.addTech(require('enb/techs/html-from-bemjson-i18n'));
  * ```
  */
 var fs = require('graceful-fs'),
@@ -27,7 +27,7 @@ var fs = require('graceful-fs'),
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
-        return 'html-from-bemjson';
+        return 'html-from-bemjson-i18n';
     },
 
     configure: function() {

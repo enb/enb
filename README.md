@@ -463,6 +463,22 @@ nodeConfig.addTech([ require('enb/techs/borschik'), {
 } ]);
 ```
 
+browser-js
+----------
+
+Склеивает `vanilla.js`, `js` и `browser.js`-файлы по deps'ам, сохраняет в виде `?.browser.js`.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию — `?.browser.js`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/browser-js'));
+```
+
 css
 ---
 
@@ -1151,6 +1167,22 @@ nodeConfig.addTech([ require('enb/techs/levels'), {
 } ]);
 ```
 
+node-js
+-------
+
+Склеивает `vanilla.js` и `node.js`-файлы по deps'ам, сохраняет в виде `?.node.js`.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию — `?.node.js`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/node-js'));
+```
+
 priv-js
 -------
 
@@ -1228,6 +1260,22 @@ nodeConfig.addTech([ require('enb/techs/symlink'), {
   fileTarget: '?.css',
   symlinkTarget: '_?.css'
 } ]);
+```
+
+vanilla-js
+----------
+
+Склеивает `vanilla.js`-файлы по deps'ам, сохраняет в виде `?.vanilla.js`.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию — `?.vanilla.js`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/vanilla-js'));
 ```
 
 xsl

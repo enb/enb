@@ -2,10 +2,11 @@
  * priv-js-i18n-all
  * =================
  *
- * Собирает *all.priv.js*-файл из *priv.js* и массива языков.
+ * Собирает *all.priv.js*-файл из *priv.js* и массива языковых файлов.
+ *
  * **Опции**
  *
- * * *Array* **langTargets** — Массив языков. По умолчанию — `[]`.
+ * * *Array* **langTargets** — Массив lang.js-таргетов. По умолчанию — `[]`.
  * * *String* **privJsTarget** — Исходный priv.js-файл. По умолчанию — `?.priv.js`.
  * * *String* **target** — Результирующий priv.js-файл. По умолчанию — `?.all.priv.js`.
  *
@@ -13,12 +14,10 @@
  *
  * ```javascript
  *  [ require('enb/techs/priv-js-i18n-all'), {
- *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.'+lang+'.js'}).concat(['?.priv.js'])
+ *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.'+lang+'.js'})
  *  } ]
  * ```
  */
-
-
 var Vow = require('vow'),
     vowFs = require('vow-fs');
 

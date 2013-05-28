@@ -81,7 +81,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     return null;
                 });
             } else {
-                _this.node.getLogger().isValid(target);
+                _this.node.isValidTarget(target);
                 _this.node.resolveTarget(target);
                 promise.fulfill();
             }

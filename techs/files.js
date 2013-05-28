@@ -55,7 +55,6 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
                     files.addFiles(entities.files);
                     dirs.addFiles(entities.dirs);
                 }
-                _this.node.getLogger().logAction('files', files.items.length);
                 _this.node.resolveTarget(filesTarget, files);
                 _this.node.resolveTarget(dirsTarget, dirs);
             });

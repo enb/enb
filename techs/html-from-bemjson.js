@@ -69,8 +69,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 return Vow.when(targets.map(function(target) {
                     return Vow.when(_this.isRebuildRequired(target)).then(function(rebuildRequired) {
                         if (!rebuildRequired) {
+                            _this.node.isValidTarget(target);
                             _this.node.resolveTarget(target);
-                            _this.node.getLogger().isValid(target);
                         } else {
                             targetsToBuild.push(target);
                         }
@@ -79,7 +79,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     if (targetsToBuild.length) {
                         return vowFs.read(_this.node.resolvePath(_this._bemjsonSource), 'utf8')
                             .then(function(bemjson) {
-                                bemjson = vm.runInThisContext(bemjson);
+                                try {
+                                    bemjson = vm.runInThisContext(bemjson);
+                                } catch (e) {
+                                    throw new Error(
+                                        'Syntax error at "' +
+                                        _this.node.resolvePath(_this._bemjsonSource) +
+                                        '": ' + e.message
+                                    );
+                                }
                                 return Vow.all(targetsToBuild.map(function(target) {
                                     return Vow.when(_this.getBuildResult(
                                             target,

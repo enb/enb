@@ -75,7 +75,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     _this.node.resolveTarget(bemdeclTarget, mergedDeps);
                 });
             } else {
-                _this.node.getLogger().isValid(bemdeclTarget);
+                _this.node.isValidTarget(bemdeclTarget);
                 delete require.cache[bemdeclTargetPath];
                 _this.node.resolveTarget(bemdeclTarget, require(bemdeclTargetPath).deps);
                 return null;

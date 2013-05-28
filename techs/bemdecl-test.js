@@ -81,7 +81,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     _this.node.resolveTarget(bemdeclTarget);
                 });
             } else {
-                _this.node.getLogger().isValid(bemdeclTarget);
+                _this.node.isValidTarget(bemdeclTarget);
                 _this.node.resolveTarget(bemdeclTarget);
                 return null;
             }

@@ -259,8 +259,8 @@ module.exports = function(config) {
   // Языки для проекта.
   config.setLanguages(['ru', 'en']);
 
-  // Добавление ноды в сборку.
-  config.node('pages/index');
+  // Добавление набора нод в сборку.
+  config.nodes('pages/*');
 
   // Добавление ноды в сборку + конфигурирование ноды.
   config.node('pages/index', function(nodeConfig) {
@@ -431,21 +431,7 @@ nodeConfig.addTech([ require('enb/techs/bemdecl-provider'), {
 bemhtml
 -------
 
-Склеивает *bemhtml*-файлы по deps'ам, обрабатывает BEMHTML-транслятором, сохраняет в виде `?.bemhtml.js`. Использует пакет `bemc` (https://github.com/bem/bemc).
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **exportName** — Имя переменной-обработчика BEMHTML. По умолчанию — `'BEMHTML'`.
-* *Boolean* **devMode** — Development-режим. По умолчанию — `true`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/bemhtml'));
-```
+Технология перенесена в пакет `enb-bemhtml`.
 
 borschik
 --------
@@ -825,6 +811,25 @@ html-from-bemjson
 nodeConfig.addTech(require('enb/techs/html-from-bemjson'));
 ```
 
+html-from-bemjson-i18n
+======================
+
+Собирает *html*-файл с помощью *bemjson*, *bemhtml*, *lang.all* и *lang.{lang}*.
+
+**Опции**
+
+* *String* **bemhtmlTarget** — Исходный BEMHTML-файл. По умолчанию — `?.bemhtml.js`.
+* *String* **bemjsonTarget** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
+* *String* **langAllTarget** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
+* *String* **langTarget** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`. Если параметр lang не указан, берется первый из объявленных в проекте языков
+* *String* **destTarget** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/html-from-bemjson-i18n'));
+```
+
 i18n-keysets-xml
 ----------------
 
@@ -1157,6 +1162,48 @@ priv-js
 
 ```javascript
 nodeConfig.addTech(require('enb/techs/priv-js'));
+```
+
+priv-js-i18n-all
+=================
+
+Собирает *all.priv.js*-файл из *priv.js* и массива языков.
+
+**Опции**
+
+* *Array* **langTargets** — Массив lang.js-таргетов. По умолчанию — `[]`.
+* *String* **privJsTarget** — Исходный priv.js-файл. По умолчанию — `?.priv.js`.
+* *String* **target** — Результирующий priv.js-файл. По умолчанию — `?.all.priv.js`.
+
+**Пример**
+
+```javascript
+[ require('enb/techs/priv-js-i18n-all'), {
+    langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.' + lang + '.js'})
+} ]
+```
+
+pub-js-i18n
+===========
+
+Собирает *{lang}.pub.js*-файл из *js*, языковых файлов и *bemhtml*.
+
+**Опции**
+
+* *String* **target** — Результирующий `priv.js`-файл. По умолчанию — `?.all.priv.js`.
+* *String* **jsTarget** — Исходный `js`-файл. По умолчанию — `?.js`.
+* *String* **lang** — Язык. Обязательная опция.
+* *Array* **langTarget** — `lang.js`-файл конкретного языка. Например, `?.lang.ru.js`. По умолчанию — `?.lang.{lang}.js`.
+* *Array* **allLangTarget** — `lang.all.js`-файл. По умолчанию — `?.lang.all.js`.
+* *Array* **bemhtmlTarget** — `bemhtml.js`-файл. По умолчанию — `?.bemhtml.js`.
+
+**Пример**
+
+```javascript
+[ require('enb/techs/pub-js-i18n'), {
+    jsTarget: '?.js',
+    target: '?.pub.js'
+} ]
 ```
 
 symlink

@@ -74,7 +74,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     });
                 });
             } else {
-                _this.node.getLogger().isValid(depsTarget);
+                _this.node.isValidTarget(depsTarget);
                 delete require.cache[depsTargetPath];
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;
@@ -248,8 +248,7 @@ var OldDeps = (function() {
                 try {
                     _this.parse(vm.runInThisContext(content, file.fullname), item);
                 } catch(e) {
-                    e.message = path + '\n' + e.message;
-                    throw e;
+                    throw new Error('Syntax error in file "' + file.fullname + '": ' + e.message);
                 }
             });
         },

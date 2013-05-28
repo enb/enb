@@ -61,7 +61,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     _this.node.resolveTarget(depsTarget, deps);
                 });
             } else {
-                _this.node.getLogger().isValid(depsTarget);
+                _this.node.isValidTarget(depsTarget);
                 delete require.cache[depsTargetPath];
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;

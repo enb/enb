@@ -1,6 +1,6 @@
 /**
  * html-from-bemjson-i18n
- * =================
+ * ======================
  *
  * Собирает *html*-файл с помощью *bemjson*, *bemhtml*, *lang.all* и *lang.{lang}*.
  *
@@ -54,7 +54,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     getBuildResult: function(target, bemhtmlFile, bemjson, allLangFile, langFile) {
         delete require.cache[bemhtmlFile];
         var bemhtml = require(bemhtmlFile);
+        delete require.cache[allLangFile];
         var allLang = require(allLangFile);
+        delete require.cache[langFile];
         var lang = require(langFile);
 
         return bemhtml.BEMHTML.apply(bemjson);
@@ -80,14 +82,16 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     build: function() {
         var _this = this;
-        return this.node.requireSources([this._bemhtmlSource, this._bemjsonSource, this._allLangSource, this._langSource]).then(function() {
+        return this.node.requireSources(
+            [this._bemhtmlSource, this._bemjsonSource, this._allLangSource, this._langSource]
+        ).then(function() {
             return Vow.when(_this.getTargets()).then(function(targets) {
                 var targetsToBuild = [];
                 return Vow.when(targets.map(function(target) {
                     return Vow.when(_this.isRebuildRequired(target)).then(function(rebuildRequired) {
                         if (!rebuildRequired) {
+                            _this.node.isValidTarget(target);
                             _this.node.resolveTarget(target);
-                            _this.node.getLogger().isValid(target);
                         } else {
                             targetsToBuild.push(target);
                         }
@@ -96,7 +100,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     if (targetsToBuild.length) {
                         return vowFs.read(_this.node.resolvePath(_this._bemjsonSource), 'utf8')
                             .then(function(bemjson) {
-                                bemjson = vm.runInThisContext(bemjson);
+                                try {
+                                    bemjson = vm.runInThisContext(bemjson);
+                                } catch (e) {
+                                    throw new Error(
+                                        'Syntax error at "' +
+                                        _this.node.resolvePath(_this._bemjsonSource) +
+                                        '": ' + e.message
+                                    );
+                                }
                                 return Vow.all(targetsToBuild.map(function(target) {
                                     return Vow.when(_this.getBuildResult(
                                             target,

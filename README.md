@@ -35,6 +35,11 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 
 Специально для этого я подготовил сборку project-stub на ENB: https://github.com/mdevils/project-stub
 
+**Пакеты для ENB**
+
+* Сборка BEMHTML: https://github.com/enb-make/enb-bemhtml
+* Модульность для нового bem-core: https://github.com/enb-make/enb-modules
+
 Благодарности
 -------------
 

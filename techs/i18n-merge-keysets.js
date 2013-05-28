@@ -22,7 +22,9 @@
  */
 var inherit = require('inherit'),
     Vow = require('vow'),
-    vowFs = require('vow-fs');
+    vowFs = require('vow-fs'),
+    vm = require('vm'),
+    asyncRequire = require('../lib/fs/async-require');
 
 module.exports = require('../lib/build-flow.js').create()
     .name('i18n-merge-keysets')
@@ -39,24 +41,25 @@ module.exports = require('../lib/build-flow.js').create()
             });
 
         var result = {};
-        langKeysetFiles.forEach(function(keysetFile) {
-            delete require.cache[keysetFile.fullname];
-            var keysets = require(keysetFile.fullname);
-            if (lang === 'all') { // XXX: Why the hell they break the pattern?
-                keysets = keysets['all'] || {};
-            }
-            Object.keys(keysets).forEach(function(keysetName) {
-                var keyset = keysets[keysetName];
-                result[keysetName] = (result[keysetName] || {});
-                if (typeof keyset !== 'string') {
-                    Object.keys(keyset).forEach(function(keyName) {
-                        result[keysetName][keyName] = keyset[keyName];
-                    });
-                } else {
-                    result[keysetName] = keyset;
+        return Vow.all(langKeysetFiles.map(function(keysetFile) {
+            return asyncRequire(keysetFile.fullname).then(function(keysets) {
+                if (lang === 'all') { // XXX: Why the hell they break the pattern?
+                    keysets = keysets['all'] || {};
                 }
+                Object.keys(keysets).forEach(function(keysetName) {
+                    var keyset = keysets[keysetName];
+                    result[keysetName] = (result[keysetName] || {});
+                    if (typeof keyset !== 'string') {
+                        Object.keys(keyset).forEach(function(keyName) {
+                            result[keysetName][keyName] = keyset[keyName];
+                        });
+                    } else {
+                        result[keysetName] = keyset;
+                    }
+                });
             });
+        })).then(function() {
+            return 'module.exports = ' + JSON.stringify(result) + ';';
         });
-        return 'module.exports = ' + JSON.stringify(result) + ';';
     })
     .createTech();

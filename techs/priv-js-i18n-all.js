@@ -21,7 +21,7 @@
 var Vow = require('vow'),
     vowFs = require('vow-fs');
 
-module.exports = require('enb/lib/build-flow').create()
+module.exports = require('../lib/build-flow').create()
     .name('priv-js-i18n-all')
     .target('target', '?.all.priv.js')
     .useSourceListFilenames('langTargets', [])

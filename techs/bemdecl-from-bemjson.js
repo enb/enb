@@ -87,7 +87,7 @@ function getBuilder(decl, block) {
                 if(mods.hasOwnProperty(n))
                     decl.push({
                         name: block,
-                        mods: [{ name: n, vals: [ mods[n] ] }]
+                        mods: [{ name: n, vals: [ { name: mods[n] } ] }]
                     });
         if(obj.elem && (mods = obj.elemMods))
             for(n in mods)
@@ -96,7 +96,7 @@ function getBuilder(decl, block) {
                         name: block,
                         elems: [{
                             name: obj.elem,
-                            mods: [{ name: n, vals: [ mods[n] ] }]
+                            mods: [{ name: n, vals: [ { name: mods[n] } ] }]
                         }]
                     });
         props = Object.keys(obj).filter(function(k) {

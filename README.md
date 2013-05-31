@@ -663,7 +663,7 @@ deps-merge
 **Пример**
 
 ```javascript
-nodeConfig.addTech([ require('enb/techs/deps-merge'))({
+nodeConfig.addTech([ require('enb/techs/deps-merge'), {
   depsSources: ['search.deps.js', 'router.deps.js'],
   depsTarget: 'all.deps.js'
 } ]);

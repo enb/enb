@@ -220,23 +220,19 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
           require('enb/techs/js'),
           require('enb/techs/css')
         ]);
-        nodeConfig.addTargets(['_?.js', '_?.css']);
-      });
-      config.mode('development', function() {
-        config.node('pages/index', function(nodeConfig) {
+        nodeConfig.mode('development', function(nodeConfig) {
           nodeConfig.addTechs([
             [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
             [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
           ]);
         });
-      });
-      config.mode('production', function() {
-        config.node('pages/index', function(nodeConfig) {
+        nodeConfig.mode('production', function(nodeConfig) {
           nodeConfig.addTechs([
             [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js', minify: true } ],
             [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css', minify: true } ]
           ]);
         });
+        nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
   function getLevels(config) {

@@ -22,8 +22,8 @@
  * } ]);
  * ```
  */
-var Level = require('../lib/level-sync'),
-    Levels = require('../lib/levels'),
+var Level = require('../lib/levels/level'),
+    Levels = require('../lib/levels/levels'),
     fs = require('graceful-fs'),
     Vow = require('vow'),
     inherit = require('inherit');
@@ -61,12 +61,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 if (levelsIndex[levelPath]) continue;
                 levelsIndex[levelPath] = true;
                 if (!this.node.buildState[levelKey]) {
-                    var level = new Level(levelPath);
+                    var level = new Level(levelPath, this.node.getLevelNamingScheme(levelPath));
                     if (levelInfo.check === false) {
                         var blocks = cache.get(levelPath);
                         if (blocks) {
-                            level.setBlocks(blocks);
-                            level.setLoaded();
+                            level.loadFromCache(blocks);
                         } else {
                             levelsToCache.push(level);
                         }

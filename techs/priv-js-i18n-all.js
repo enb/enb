@@ -14,14 +14,14 @@
  *
  * ```javascript
  *  [ require('enb/techs/priv-js-i18n-all'), {
- *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.'+lang+'.js'})
+ *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.' + lang + '.js'})
  *  } ]
  * ```
  */
 var Vow = require('vow'),
     vowFs = require('vow-fs');
 
-module.exports = require('enb/lib/build-flow').create()
+module.exports = require('../lib/build-flow').create()
     .name('priv-js-i18n-all')
     .target('target', '?.all.priv.js')
     .useSourceListFilenames('langTargets', [])

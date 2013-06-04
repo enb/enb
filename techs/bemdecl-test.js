@@ -14,6 +14,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     configure: function() {
         this._fileMask = this.getOption('fileMask', /.*/);
         this._target = this.getOption('target', this.node.getTargetName('test.bemdecl.js'));
+        this._levelsTarget = this.node.unmaskTargetName(
+            this.getOption('levelsTarget', this.node.getTargetName('levels'))
+        );
     },
 
     getTargets: function() {
@@ -27,7 +30,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
             _this = this,
             cache = this.node.getNodeCache(bemdeclTarget);
-        return this.node.requireSources([this.node.getTargetName('levels')]).spread(function(files) {
+        return this.node.requireSources([this._levelsTarget]).spread(function(files) {
             var sourceFiles = files.getFilesBySuffix('test.js'),
                 depsFiles = files.getFilesBySuffix('test.deps.js'),
                 filterFunction;

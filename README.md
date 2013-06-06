@@ -39,6 +39,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 
 * Сборка BEMHTML: https://github.com/enb-make/enb-bemhtml
 * Модульность для нового bem-core: https://github.com/enb-make/enb-modules
+* Интеграция для grunt: https://github.com/megatolya/grunt-enb
 
 Благодарности
 -------------

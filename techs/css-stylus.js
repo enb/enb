@@ -46,4 +46,9 @@ module.exports = require('./css').buildFlow()
             return _this._processIncludes(css, _this.node.resolvePath(targetName));
         });
     })
+    .methods({
+        _resolveCssUrl: function(data, filename) {
+            return this._getCssPreprocessor()._resolveCssUrl(data, filename);
+        }
+    })
     .createTech();

@@ -32,11 +32,13 @@ module.exports = require('./css').buildFlow()
         }).join('\n');
 
         var targetName = _this._target;
-        stylus(css)
+        var renderer = stylus(css)
             .define('url', function(url){
                 return new stylus.nodes.Literal('url(' + _this._resolveCssUrl(url.val, url.filename) + ')');
             })
-            .set('filename', _this.node.resolvePath(targetName))
+            .set('filename', _this.node.resolvePath(targetName));
+
+        _this._configureRenderer(renderer)
             .render(function(err, css) {
                 if (err) promise.reject(err);
                 promise.fulfill(css);
@@ -49,6 +51,9 @@ module.exports = require('./css').buildFlow()
     .methods({
         _resolveCssUrl: function(data, filename) {
             return this._getCssPreprocessor()._resolveCssUrl(data, filename);
+        },
+        _configureRenderer: function(renderer) {
+            return renderer;
         }
     })
     .createTech();

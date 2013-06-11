@@ -59,6 +59,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         delete require.cache[langFile];
         var lang = require(langFile);
 
+        var global = bemhtml.lib && bemhtml.lib.global;
+        if (global) {
+            global.lang = this.getOption('lang');
+            global.setTld(this.getOption('lang'));
+        }
+
         return bemhtml.BEMHTML.apply(bemjson);
     },
 

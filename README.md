@@ -603,6 +603,22 @@ css-includes
 nodeConfig.addTech(require('enb/techs/css-includes'));
 ```
 
+css-less
+--------
+
+Собирает *css*-файлы вместе со *less*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
+
+**Опции**
+
+* *String* **target** — Результирующий таргет. По умолчанию `?.css`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+
+**Пример**
+
+```javascript
+nodeConfig.addTech(require('enb/techs/css-less'));
+```
+
 css-stylus
 ----------
 

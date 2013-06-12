@@ -2,7 +2,7 @@
     "author" : "Marat Dulin <mdevils@yandex.ru>",
     "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.8.10",
+    "version" : "0.8.11",
     "repository" : "https://github.com/enb-make/enb",
     "contributors" : [
         {
@@ -42,6 +42,6 @@
         "enb" : "./bin/enb"
     },
     "scripts": {
-        "jshint" : "./node_modules/.bin/jshint ."
+        "test" : "./node_modules/.bin/jshint ."
     }
 }

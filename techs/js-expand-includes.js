@@ -57,7 +57,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             targetsToWaitFor = [],
             regex = /include\(["']([^"']+)["']\);/g,
             match;
-        while (match = regex.exec(data)) {
+        while (!!(match = regex.exec(data))) {
             if (this.node.hasRegisteredTarget(match[1])) {
                 targetsToWaitFor.push(match[1]);
             }
@@ -70,15 +70,16 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     _processIncludes: function(data, filename) {
         var _this = this;
-        return data.replace(/([^\.]|^)include\(["']([^"']+)["']\);/g, function(s, preChar, url){
+        return data.replace(/([^\.]|^)include\(["']([^"']+)["']\);/g, function(s, preChar, url) {
             var importFilename = path.resolve(path.dirname(filename), url),
                 rootRelImportFilename = importFilename.slice(1),
                 pre = preChar + '/* ' + rootRelImportFilename + ': begin */ /**/\n',
                 post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n';
             return pre +
-                '    ' + _this._processIncludes(fs.readFileSync(importFilename, "utf8"), importFilename)
-                    .replace(/\n/g, '\n    ')
-                 + post;
+                '    ' +
+                _this._processIncludes(fs.readFileSync(importFilename, "utf8"), importFilename)
+                    .replace(/\n/g, '\n    ') +
+                post;
         });
     }
 });

@@ -34,21 +34,21 @@ module.exports = require('../lib/build-flow').create()
             importFilenames = sourceFiles.map(function(sourceFile) {
                 return sourceFile.fullname;
             }).concat(imports);
-        return this.getPrependXsl()
-            + importFilenames.map(function(filename) {
+        return this.getPrependXsl() +
+            importFilenames.map(function(filename) {
                 return '<xsl:import href="' + node.relativePath(filename) + '"/>';
-            }).join('\n')
-            + '\n'
-            + includes.map(function(filename) {
+            }).join('\n') +
+            '\n' +
+            includes.map(function(filename) {
                 return '<xsl:include href="' + node.relativePath(filename) + '"/>';
-            })
-            + this.getAppendXsl();
+            }) +
+            this.getAppendXsl();
     })
     .methods({
         getPrependXsl: function() {
             return '<?xml version="1.0" encoding="utf-8"?>\n' +
-                '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">\n'
-                + this._prependXsl;
+                '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">\n' +
+                this._prependXsl;
         },
         getAppendXsl: function() {
             return this._appendXsl + '\n</xsl:stylesheet>';

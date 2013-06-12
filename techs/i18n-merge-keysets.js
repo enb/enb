@@ -44,7 +44,7 @@ module.exports = require('../lib/build-flow.js').create()
         return Vow.all(langKeysetFiles.map(function(keysetFile) {
             return asyncRequire(keysetFile.fullname).then(function(keysets) {
                 if (lang === 'all') { // XXX: Why the hell they break the pattern?
-                    keysets = keysets['all'] || {};
+                    keysets = keysets.all || {};
                 }
                 Object.keys(keysets).forEach(function(keysetName) {
                     var keyset = keysets[keysetName];

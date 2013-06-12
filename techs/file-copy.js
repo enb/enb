@@ -45,8 +45,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             _this = this,
             cache = this.node.getNodeCache(target);
         return this.node.requireSources([source]).then(function() {
-            if (cache.needRebuildFile('source-file', sourcePath)
-                    || cache.needRebuildFile('target-file', targetPath)) {
+            if (cache.needRebuildFile('source-file', sourcePath) ||
+                cache.needRebuildFile('target-file', targetPath)
+            ) {
                 return vowFs.read(sourcePath, 'utf8').then(function(data) {
                     return vowFs.write(targetPath, data, 'utf8').then(function() {
                         cache.cacheFileInfo('source-file', sourcePath);

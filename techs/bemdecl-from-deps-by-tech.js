@@ -62,7 +62,7 @@ module.exports = require('../lib/build-flow').create()
                                     }
                                 });
                             }
-                        })
+                        });
                     }
                 });
             });

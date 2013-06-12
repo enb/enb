@@ -43,16 +43,20 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             }
             sourceFiles = sourceFiles.filter(filterFunction);
             depsFiles = depsFiles.filter(filterFunction);
-            if (cache.needRebuildFile('bemdecl-file', bemdeclTargetPath)
-                    || cache.needRebuildFileList('source-files', sourceFiles)
-                    || cache.needRebuildFileList('deps-files', depsFiles)
-                ) {
+            if (cache.needRebuildFile('bemdecl-file', bemdeclTargetPath) ||
+                cache.needRebuildFileList('source-files', sourceFiles) ||
+                cache.needRebuildFileList('deps-files', depsFiles)
+            ) {
                 var deps = [];
 
                 sourceFiles.forEach(function(file) {
                     var fileDeps = FileList.parseFilename(file.name).bem;
-                    fileDeps.hasOwnProperty('modName') && (fileDeps.mod = fileDeps.modName);
-                    fileDeps.hasOwnProperty('modVal') && (fileDeps.val = fileDeps.modVal);
+                    if (fileDeps.hasOwnProperty('modName')) {
+                        fileDeps.mod = fileDeps.modName;
+                    }
+                    if (fileDeps.hasOwnProperty('modVal')) {
+                        fileDeps.val = fileDeps.modVal;
+                    }
                     deps.push(fileDeps);
                 });
 
@@ -69,8 +73,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     }
                     allDeps.forEach(function(dep) {
                         dep.block = dep.name;
-                        dep.hasOwnProperty('modName') && (dep.mod = dep.modName);
-                        dep.hasOwnProperty('modVal') && (dep.val = dep.modVal);
+                        if (dep.hasOwnProperty('modName')) {
+                            dep.mod = dep.modName;
+                        }
+                        if (dep.hasOwnProperty('modVal')) {
+                            dep.val = dep.modVal;
+                        }
                     });
                     deps = deps.concat(allDeps);
                 });

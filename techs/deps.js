@@ -2,7 +2,9 @@
  * deps
  * ====
  *
- * Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Следует использовать с осторожностью: в bem-bl не хватает зависимостей, потому проект может собраться иначе, чем с помощью bem-tools.
+ * Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`.
+ * Следует использовать с осторожностью: в bem-bl не хватает зависимостей, потому проект может собраться иначе,
+ * чем с помощью bem-tools.
  *
  * **Опции**
  *
@@ -33,6 +35,7 @@ var Vow = require('vow'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
+
     getName: function() {
         return 'deps';
     },
@@ -59,43 +62,48 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
         return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function(levels) {
             var depFiles = levels.getFilesBySuffix('deps.js');
-            if (cache.needRebuildFile('deps-file', depsTargetPath)
-                    || cache.needRebuildFile('bemdecl-file', bemdeclSourcePath)
-                    || cache.needRebuildFileList('deps-file-list', depFiles)) {
+            if (cache.needRebuildFile('deps-file', depsTargetPath) ||
+                cache.needRebuildFile('bemdecl-file', bemdeclSourcePath) ||
+                cache.needRebuildFileList('deps-file-list', depFiles)
+            ) {
                 delete require.cache[bemdeclSourcePath];
                 var bemdecl = require(bemdeclSourcePath),
                     dep = new DepsResolver(levels);
 
-                bemdecl.blocks && bemdecl.blocks.forEach(function(block) {
-                    dep.addBlock(block.name);
-                    if (block.mods) {
-                        block.mods.forEach(function(mod) {
-                            if (mod.vals) {
-                                mod.vals.forEach(function(val) {
-                                    dep.addBlock(block.name, mod.name, val.name);
-                                });
-                            }
-                        });
-                    }
-                    if (block.elems) {
-                        block.elems.forEach(function(elem){
-                            dep.addElem(block.name, elem.name);
-                            if (elem.mods) {
-                                elem.mods.forEach(function(mod) {
-                                    if (mod.vals) {
-                                        mod.vals.forEach(function(val) {
-                                            dep.addElem(block.name, elem.name, mod.name, val.name);
-                                        });
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+                if (bemdecl.blocks) {
+                    bemdecl.blocks.forEach(function(block) {
+                        dep.addBlock(block.name);
+                        if (block.mods) {
+                            block.mods.forEach(function(mod) {
+                                if (mod.vals) {
+                                    mod.vals.forEach(function(val) {
+                                        dep.addBlock(block.name, mod.name, val.name);
+                                    });
+                                }
+                            });
+                        }
+                        if (block.elems) {
+                            block.elems.forEach(function(elem){
+                                dep.addElem(block.name, elem.name);
+                                if (elem.mods) {
+                                    elem.mods.forEach(function(mod) {
+                                        if (mod.vals) {
+                                            mod.vals.forEach(function(val) {
+                                                dep.addElem(block.name, elem.name, mod.name, val.name);
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
 
-                bemdecl.deps && dep.normalizeDeps(bemdecl.deps).forEach(function(decl) {
-                    dep.addDecl(decl);
-                });
+                if (bemdecl.deps) {
+                    dep.normalizeDeps(bemdecl.deps).forEach(function(decl) {
+                        dep.addDecl(decl);
+                    });
+                }
 
                 var resolvedDeps = dep.resolve();
                 return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8').then(function() {

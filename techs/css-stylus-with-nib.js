@@ -20,8 +20,9 @@ module.exports = require('./css-stylus').buildFlow()
     .name('css-stylus-with-nib')
     .methods({
         _configureRenderer: function(renderer) {
+            var nib;
             try {
-                var nib = require('nib');
+                nib = require('nib');
             } catch (e) {
                 throw new Error('The technology "css-stylus-with-nib" cannot be executed because the npm module "nib" was not found.');
             }

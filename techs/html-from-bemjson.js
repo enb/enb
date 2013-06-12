@@ -49,9 +49,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     isRebuildRequired: function(target) {
         var cache = this.node.getNodeCache(target);
-        return cache.needRebuildFile('bemhtml-file', this.node.resolvePath(this._bemhtmlSource))
-            || cache.needRebuildFile('bemjson-file', this.node.resolvePath(this._bemjsonSource))
-            || cache.needRebuildFile('html-file', this.node.resolvePath(target));
+        return cache.needRebuildFile('bemhtml-file', this.node.resolvePath(this._bemhtmlSource)) ||
+            cache.needRebuildFile('bemjson-file', this.node.resolvePath(this._bemjsonSource)) ||
+            cache.needRebuildFile('html-file', this.node.resolvePath(target));
     },
 
     storeCache: function(target) {

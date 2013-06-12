@@ -54,8 +54,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         requirements[fromNode] = [sourceTargetName];
         return this.node.requireNodeSources(requirements).then(function(results) {
             var deps = results[fromNode][0];
-            if (cache.needRebuildFile('bemdecl-file', bemdeclTargetPath)
-                    || cache.needRebuildFile('bemdecl-source-file', sourceTargetPath)) {
+            if (cache.needRebuildFile('bemdecl-file', bemdeclTargetPath) ||
+                cache.needRebuildFile('bemdecl-source-file', sourceTargetPath)
+            ) {
                 return vowFs.read(sourceTargetPath, 'utf8').then(function(data) {
                     vowFs.write(bemdeclTargetPath, data).then(function() {
                         cache.cacheFileInfo('bemdecl-file', bemdeclTargetPath);

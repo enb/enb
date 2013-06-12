@@ -24,8 +24,9 @@ module.exports = require('./css').buildFlow()
     .name('css-less')
     .useFileList(['css', 'less'])
     .builder(function (sourceFiles) {
+        var less;
         try {
-            var less = require('less');
+            less = require('less');
         } catch (e) {
             throw new Error('The technology "css-less" cannot be executed because the npm module "less" was not found.');
         }
@@ -60,6 +61,7 @@ module.exports = require('./css').buildFlow()
                 return "url(" + this.value.toCSS() + ")";
             },
             eval: function (ctx) {
+                /*jshint -W061 */
                 var val = this.value.eval(ctx), rootpath;
                 rootpath = this.currentFileInfo && this.currentFileInfo.rootpath;
                 if (rootpath && typeof val.value === "string" && ctx.isPathRelative(val.value)) {

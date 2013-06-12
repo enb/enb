@@ -55,9 +55,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget),
             sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
         return this.node.requireSources(sourceTargets).spread(function(subtractFrom, subtractWhat) {
-            if (cache.needRebuildFile('deps-file', depsTargetPath)
-                || cache.needRebuildFile('deps-from-file', substractFromTargetPath)
-                || cache.needRebuildFile('deps-what-file', subtractWhatTargetPath)
+            if (cache.needRebuildFile('deps-file', depsTargetPath) ||
+                cache.needRebuildFile('deps-from-file', substractFromTargetPath) ||
+                cache.needRebuildFile('deps-what-file', subtractWhatTargetPath)
             ) {
                 var subtractedDeps = deps.subtract(subtractFrom, subtractWhat);
                 return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';').then(function() {

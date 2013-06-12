@@ -57,8 +57,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             _this = this,
             cache = this.node.getNodeCache(target);
         return this.node.requireSources([source]).then(function() {
-            if (cache.needRebuildFile('source-file', sourcePath)
-                    || cache.needRebuildFile('target-file', targetPath)) {
+            if (cache.needRebuildFile('source-file', sourcePath) ||
+                cache.needRebuildFile('target-file', targetPath)
+            ) {
                 var borschikProcessor = BorschikProcessorSibling.fork();
                 return Vow.when(borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify)).then(function() {
                     cache.cacheFileInfo('source-file', sourcePath);
@@ -66,7 +67,6 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     _this.node.resolveTarget(target);
                     borschikProcessor.dispose();
                 });
-
             } else {
                 _this.node.isValidTarget(target);
                 _this.node.resolveTarget(target);

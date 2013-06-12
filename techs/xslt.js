@@ -66,9 +66,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         this.node.requireSources(sources).then(function() {
             var args = (options.args || []).concat([xslFile, sourcePath]);
             // TODO: XSL Include deps tree.
-            if (cache.needRebuildFile('target-file', targetPath)
-                    || cache.needRebuildFile('source-file', sourcePath)
-                    || cache.needRebuildFile('xsl-file', xslFile)) {
+            if (cache.needRebuildFile('target-file', targetPath) ||
+                cache.needRebuildFile('source-file', sourcePath) ||
+                cache.needRebuildFile('xsl-file', xslFile)
+            ) {
                 childProcess.execFile('/usr/bin/xsltproc', args, {}, function(err, xsltStdout, stderr) {
                     if (err) return promise.reject(err);
                     vowFs.write(targetPath, xsltStdout, "utf8").then(function() {

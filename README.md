@@ -1,4 +1,4 @@
-ENB
+ENB [![Build Status](https://travis-ci.org/enb-make/enb.png?branch=master)](https://travis-ci.org/enb-make/enb)
 ===
 
 Инструментарий для работы с проектами, основанными на идеологии BEM.

@@ -58,7 +58,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * [Процесс сборки](#Процесс-сборки)
 * [Как собрать проект - пошаговое руководство](#Как-собрать-проект---пошаговое-руководство)
 * [Настройка сборки](#Настройка-сборки)
-* [Общий бандл со всех страниц](#Общий-бандл-со-всех-страниц)
+* [Сборка merged (common) бандла](#Сборка-merged-(common)-бандла)
 * [Подробное описание актуальных технологий](#Подробное-описание-актуальных-технологий)
 * [Как написать свою технологию](#Как-написать-свою-технологию)
 * [Node API](#node-api)
@@ -329,21 +329,23 @@ module.exports = function(config) {
 };
 ```
 
+Сборка merged (common) бандла
+=============================
 
-Общий бандл со всех страниц
-===========================
-
-Может возникнуть необходимость собрать common бандл, который бы включал в себе технологии с остальных страниц (css, js, ...).
+>  Merged бандл — это бандл, который объединяет в себе декларации всех бандлов уровня. Соответственно по такой объединенной декларации собираются и объединенные конечные файлы. Например, css будет включать в себе все стили, используемые всеми бандлами.
+> 
+>  Merged бандл может быть полезен, например, если вы хотите использовать общие файлы статики (js, css) для нескольких страниц проекта.
+>  (c) bem.info
 
 Одним из решений может быть:
 
-1. Проход по всем нашим страницам и копирование deps в общую (common) папку (deps-provider);
+1. Проход по всем нодам и копирование deps в общую (common) папку (см. deps-provider);
 
-2. Мердж всех депсов в один (deps-merge).
+2. Мердж всех депсов в один (см. deps-merge).
 
 Разберем на примере:
 
-Предположим у нас есть 3 страницы: 
+Предположим у нас есть 3 ноды: 
 
 * pages/index; 
 * pages/search; 
@@ -355,7 +357,8 @@ module.exports = function(config) {
 ```javascript
 // Пробегаемся по всем директориям внутри "pages"
 // ...
-config.nodeMask(/pages\/.*/, function(nodeConfig) {
+config.nodeMask(/pages\/.*/, function (nodeConfig) {
+    // Если текущая нода common
     if (nodeConfig.getPath() === 'pages/common') {
         nodeConfig.addTechs([
             [ require("enb/techs/levels"), { levels: getLevels() } ],
@@ -417,14 +420,13 @@ p.s. директория pages/common должна сущестовать (мо
 // ...
 ```
 
-Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это денамически:
+Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это динамически:
 
 Необходимо подключать модуль fs
 ```javascript
 var fs = require('fs');
 //...
 if (nodeConfig.getPath() === 'touch.bundles/common') {
-    // Общий бандл со всех страниц
     var pagesDeps = [],
         addTechsAttrs = [
             [ require("enb/techs/levels"), { levels: getLevels() } ],
@@ -435,7 +437,7 @@ if (nodeConfig.getPath() === 'touch.bundles/common') {
         ];
 
     // Проходимся по существующим страницам
-    fs.readdirSync('touch.bundles').map(function(page){
+    fs.readdirSync('touch.bundles').map(function (page) {
         if (page !== 'common' && fs.existsSync('touch.bundles/' + page + '/' + page + '.deps.js')) {
             // Копируем депсы с каджой страницы внутрь common
             addTechsAttrs.push([ require('enb/techs/deps-provider'), { sourceNodePath: 'touch.bundles/' + page, depsTarget: page + '.deps.js' } ]);
@@ -444,7 +446,7 @@ if (nodeConfig.getPath() === 'touch.bundles/common') {
         }
     });
 
-    // Склеиваем все полученные депмы в один - common.deps.js
+    // Мерджим все полученные депмы в один - common.deps.js
     addTechsAttrs.push([ require('enb/techs/deps-merge'), { depsSources: pagesDeps } ]);
 
     // прокидываем атрибуты
@@ -453,7 +455,6 @@ if (nodeConfig.getPath() === 'touch.bundles/common') {
 }
 //...
 ```
-
 
 
 Подробное описание актуальных технологий

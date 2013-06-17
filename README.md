@@ -58,6 +58,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * [Процесс сборки](#Процесс-сборки)
 * [Как собрать проект - пошаговое руководство](#Как-собрать-проект---пошаговое-руководство)
 * [Настройка сборки](#Настройка-сборки)
+* [Сборка merged (common) бандла](#Сборка-merged-(common)-бандла)
 * [Подробное описание актуальных технологий](#Подробное-описание-актуальных-технологий)
 * [Как написать свою технологию](#Как-написать-свою-технологию)
 * [Node API](#node-api)
@@ -326,6 +327,133 @@ module.exports = function(config) {
       TANKER_PRJ_REV  : 'master'
   });
 };
+```
+
+Сборка merged (common) бандла
+=============================
+
+>  Merged бандл — это бандл, который объединяет в себе декларации всех бандлов уровня. Соответственно по такой объединенной декларации собираются и объединенные конечные файлы. Например, css будет включать в себе все стили, используемые всеми бандлами.
+> 
+>  Merged бандл может быть полезен, например, если вы хотите использовать общие файлы статики (js, css) для нескольких страниц проекта.
+>  (c) bem.info
+
+Одним из решений может быть:
+
+1. Проход по всем нодам и копирование deps в общую (common) папку (см. deps-provider);
+
+2. Мердж всех депсов в один (см. deps-merge).
+
+Разберем на примере:
+
+Предположим у нас есть 3 ноды: 
+
+* pages/index; 
+* pages/search; 
+* pages/order.
+
+У каждой страницы свои уникальными стили и скрипты. Нам нужно собрать общий js и css с этих страниц и положить их внутрь pages/common/ как common.js и common.css соответственно.
+
+
+```javascript
+// Пробегаемся по всем директориям внутри "pages"
+// ...
+config.nodeMask(/pages\/.*/, function (nodeConfig) {
+    // Если текущая нода common
+    if (nodeConfig.getPath() === 'pages/common') {
+        nodeConfig.addTechs([
+            [ require("enb/techs/levels"), { levels: getLevels() } ],
+            require("enb/techs/files"),
+
+            // Копируем депсы с каждоый страницы внутрь текущей ноды (pages/common)
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/search', depsTarget: 'search.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/order', depsTarget: 'order.deps.js' } ],
+
+            // Склеиваем наши депсы в один (common.deps.js)
+            [ require('enb/techs/deps-merge'), { depsSources: ['index.deps.js', 'search.deps.js', 'order.deps.js'] } ],
+
+            require("enb/techs/js"),
+            require("enb/techs/css"),
+            require("enb/techs/css-ie9")
+        ]);
+        // Собираем необходимые файлы
+        nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css"]);
+    } else {
+        nodeConfig.addTechs([
+            [ require("enb/techs/levels"), { levels: getLevels() } ],
+            [ require("enb/techs/file-provider"), { target: "?.bemjson.js" } ],
+            require("enb/techs/bemdecl-from-bemjson"),
+            require("enb/techs/deps-old"),
+            require("enb/techs/files"),
+            require("enb-bemhtml/techs/bemhtml"),
+            require("enb/techs/html-from-bemjson"),
+            require("enb/techs/js"),
+            [ require("enb/techs/i18n-merge-keysets"), { lang: "all" }],
+            [ require("enb/techs/i18n-merge-keysets"), { lang: "{lang}" }],
+            [ require("enb/techs/i18n-lang-js"), { lang: "all" } ],
+            [ require("enb/techs/i18n-lang-js"), { lang: "{lang}" } ],
+            [ require("enb/techs/js-i18n"), { lang: "{lang}" } ],
+            require("enb/techs/css"),
+            require("enb/techs/css-ie9")
+        ]);
+        nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css", "?.html"]);
+    }
+
+    function getLevels() {
+        return [
+            {"path":"bem-bl/blocks-common","check":false},
+            {"path":"bem-bl/blocks-touch","check":false},
+            {"path":"blocks","check":true}
+        ].map(function(l) { return config.resolvePath(l); });
+    }
+});
+// ...
+```
+
+p.s. директория pages/common должна сущестовать (можно создавать динамически)
+```javascript
+// ...
+  // Создание директории common
+  if (!fs.existsSync('pages/common')) {
+      fs.mkdirSync('pages/common');
+  }
+// ...
+```
+
+Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это динамически:
+
+Необходимо подключать модуль fs
+```javascript
+var fs = require('fs');
+//...
+if (nodeConfig.getPath() === 'touch.bundles/common') {
+    var pagesDeps = [],
+        addTechsAttrs = [
+            [ require("enb/techs/levels"), { levels: getLevels() } ],
+            require("enb/techs/files"),
+            require("enb/techs/js"),
+            require("enb/techs/css"),
+            require("enb/techs/css-ie9")
+        ];
+
+    // Проходимся по существующим страницам
+    fs.readdirSync('touch.bundles').map(function (page) {
+        if (page !== 'common' && fs.existsSync('touch.bundles/' + page + '/' + page + '.deps.js')) {
+            // Копируем депсы с каджой страницы внутрь common
+            addTechsAttrs.push([ require('enb/techs/deps-provider'), { sourceNodePath: 'touch.bundles/' + page, depsTarget: page + '.deps.js' } ]);
+
+            pagesDeps.push(page + '.deps.js');
+        }
+    });
+
+    // Мерджим все полученные депмы в один - common.deps.js
+    addTechsAttrs.push([ require('enb/techs/deps-merge'), { depsSources: pagesDeps } ]);
+
+    // прокидываем атрибуты
+    nodeConfig.addTechs(addTechsAttrs);
+    nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css"]);
+}
+//...
 ```
 
 

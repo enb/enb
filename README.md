@@ -187,10 +187,10 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
-          require('enb/techs/deps-old')(),
-          require('enb/techs/files')(),
-          require('enb/techs/js')(),
-          require('enb/techs/css')(),
+          require('enb/techs/deps-old'),
+          require('enb/techs/files'),
+          require('enb/techs/js'),
+          require('enb/techs/css'),
           [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
           [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
         ]);
@@ -250,7 +250,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
       ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
-  Теперь для production-режима (который запускается командой `YENV=production node_modules/.bin/enb make`) конечные файлы обрабатываются Борщиком (https://github.com/veged/borschik).
+  Теперь для production-режима (который запускается командой `YENV=production node_modules/.bin/enb make`) конечные файлы обрабатываются Борщиком (https://github.com/bem/borschik).
 
 11. Сборка js и css работает. Если в вашем проекте присутствуют другие цели или мультиязычность, то можно продолжить чтение данной документации в поисках информации о небходимых технологиях.
 12. Собираем `node_modules/.bin/enb make`.
@@ -1387,7 +1387,7 @@ pub-js-i18n
 
 **Опции**
 
-* *String* **target** — Результирующий `priv.js`-файл. По умолчанию — `?.all.priv.js`.
+* *String* **target** — Результирующий `pub.js`-файл. По умолчанию — `?.all.pub.js`.
 * *String* **jsTarget** — Исходный `js`-файл. По умолчанию — `?.js`.
 * *String* **lang** — Язык. Обязательная опция.
 * *Array* **langTarget** — `lang.js`-файл конкретного языка. Например, `?.lang.ru.js`. По умолчанию — `?.lang.{lang}.js`.

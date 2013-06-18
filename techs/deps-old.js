@@ -75,7 +75,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                         cache.cacheFileList('deps-file-list', depFiles);
                         _this.node.resolveTarget(depsTarget, resolvedDeps);
                     });
-                });
+                }));
             } else {
                 _this.node.isValidTarget(depsTarget);
                 delete require.cache[depsTargetPath];

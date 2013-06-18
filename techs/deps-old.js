@@ -1,30 +1,30 @@
 /**
-* deps-old
-* ========
-*
-* Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
-*
-* **Опции**
-*
-* * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
-* * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
-* * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
-*
-* **Пример**
-*
-* Обычное использование:
-* ```javascript
-* nodeConfig.addTech(require('enb/techs/deps-old'));
-* ```
-*
-* Сборка специфического deps:
-* ```javascript
-* nodeConfig.addTech([ require('enb/techs/deps-old'), {
-* bemdeclTarget: 'search.bemdecl.js',
-* depsTarget: 'search.deps.js'
-* } ]);
-* ```
-*/
+ * deps-old
+ * ========
+ *
+ * Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
+ *
+ * **Опции**
+ *
+ * * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
+ * * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
+ * * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
+ *
+ * **Пример**
+ *
+ * Обычное использование:
+ * ```javascript
+ * nodeConfig.addTech(require('enb/techs/deps-old'));
+ * ```
+ *
+ * Сборка специфического deps:
+ * ```javascript
+ * nodeConfig.addTech([ require('enb/techs/deps-old'), {
+ * bemdeclTarget: 'search.bemdecl.js',
+ * depsTarget: 'search.deps.js'
+ * } ]);
+ * ```
+ */
 var Vow = require('vow'),
     fs = require('graceful-fs'),
     vm = require('vm'),

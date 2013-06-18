@@ -55,9 +55,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         delete require.cache[bemhtmlFile];
         var bemhtml = require(bemhtmlFile);
         delete require.cache[allLangFile];
-        var allLang = require(allLangFile);
+        require(allLangFile);
         delete require.cache[langFile];
-        var lang = require(langFile);
+        require(langFile);
 
         var global = bemhtml.lib && bemhtml.lib.global;
         if (global) {

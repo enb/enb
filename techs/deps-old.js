@@ -1,35 +1,36 @@
 /**
- * deps-old
- * ========
- *
- * Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
- *
- * **Опции**
- *
- * * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
- * * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
- * * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
- *
- * **Пример**
- *
- * Обычное использование:
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/deps-old'));
- * ```
- *
- * Сборка специфического deps:
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/deps-old'), {
- *   bemdeclTarget: 'search.bemdecl.js',
- *   depsTarget: 'search.deps.js'
- * } ]);
- * ```
- */
+* deps-old
+* ========
+*
+* Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
+*
+* **Опции**
+*
+* * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
+* * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
+* * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
+*
+* **Пример**
+*
+* Обычное использование:
+* ```javascript
+* nodeConfig.addTech(require('enb/techs/deps-old'));
+* ```
+*
+* Сборка специфического deps:
+* ```javascript
+* nodeConfig.addTech([ require('enb/techs/deps-old'), {
+* bemdeclTarget: 'search.bemdecl.js',
+* depsTarget: 'search.deps.js'
+* } ]);
+* ```
+*/
 var Vow = require('vow'),
     fs = require('graceful-fs'),
     vm = require('vm'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),
+    deps = require('../lib/deps/deps'),
     OldDeps = require('../exlib/deps').OldDeps;
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
@@ -64,7 +65,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFileList('deps-file-list', depFiles)
             ) {
                 var bemdecl = require(bemdeclSourcePath);
-                return (new OldDeps(bemdecl.blocks || bemdecl.deps)).expandByFS({
+                return (new OldDeps(deps.toBemdecl(bemdecl)).expandByFS({
                     levels: levels
                 }).then(function(resolvedDeps) {
                     resolvedDeps = resolvedDeps.getDeps();
@@ -74,7 +75,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                         cache.cacheFileList('deps-file-list', depFiles);
                         _this.node.resolveTarget(depsTarget, resolvedDeps);
                     });
-                });
+                }));
             } else {
                 _this.node.isValidTarget(depsTarget);
                 delete require.cache[depsTargetPath];

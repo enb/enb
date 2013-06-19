@@ -6,7 +6,7 @@
  *
  * **Опции**
  *
- * * *String* **target** — Результирующий `priv.js`-файл. По умолчанию — `?.all.priv.js`.
+ * * *String* **target** — Результирующий `pub.js`-файл. По умолчанию — `?.all.pub.js`.
  * * *String* **jsTarget** — Исходный `js`-файл. По умолчанию — `?.js`.
  * * *String* **lang** — Язык. Обязательная опция.
  * * *Array* **langTarget** — `lang.js`-файл конкретного языка. Например, `?.lang.ru.js`. По умолчанию — `?.lang.{lang}.js`.

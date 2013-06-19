@@ -7,7 +7,7 @@
  * **Опции**
  *
  * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
- * * *String* **cssSources** — Суффиксы файлов для сборки. По умолчанию `css`.
+ * * *String* **sourceSuffixes** — Суффиксы файлов для сборки. По умолчанию `css`.
  * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
  *
  * **Пример**
@@ -22,7 +22,7 @@ var inherit = require('inherit'),
 module.exports = require('../lib/build-flow').create()
     .name('css-includes')
     .target('target', '?.css')
-    .useFileList('cssSources', 'css')
+    .useFileList('css')
     .builder(function(cssFiles) {
         var node = this.node;
         return cssFiles.map(function(file) {

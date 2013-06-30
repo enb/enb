@@ -62,7 +62,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 targetsToWaitFor.push(match[1]);
             }
         }
-        return Vow.when(targetsToWaitFor.length? this.node.requireSources(targetsToWaitFor) : null)
+        return Vow.when(targetsToWaitFor.length ? this.node.requireSources(targetsToWaitFor) : null)
             .then(function() {
                 return _this._processIncludes(data, filename);
             });

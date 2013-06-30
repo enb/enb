@@ -13,7 +13,7 @@
  */
 function mergeDecls(d1, d2) {
     var keys = {};
-    d1?
+    d1 ?
         d1.forEach(function(o) { keys[o.name || o] = o }) :
         d1 = [];
 
@@ -51,10 +51,10 @@ function isSimple(obj) {
  * @returns {Object}
  */
 function iterateJson(obj, fn) {
-    if(obj && !isSimple(obj))
-        if(Array.isArray(obj)) {
+    if (obj && !isSimple(obj))
+        if (Array.isArray(obj)) {
             var i = 0, l = obj.length;
-            while(i < l) iterateJson(obj[i++], fn);
+            while (i < l) iterateJson(obj[i++], fn);
         } else fn(obj);
     return obj;
 }
@@ -66,16 +66,16 @@ function getBuilder(decl, block) {
         obj.block && decl.push({ name: block });
         obj.elem && decl.push({ name: block, elems: [{ name: obj.elem }] });
         var mods, n, props;
-        if(mods = obj.mods)
-            for(n in mods)
-                if(mods.hasOwnProperty(n))
+        if (mods = obj.mods)
+            for (n in mods)
+                if (mods.hasOwnProperty(n))
                     decl.push({
                         name: block,
                         mods: [{ name: n, vals: [ { name: mods[n] } ] }]
                     });
-        if(obj.elem && (mods = obj.elemMods))
-            for(n in mods)
-                if(mods.hasOwnProperty(n))
+        if (obj.elem && (mods = obj.elemMods))
+            for (n in mods)
+                if (mods.hasOwnProperty(n))
                     decl.push({
                         name: block,
                         elems: [{

@@ -14,7 +14,7 @@ module.exports = require('../lib/build-flow').create()
     .builder(function(testFiles) {
         var fileMask = this._fileMask;
         testFiles = testFiles.filter(
-            typeof fileMask == 'function' ? fileMask : function(file) {
+            typeof fileMask === 'function' ? fileMask : function(file) {
                 return fileMask.test(file.fullname);
             });
         return Vow.all(testFiles.map(function(file) {

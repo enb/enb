@@ -32,19 +32,30 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     configure: function() {
         this._bemhtmlSource = this.node.unmaskTargetName(
-            this.getOption('bemhtmlTarget', this.node.getTargetName('bemhtml.js')));
+            this.getOption('bemhtmlTarget', this.node.getTargetName('bemhtml.js'))
+        );
 
         this._bemjsonSource = this.node.unmaskTargetName(
-            this.getOption('bemjsonTarget', this.node.getTargetName('bemjson.js')));
+            this.getOption('bemjsonTarget', this.node.getTargetName('bemjson.js'))
+        );
 
         this._allLangSource = this.node.unmaskTargetName(
-            this.getOption('langAllTarget', this.node.getTargetName('lang.all.js')));
+            this.getOption('langAllTarget', this.node.getTargetName('lang.all.js'))
+        );
 
         this._langSource = this.node.unmaskTargetName(
-            this.getOption('langTarget', this.node.getTargetName('lang.'+this.getOption('lang', this.node.getLanguages()[0])+'.js')));
+            this.getOption(
+                'langTarget',
+                this.node.getTargetName('lang.' + this.getOption('lang', this.node.getLanguages()[0]) + '.js')
+            )
+        );
 
         this._target = this.node.unmaskTargetName(
-            this.getOption('destTarget', this.node.getTargetName(this.getOption('lang', this.node.getLanguages()[0])+ '.html')));
+            this.getOption(
+                'destTarget',
+                this.node.getTargetName(this.getOption('lang', this.node.getLanguages()[0]) + '.html')
+            )
+        );
     },
 
     getTargets: function() {

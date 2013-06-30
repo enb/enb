@@ -66,7 +66,7 @@ module.exports = require('./css').buildFlow()
                 rootpath = this.currentFileInfo && this.currentFileInfo.rootpath;
                 if (rootpath && typeof val.value === "string" && ctx.isPathRelative(val.value)) {
                     if (!val.quote) {
-                        rootpath = rootpath.replace(/[\(\)'"\s]/g, function(match) { return "\\"+match; });
+                        rootpath = rootpath.replace(/[\(\)'"\s]/g, function(match) { return "\\" + match; });
                     }
                     var urlFilename = path.resolve(
                         path.dirname(this.currentFileInfo.filename),

@@ -14,13 +14,13 @@ var DOM = require('dom-js'),
 
     isJson = function(obj) {
         try {
-            if(isString(obj)) {
+            if (isString(obj)) {
                 var jsonStart = obj.trim().charAt(0);
-                if(jsonStart === '{' || jsonStart === '[')
+                if (jsonStart === '{' || jsonStart === '[')
                     return JSON.parse(obj);
             }
             return false;
-        } catch(e) {
+        } catch (e) {
             return false;
         }
     },
@@ -39,10 +39,10 @@ var parseXml = exports.parseXml = function(xml, cb) {
 
         try {
             new DOM.DomJS().parse('<root>' + xml + '</root>', function(err, dom) {
-                if(err) return;
+                if (err) return;
                 cb(dom.children);
             });
-        } catch(e) {
+        } catch (e) {
             parseXml(DOM.escape(xml), cb);
         }
 
@@ -71,10 +71,10 @@ exports.xmlToJs = function(xml, cb) {
  */
 function expandNodes(node, expanderFn) {
 
-    if(isSimple(node)) return node;
+    if (isSimple(node)) return node;
 
     return node.map(function(item) {
-        return isSimple(item)? item : expanderFn(item);
+        return isSimple(item) ? item : expanderFn(item);
     });
 
 }
@@ -94,7 +94,7 @@ function jsExpander(node, _raw) {
             return jsExpander(node, true);
         };
 
-    if(!node) {
+    if (!node) {
         // FIXME: should we throw?
         console.warn('[WARN]: Undefined item');
         return '';
@@ -103,7 +103,7 @@ function jsExpander(node, _raw) {
     var nodeclass = node.pop(),
         code;
 
-    switch(nodeclass) {
+    switch (nodeclass) {
 
     case 'TANKER_DYNAMIC':
         // [ keyset, key, [params] ]
@@ -128,13 +128,13 @@ function jsExpander(node, _raw) {
 
         code = [];
 
-        for(c in attrs) { prop.push([c, SINGLE_QUOTE_CHAR + attrs[c] + SINGLE_QUOTE_CHAR].join('=')); };
-        prop = prop.length? jsQuote(' ' + prop.join(' ')) : '';
+        for (c in attrs) { prop.push([c, SINGLE_QUOTE_CHAR + attrs[c] + SINGLE_QUOTE_CHAR].join('=')); };
+        prop = prop.length ? jsQuote(' ' + prop.join(' ')) : '';
 
         c = '';
         t = '"<' + tag + prop;
 
-        if(node[2].length) {
+        if (node[2].length) {
             s = ' + ';
 
             t += '>"';
@@ -185,12 +185,11 @@ function toCommonNodes(nodes) {
     var code = [];
 
     nodes.forEach(function(node) {
-        if(node.name) {
+        if (node.name) {
             code.push(_node(node));
-        }
-        else if(node.text) {
+        } else if (node.text) {
             var text = _json(node.text);
-            if(text) code.push(text);
+            if (text) code.push(text);
         }
     });
 
@@ -204,11 +203,11 @@ function toCommonNodes(nodes) {
  */
 function _text(str) {
 
-    if(!isSimple(str)) return '';
+    if (!isSimple(str)) return '';
 
     str = str.replace(/\n\s\s+/g, '\n ');
 
-    if(!str.length) return '';
+    if (!str.length) return '';
 
     return [str, 'TEXT'];
 
@@ -228,11 +227,11 @@ function _empty() {
 function _node(node) {
 
     var name = node.name;
-    switch(name) {
+    switch (name) {
 
     case 'i18n:dynamic':
         var attrs = node.attributes;
-        if(attrs && attrs.key) {
+        if (attrs && attrs.key) {
             // tanker dynamic
             var keyset = _keyset(attrs),
                 params = _params(node.children);
@@ -245,12 +244,12 @@ function _node(node) {
         return _dynamic(node.children);
 
     case 'i18n:param':
-        if(node.firstChild())
+        if (node.firstChild())
             return _paramCall(node.children[0]);
 
     }
 
-    if(!~name.indexOf(':'))
+    if (!~name.indexOf(':'))
         return _xml(node);
 
 }
@@ -270,10 +269,10 @@ function _xml(node) {
 function _json(nodes) {
 
     var json;
-    if(!(json = isJson(nodes)))
+    if (!(json = isJson(nodes)))
         return _text(nodes);
 
-    if(isArray(json)) {
+    if (isArray(json)) {
         // FIXME: array should always produce `plural_adv`?
         // FIXME: `none` value for json
         var params = [
@@ -304,15 +303,15 @@ function _dynamic(nodes) {
     nodes.forEach(function(node) {
         var name = node.name;
 
-        if(name === 'i18n:js') {
+        if (name === 'i18n:js') {
             code.push([toCommonNodes(node.children), 'JS_DYNAMIC']);
-        //} else if(name === 'i18n:xsl') {
+        //} else if (name === 'i18n:xsl') {
         //    code.push([toCommonNodes(node.children), 'XSL_DYNAMIC']);
         }
 
     });
 
-    return code.length === 1? code[0] : code;
+    return code.length === 1 ? code[0] : code;
 
 }
 
@@ -325,7 +324,7 @@ function _params(nodes) {
     var params = [];
 
     nodes.forEach(function(node) {
-        if(!node.name) return;
+        if (!node.name) return;
         params.push(_param(node));
     });
 
@@ -373,7 +372,7 @@ function jsQuote(s) {
 }
 
 function quotify(str) {
-    if(isString(str))
+    if (isString(str))
        return QUOTE_CHAR + str + QUOTE_CHAR;
     return str;
 }

@@ -37,7 +37,7 @@ module.exports = require('../lib/build-flow.js').create()
             langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function(dir) {
                 return dir.files;
             })).filter(function(fileInfo) {
-                return fileInfo.name == langJs;
+                return fileInfo.name === langJs;
             });
 
         var result = {};

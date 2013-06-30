@@ -54,7 +54,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache = this.node.getNodeCache(target);
             for (var i = 0, l = this._levelConfig.length; i < l; i++) {
                 var levelInfo = this._levelConfig[i];
-                levelInfo = typeof levelInfo == 'object' ? levelInfo : {path: levelInfo};
+                levelInfo = typeof levelInfo === 'object' ? levelInfo : {path: levelInfo};
                 var
                     levelPath = levelInfo.path,
                     levelKey = 'level:' + levelPath;

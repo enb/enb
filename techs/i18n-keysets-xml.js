@@ -42,7 +42,7 @@ module.exports = require('../lib/build-flow').create()
                 var value = keyset[key], dom = new domjs.DomJS();
                 try {
                     dom.parse('<root>' + value + '</root>', function() {});
-                } catch(e) {
+                } catch (e) {
                     value = domjs.escape(value);
                 }
                 res.push('<key id="' + key + '">');

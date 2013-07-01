@@ -2,7 +2,8 @@
  * deps-subtract
  * =============
  *
- * Формирует *deps* с помощью вычитания одного deps-файла из другого. Может применяться в паре с `deps-provider` для получения deps для bembundle.
+ * Формирует *deps* с помощью вычитания одного deps-файла из другого.
+ * Может применяться в паре с `deps-provider` для получения deps для bembundle.
  *
  * **Опции**
  *
@@ -60,7 +61,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('deps-what-file', subtractWhatTargetPath)
             ) {
                 var subtractedDeps = deps.subtract(subtractFrom, subtractWhat);
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';').then(function() {
+                return vowFs.write(
+                    depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';'
+                ).then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('deps-from-file', substractFromTargetPath);
                     cache.cacheFileInfo('deps-what-file', subtractWhatTargetPath);

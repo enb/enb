@@ -55,9 +55,18 @@ describe('lib', function() {
                     return cssPreprocessor.preprocess('div { background: url(//ya.ru/1.png); }', '1.css');
                 }).then(function(css) {
                     css.should.equal('div { background: url(//ya.ru/1.png); }');
-                    return cssPreprocessor.preprocess('div { background: url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC\'); }', '1.css');
+                    return cssPreprocessor.preprocess(
+                        'div { background: url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0i' +
+                        'AAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA' +
+                        '/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC\'); }',
+                        '1.css'
+                    );
                 }).then(function(css) {
-                    css.should.equal('div { background: url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC\'); }');
+                    css.should.equal(
+                        'div { background: url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0i' +
+                        'AAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA' +
+                        '/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC\'); }'
+                    );
                     next();
                 }).fail(function(e) {
                     next(e);

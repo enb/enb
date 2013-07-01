@@ -6,6 +6,7 @@
     "disallow_left_sticked_operators": ["?", "+", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
     "disallow_right_sticked_operators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
     "require_right_sticked_operators": ["!"],
+    "require_line_feed_at_file_end": true,
     "exclude_files": [
         "node_modules",
         "tools"

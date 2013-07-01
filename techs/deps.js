@@ -106,7 +106,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 }
 
                 var resolvedDeps = dep.resolve();
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8').then(function() {
+                return vowFs.write(
+                    depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8'
+                ).then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
                     cache.cacheFileList('deps-file-list', depFiles);

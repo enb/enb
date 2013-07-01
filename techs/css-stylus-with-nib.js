@@ -1,13 +1,15 @@
 /**
  * css-stylus-with-nib
  * ===================
+ *
  * Собирает *css*-файлы вместе со *styl*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
  * При сборке *styl*-файлов использует `nib`.
  *
  * **Опции**
  *
  * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
+ *   (его предоставляет технология `files`). По умолчанию — `?.files`.
  *
  * **Пример**
  *
@@ -24,7 +26,10 @@ module.exports = require('./css-stylus').buildFlow()
             try {
                 nib = require('nib');
             } catch (e) {
-                throw new Error('The technology "css-stylus-with-nib" cannot be executed because the npm module "nib" was not found.');
+                throw new Error(
+                    'The technology "css-stylus-with-nib" cannot be executed ' +
+                    'because the npm module "nib" was not found.'
+                );
             }
 
             renderer.use(nib());

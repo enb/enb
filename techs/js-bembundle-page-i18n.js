@@ -4,12 +4,15 @@
  *
  * Собирает страничный `?.<язык>.js`-файл из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
  *
- * Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+ * Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`,
+ * `css-chunks` для построения догружаемой части функционала сайта.
  *
  * **Опции**
  *
- * * *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
- * * *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
+ * * *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки.
+ *   По умолчанию — `[ '?.css-chunks.js' ]`.
+ * * *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки.
+ *   По умолчанию — `[ '?.js-chunks.js' ]`.
  * * *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.{lang}.js`.
  * * *String* **lang** — Язык, для которого небходимо собрать файл.
  *

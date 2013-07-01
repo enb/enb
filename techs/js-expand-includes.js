@@ -2,7 +2,8 @@
  * js-expand-includes
  * ==================
  *
- * Обрабатывает инклуды в исходном `js`-файле и собирает результирующий файл. При раскрытии инклудов, если имя подключенного файла является таргетом, то ждет его выполнения.
+ * Обрабатывает инклуды в исходном `js`-файле и собирает результирующий файл.
+ * При раскрытии инклудов, если имя подключенного файла является таргетом, то ждет его выполнения.
  *
  * **Опции**
  *
@@ -12,7 +13,10 @@
  * **Пример**
  *
  * ```javascript
- * nodeConfig.addTech([ require('enb/techs/js-expand-includes'), { sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' } ]);
+ * nodeConfig.addTech([
+ *    require('enb/techs/js-expand-includes'),
+ *    { sourceTarget: '?.run-tests.js', destTarget: '_?.run-tests.js' }
+ * ]);
  * ```
  */
 var fs = require('graceful-fs'),

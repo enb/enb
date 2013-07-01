@@ -66,10 +66,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     var fileDeps = vm.runInThisContext(fs.readFileSync(file.fullname, "utf8"));
                     var allDeps = [];
                     if (fileDeps.mustDeps) {
-                        allDeps = allDeps.concat(depsResolver.normalizeDeps(fileDeps.mustDeps, fileDecl.block, fileDecl.elem));
+                        allDeps = allDeps.concat(
+                            depsResolver.normalizeDeps(fileDeps.mustDeps, fileDecl.block, fileDecl.elem)
+                        );
                     }
                     if (fileDeps.shouldDeps) {
-                        allDeps = allDeps.concat(depsResolver.normalizeDeps(fileDeps.shouldDeps, fileDecl.block, fileDecl.elem));
+                        allDeps = allDeps.concat(
+                            depsResolver.normalizeDeps(fileDeps.shouldDeps, fileDecl.block, fileDecl.elem)
+                        );
                     }
                     allDeps.forEach(function(dep) {
                         dep.block = dep.name;

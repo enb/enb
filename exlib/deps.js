@@ -11,20 +11,38 @@ var vm = require('vm');
 var Vow = require('vow');
 
 module.exports.OldDeps = (function() {
-    var Deps = inherit({
+    /**
+     * Класс, раскрывающий зависимости. Взят из bem-tools.
+     *
+     * @name OldDeps
+     */
+    var OldDeps = inherit({
 
+        /**
+         * Конструктор.
+         * Принимает блоки из bemdecl.
+         *
+         * @param {Array} deps
+         */
         __constructor: function(deps) {
             this.items = {};
             this.itemsByOrder = [];
             this.uniqExpand = {};
 
             // Force adding of root item to this.items
-            var rootItem = this.rootItem = new DepsItem({});
+            var rootItem = this.rootItem = new OldDepsItem({});
             this.items[rootItem.buildKey()] = rootItem;
 
             deps && this.parse(deps);
         },
 
+        /**
+         * Добавляет зависимость в коллекцию.
+         *
+         * @param {OldDepsItem} target
+         * @param {String} depsType shouldDeps/mustDeps
+         * @param {OldDepsItem} item
+         */
         add: function(target, depsType, item) {
             var items = this.items,
                 targetKey = target.buildKey(),
@@ -38,6 +56,12 @@ module.exports.OldDeps = (function() {
             (items[targetKey] || (items[targetKey] = target))[depsType].push(itemKey);
         },
 
+        /**
+         * Удаляет зависимость из коллекции.
+         *
+         * @param {OldDepsItem} target
+         * @param {OldDepsItem} item
+         */
         remove: function(target, item) {
             target = this.items[target.buildKey()];
             var itemKey = item.buildKey();
@@ -45,6 +69,12 @@ module.exports.OldDeps = (function() {
             removeFromArray(target.mustDeps, itemKey);
         },
 
+        /**
+         * Клонирует резолвер зависимостей.
+         *
+         * @param {OldDeps} target
+         * @returns {OldDeps}
+         */
         clone: function(target) {
             target || (target = new this.__self());
 
@@ -61,6 +91,14 @@ module.exports.OldDeps = (function() {
             return target;
         },
 
+        /**
+         * Разбирает bemdecl.
+         *
+         * @param {Array} deps
+         * @param {Object} ctx
+         * @param {Function} fn
+         * @returns {OldDeps}
+         */
         parse: function(deps, ctx, fn) {
             fn || (fn = function(i) { this.add(this.rootItem, 'shouldDeps', i) });
 
@@ -75,7 +113,7 @@ module.exports.OldDeps = (function() {
                         }
                         item.name && (item[type] = item.name);
 
-                        var depsItem = new DepsItem(item, ctx);
+                        var depsItem = new OldDepsItem(item, ctx);
 
                         fn.call(_this, depsItem); // _this.add(rootItem, 'shouldDeps', depsItem);
 
@@ -120,6 +158,12 @@ module.exports.OldDeps = (function() {
             return this;
         },
 
+        /**
+         * Раскрывает зависимости, используя deps.js-файлы.
+         *
+         * @param {String} tech
+         * @returns {Promise}
+         */
         expandByFS: function(tech) {
 
             this.tech = tech;
@@ -143,6 +187,11 @@ module.exports.OldDeps = (function() {
 
         },
 
+        /**
+         * Раскрывает зависимости, используя deps.js-файлы без повторений.
+         *
+         * @returns {Promise}
+         */
         expandOnceByFS: function() {
 
             var newDeps = this.clone(),
@@ -160,13 +209,18 @@ module.exports.OldDeps = (function() {
             return newDeps;
         },
 
+        /**
+         * Раскрывает одну зависимость, используя deps.js-файлы.
+         *
+         * @param {OldDepsItem} item
+         */
         expandItemByFS: function(item) {
 
             var _this = this,
                 tech = this.tech;
 
             var files = tech.levels.getFilesByDecl(item.item.block, item.item.elem, item.item.mod, item.item.val)
-                .filter(function(file) { return file.suffix == 'deps.js'; });
+                .filter(function(file) { return file.suffix === 'deps.js'; });
 
             files.forEach(function(file) {
                 var content = fs.readFileSync(file.fullname, 'utf8');
@@ -178,6 +232,12 @@ module.exports.OldDeps = (function() {
             });
         },
 
+        /**
+         * Вычитает зависимости из переданного OldDeps.
+         *
+         * @param {OldDeps} deps
+         * @returns {OldDeps}
+         */
         subtract: function(deps) {
             var items1 = this.items,
                 items2 = deps.items;
@@ -187,6 +247,11 @@ module.exports.OldDeps = (function() {
             return this;
         },
 
+        /**
+         *
+         * @param deps
+         * @returns {*}
+         */
         intersect: function(deps) {
             var items1 = this.items,
                 items2 = deps.items,
@@ -276,7 +341,12 @@ module.exports.OldDeps = (function() {
 
     });
 
-    var DepsItem = exports.DepsItem = inherit({
+    /**
+     * Элемент зависимостей.
+     *
+     * @name OldDepsItem
+     */
+    var OldDepsItem = inherit({
 
         __constructor: function(item, ctx) {
             this.shouldDeps = [];
@@ -364,22 +434,45 @@ module.exports.OldDeps = (function() {
 
     });
 
-    function isSimple(o) {
-        var t = typeof o;
+    exports.DepsItem = OldDepsItem;
+
+    /**
+     * Возвращает true при String/Number.
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    function isSimple(value) {
+        var t = typeof value;
         return t === 'string' || t === 'number';
     }
 
-    function removeFromArray(arr, o) {
-        var i = arr.indexOf(o);
-        return i >= 0 ?
-            (arr.splice(i, 1), true) :
-            false
+    /**
+     * Хэлпер для удаления значений из массива.
+     * Возвращает true в случае успеха.
+     *
+     * @param {Array} arr
+     * @param {*} value
+     * @returns {Boolean}
+     */
+    function removeFromArray(arr, value) {
+        var i = arr.indexOf(value);
+        if (i >= 0) {
+            arr.splice(i, 1);
+            return true;
+        } else {
+            return false;
+        }
     }
 
+    /**
+     * Возвращает true, если переданный объект пуст.
+     * @param {Object} obj
+     * @returns {Boolean}
+     */
     function isEmptyObject(obj) {
         for (var i in obj) return false;
         return true;
     }
 
-    return Deps;
+    return OldDeps;
 })();

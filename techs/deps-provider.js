@@ -2,13 +2,16 @@
  * deps-provider
  * =============
  *
- * Копирует *deps* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения deps'ов.
+ * Копирует *deps* в текущую ноду под нужным именем из другой ноды.
+ * Может понадобиться, например, для объединения deps'ов.
  *
  * **Опции**
  *
  * * *String* **sourceNodePath** — Путь исходной ноды с нужным deps'ом. Обязательная опция.
- * * *String* **sourceTarget** — Исходный deps, который будет копироваться. По умолчанию — `?.deps.js` (демаскируется в рамках исходной ноды).
- * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js` (демаскируется в рамках текущей ноды).
+ * * *String* **sourceTarget** — Исходный deps, который будет копироваться.
+ *   По умолчанию — `?.deps.js` (демаскируется в рамках исходной ноды).
+ * * *String* **depsTarget** — Результирующий deps-таргет.
+ *   По умолчанию — `?.deps.js` (демаскируется в рамках текущей ноды).
  *
  * **Пример**
  *
@@ -54,8 +57,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         requirements[fromNode] = [sourceTargetName];
         return this.node.requireNodeSources(requirements).then(function(results) {
             var deps = results[fromNode][0];
-            if (cache.needRebuildFile('deps-file', depsTargetPath) || cache.needRebuildFile('source-deps-file', sourceTargetPath)) {
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';').then(function() {
+            if (cache.needRebuildFile('deps-file', depsTargetPath) ||
+                cache.needRebuildFile('source-deps-file', sourceTargetPath)
+            ) {
+                return vowFs.write(
+                    depsTargetPath, 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';'
+                ).then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('source-deps-file', sourceTargetPath);
                     _this.node.resolveTarget(depsTarget, deps);

@@ -4,7 +4,8 @@
  *
  * Обрабатывает файл Борщиком (раскрытие borschik-ссылок, минификация, фризинг).
  *
- * Настройки фризинга и путей описываются в конфиге Борщика (`.borschik`) в корне проекта (https://github.com/veged/borschik/blob/master/README.ru.md).
+ * Настройки фризинга и путей описываются в конфиге Борщика (`.borschik`) в корне проекта
+ * (https://github.com/veged/borschik/blob/master/README.ru.md).
  *
  * **Опции**
  *
@@ -61,7 +62,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('target-file', targetPath)
             ) {
                 var borschikProcessor = BorschikProcessorSibling.fork();
-                return Vow.when(borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify)).then(function() {
+                return Vow.when(
+                    borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify)
+                ).then(function() {
                     cache.cacheFileInfo('source-file', sourcePath);
                     cache.cacheFileInfo('target-file', targetPath);
                     _this.node.resolveTarget(target);

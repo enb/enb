@@ -1,3 +1,4 @@
 {
-    "eqeqeq": true
+    "eqeqeq": true,
+    "maxlen": 120
 }

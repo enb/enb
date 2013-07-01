@@ -9,7 +9,8 @@
  * * *String* **target** — Результирующий priv.js-файл. По умолчанию — `?.all.priv.js`.
  * * *String* **privJsTarget** — Исходный priv.js-файл. По умолчанию — `?.priv.js`.
  * * *String* **lang** — Язык. Обязательная опция.
- * * *Array* **langTarget** — lang.js-файл конкретного языка. Например, `?.lang.ru.js`. По умолчанию — `?.lang.{lang}.js`.
+ * * *Array* **langTarget** — lang.js-файл конкретного языка. Например, `?.lang.ru.js`.
+ *   По умолчанию — `?.lang.{lang}.js`.
  * * *Array* **allLangTarget** — lang.all.js-файл. По умолчанию — `?.lang.all.js`.
  *
  * **Пример**

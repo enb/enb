@@ -8,7 +8,8 @@
  *
  * * *String* **sourceTech** — Имя исходной технологии. Обязательная опция.
  * * *String* **destTech** — Имя конечной технологии. Обязательная опция.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
+ *   (его предоставляет технология `files`). По умолчанию — `?.files`.
  * * *String* **target** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
  *
  * **Пример**
@@ -73,5 +74,7 @@ module.exports = require('../lib/build-flow').create()
 
 
 function depKey(dep) {
-   return dep.block + (dep.elem ? '__' + dep.elem : '') + (dep.mod ? '_' + dep.mod + (dep.val ? '_' + dep.val : '') : '');
+   return dep.block +
+       (dep.elem ? '__' + dep.elem : '') +
+       (dep.mod ? '_' + dep.mod + (dep.val ? '_' + dep.val : '') : '');
 }

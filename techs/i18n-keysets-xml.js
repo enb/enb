@@ -57,7 +57,8 @@ module.exports = require('../lib/build-flow').create()
     .methods({
         getPrependXml: function(lang) {
             return '<?xml version="1.0" encoding="utf-8"?>\n' +
-                '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:i18n="urn:yandex-functions:internationalization">\n';
+                '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
+                'xmlns:i18n="urn:yandex-functions:internationalization">\n';
         },
         getAppendXml: function(lang) {
             return '\n</tanker>';

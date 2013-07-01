@@ -60,7 +60,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             }
             if (rebuildNeeded) {
                 var mergedDeps = deps.merge(depResults);
-                return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';').then(function() {
+                return vowFs.write(
+                    depsTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';'
+                ).then(function() {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     sources.forEach(function(source) {
                         cache.cacheFileInfo(source, _this.node.resolvePath(source));

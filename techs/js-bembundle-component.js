@@ -4,12 +4,15 @@
  *
  * Собирает `?.bembundle.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
  *
- * Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
+ * Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`,
+ * `css-chunks` для построения догружаемой части функционала сайта.
  *
  * **Опции**
  *
- * * *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
- * * *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
+ * * *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки.
+ *   По умолчанию — `[ '?.css-chunks.js' ]`.
+ * * *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки.
+ *   По умолчанию — `[ '?.js-chunks.js' ]`.
  * * *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.js`.
  *
  * **Пример**
@@ -81,7 +84,8 @@ module.exports = require('../lib/build-flow').create()
     })
     .staticMethods({
         getOnceFunctionDecl: function() {
-            return '(function(){ this._ycssjs || (this._ycssjs=function(a,b){return !(a in _ycssjs||_ycssjs[a]++)}) })();\n';
+            return '(function(){ this._ycssjs || ' +
+                '(this._ycssjs=function(a,b){return !(a in _ycssjs||_ycssjs[a]++)}) })();\n';
         },
         wrapWithOnceIf: function(data, filename, hash) {
             return 'if (_ycssjs("' + hash + '")) {\n' + '// ' + filename + '\n' + data + '\n}';

@@ -9,7 +9,8 @@
  * **Опции**
  *
  * * *String* **bemhtmlTarget** — Имя `bemhtml.js`-таргета. По умолчанию — `?.bemhtml.js`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
+ *   (его предоставляет технология `files`). По умолчанию — `?.files`.
  *
  * **Пример**
  *
@@ -42,7 +43,9 @@ module.exports = require('../lib/build-flow').create()
                 });
             });
         })).then(function(res) {
-            res.push('\nif (typeof exports !== "undefined" && typeof blocks !== "undefined") { exports.blocks = blocks; }\n');
+            res.push(
+                '\nif (typeof exports !== "undefined" && typeof blocks !== "undefined") { exports.blocks = blocks; }\n'
+            );
             return bemhtml + '\n' + res.join('\n');
         });
     })

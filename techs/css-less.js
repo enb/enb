@@ -7,7 +7,8 @@
  * **Опции**
  *
  * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+ * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
+ *   (его предоставляет технология `files`). По умолчанию — `?.files`.
  *
  * **Пример**
  *
@@ -28,7 +29,9 @@ module.exports = require('./css').buildFlow()
         try {
             less = require('less');
         } catch (e) {
-            throw new Error('The technology "css-less" cannot be executed because the npm module "less" was not found.');
+            throw new Error(
+                'The technology "css-less" cannot be executed because the npm module "less" was not found.'
+            );
         }
 
         var _this = this,

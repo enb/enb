@@ -9,7 +9,8 @@
  * * *String* **bemhtmlTarget** — Исходный BEMHTML-файл. По умолчанию — `?.bemhtml.js`.
  * * *String* **bemjsonTarget** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
  * * *String* **langAllTarget** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
- * * *String* **langTarget** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`. Если параметр lang не указан, берется первый из объявленных в проекте языков
+ * * *String* **langTarget** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`.
+ *   Если параметр lang не указан, берется первый из объявленных в проекте языков
  * * *String* **destTarget** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
  *
  * **Пример**

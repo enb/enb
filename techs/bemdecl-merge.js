@@ -67,7 +67,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var mergedDeps = deps.merge(bemdeclResults.map(function(bemdecl) {
                     return deps.fromBemdecl(bemdecl);
                 }));
-                return vowFs.write(bemdeclTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';').then(function() {
+                return vowFs.write(
+                    bemdeclTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';'
+                ).then(function() {
                     cache.cacheFileInfo('bemdecl-file', bemdeclTargetPath);
                     sources.forEach(function(source) {
                         cache.cacheFileInfo(source, _this.node.resolvePath(source));

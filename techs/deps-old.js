@@ -2,7 +2,8 @@
  * deps-old
  * ========
  *
- * Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
+ * Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости.
+ * Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
  *
  * **Опции**
  *
@@ -69,7 +70,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     levels: levels
                 }).then(function(resolvedDeps) {
                     resolvedDeps = resolvedDeps.getDeps();
-                    return vowFs.write(depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8').then(function() {
+                    return vowFs.write(
+                        depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8'
+                    ).then(function() {
                         cache.cacheFileInfo('deps-file', depsTargetPath);
                         cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
                         cache.cacheFileList('deps-file-list', depFiles);

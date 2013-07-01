@@ -6,7 +6,7 @@
  */
 
 var inherit = require('inherit');
-var fs = require('fs');
+var vowFs = require('vow-fs');
 var vm = require('vm');
 var Vow = require('vow');
 
@@ -72,7 +72,7 @@ module.exports.OldDeps = (function() {
         /**
          * Клонирует резолвер зависимостей.
          *
-         * @param {OldDeps} target
+         * @param {OldDeps} [target]
          * @returns {OldDeps}
          */
         clone: function(target) {
@@ -95,12 +95,12 @@ module.exports.OldDeps = (function() {
          * Разбирает bemdecl.
          *
          * @param {Array} deps
-         * @param {Object} ctx
-         * @param {Function} fn
+         * @param {Object} [ctx]
+         * @param {Function} [fn]
          * @returns {OldDeps}
          */
         parse: function(deps, ctx, fn) {
-            fn || (fn = function(i) { this.add(this.rootItem, 'shouldDeps', i) });
+            fn || (fn = function(i) { this.add(this.rootItem, 'shouldDeps', i); });
 
             var _this = this,
 
@@ -161,7 +161,7 @@ module.exports.OldDeps = (function() {
         /**
          * Раскрывает зависимости, используя deps.js-файлы.
          *
-         * @param {String} tech
+         * @param {Object} tech
          * @returns {Promise}
          */
         expandByFS: function(tech) {
@@ -194,25 +194,36 @@ module.exports.OldDeps = (function() {
          */
         expandOnceByFS: function() {
 
-            var newDeps = this.clone(),
-                steps = this
-                    .filter(function(item) {
-                        return !newDeps.uniqExpand.hasOwnProperty(item.buildKey());
-                    })
-                    .map(function(item) {
-                        newDeps.uniqExpand[item.buildKey()] = true;
-                        return newDeps.expandItemByFS(item);
-                    });
+            var newDeps = this.clone();
+            var items = this.filter(function(item) {
+                return !newDeps.uniqExpand.hasOwnProperty(item.buildKey());
+            });
 
-            if (!steps.length) return Vow.fulfill(newDeps);
+            function keepWorking(item) {
+                newDeps.uniqExpand[item.buildKey()] = true;
+                return newDeps.expandItemByFS(item).then(function() {
+                    if (items.length > 0) {
+                        return keepWorking(items.shift());
+                    } else {
+                        return null;
+                    }
+                });
+            }
 
-            return newDeps;
+            if (items.length > 0) {
+                return keepWorking(items.shift()).then(function() {
+                    return newDeps;
+                });
+            } else {
+                return Vow.fulfill(newDeps);
+            }
         },
 
         /**
          * Раскрывает одну зависимость, используя deps.js-файлы.
          *
          * @param {OldDepsItem} item
+         * @returns {Promise}
          */
         expandItemByFS: function(item) {
 
@@ -222,14 +233,21 @@ module.exports.OldDeps = (function() {
             var files = tech.levels.getFilesByDecl(item.item.block, item.item.elem, item.item.mod, item.item.val)
                 .filter(function(file) { return file.suffix === 'deps.js'; });
 
+            var promise = Vow.fulfill();
+
             files.forEach(function(file) {
-                var content = fs.readFileSync(file.fullname, 'utf8');
-                try {
-                    _this.parse(vm.runInThisContext(content, file.fullname), item);
-                } catch (e) {
-                    throw new Error('Syntax error in file "' + file.fullname + '": ' + e.message);
-                }
+                promise = promise.then(function() {
+                    return vowFs.read(file.fullname, 'utf8').then(function(content) {
+                        try {
+                            _this.parse(vm.runInThisContext(content, file.fullname), item);
+                        } catch (e) {
+                            throw new Error('Syntax error in file "' + file.fullname + '": ' + e.message);
+                        }
+                    });
+                });
             });
+
+            return promise;
         },
 
         /**
@@ -248,9 +266,10 @@ module.exports.OldDeps = (function() {
         },
 
         /**
+         * Сохраняет пересечение с другим OldDeps.
          *
-         * @param deps
-         * @returns {*}
+         * @param {OldDeps} deps
+         * @returns {OldDeps}
          */
         intersect: function(deps) {
             var items1 = this.items,
@@ -267,6 +286,11 @@ module.exports.OldDeps = (function() {
             return this;
         },
 
+        /**
+         * Возвращает количество зависимостей.
+         *
+         * @returns {Number}
+         */
         getCount: function() {
             var res = 0,
                 items = this.items;
@@ -276,6 +300,14 @@ module.exports.OldDeps = (function() {
             return res;
         },
 
+        /**
+         * Итерирует по набору зависимостей.
+         *
+         * @param {Function} fn
+         * @param {Object} [uniq]
+         * @param {Array} [itemsByOrder]
+         * @param {Object} [ctx]
+         */
         forEach: function(fn, uniq, itemsByOrder, ctx) {
             uniq || (uniq = {});
             var _this = this;
@@ -294,18 +326,34 @@ module.exports.OldDeps = (function() {
             })
         },
 
+        /**
+         * Вызывает map для набора зависимостей.
+         *
+         * @param {Function} fn
+         * @returns {Array}
+         */
         map: function(fn) {
             var res = [];
-            this.forEach(function(item) { res.push(fn.call(this, item)) });
+            this.forEach(function(item) { res.push(fn.call(this, item)); });
             return res;
         },
 
+        /**
+         * Фильтрует зависимости, возвращает результат.
+         * @param {Function} fn
+         * @returns {Array}
+         */
         filter: function(fn) {
             var res = [];
-            this.forEach(function(item) { if (fn.call(this, item)) res.push(item) });
+            this.forEach(function(item) { if (fn.call(this, item)) res.push(item); });
             return res;
         },
 
+        /**
+         * Возвращает результат резолвинга.
+         *
+         * @returns {Object}
+         */
         serialize: function() {
             var byTech = {};
             this.forEach(function(item, ctx) {
@@ -318,6 +366,11 @@ module.exports.OldDeps = (function() {
             return byTech;
         },
 
+        /**
+         * Сериализует в строку.
+         *
+         * @returns {String}
+         */
         stringify: function() {
             var res = [],
                 deps = this.serialize();
@@ -334,6 +387,11 @@ module.exports.OldDeps = (function() {
             return res.join('');
         },
 
+        /**
+         * Возвращает результат раскрытия зависимостей.
+         *
+         * @returns {Object|*|*|Array}
+         */
         getDeps: function() {
             var serializedData = this.serialize();
             return (serializedData && serializedData[''] && serializedData['']['']) || [];
@@ -356,6 +414,12 @@ module.exports.OldDeps = (function() {
             this.extendByCtx(ctx);
         },
 
+        /**
+         * Раскрывает зависимости.
+         *
+         * @param {Object} ctx
+         * @returns {OldDepsItem}
+         */
         extendByCtx: function(ctx) {
             if (ctx && (ctx = ctx.item)) {
                 var ks = ['tech', 'block', 'elem', 'mod', 'val'],
@@ -372,6 +436,11 @@ module.exports.OldDeps = (function() {
             return this;
         },
 
+        /**
+         * Возвращает копию.
+         *
+         * @returns {OldDepsItem}
+         */
         clone: function() {
             var res = new this.__self({}, this);
             res.shouldDeps = this.shouldDeps.concat();
@@ -380,6 +449,12 @@ module.exports.OldDeps = (function() {
             return res;
         },
 
+        /**
+         * Расширяет зависимость.
+         *
+         * @param {OldDepsItem} item
+         * @returns {OldDepsItem}
+         */
         extend: function(item) {
             if (!item) return this;
             var ds = ['mustDeps', 'shouldDeps'], d,
@@ -397,11 +472,22 @@ module.exports.OldDeps = (function() {
             return item;
         },
 
+        /**
+         * Записывает зависимость в кэш по ключу.
+         *
+         * @param {Object} cache
+         * @returns {OldDepsItem}
+         */
         cache: function(cache) {
             var key = this.buildKey();
             return cache[key] = this.extend(cache[key]);
         },
 
+        /**
+         * Строит ключ для зависимости.
+         *
+         * @returns {String}
+         */
         buildKey: function() {
             if ('key' in this) return this.key;
 
@@ -420,10 +506,11 @@ module.exports.OldDeps = (function() {
             return this.key = k;
         },
 
-        buildLevelPath: function(level) {
-            return level.getByObj(this.item);
-        },
-
+        /**
+         * Сериализует зависимость в объект.
+         *
+         * @returns {Object}
+         */
         serialize: function() {
             var res = {},
                 ks = ['tech', 'block', 'elem', 'mod', 'val'], k;

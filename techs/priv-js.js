@@ -33,12 +33,16 @@ module.exports = require('../lib/build-flow').create()
         var _this = this,
             target = this._target,
             jsBorschikPreprocessor = new BorschikPreprocessor();
+        var node = this.node;
         return Vow.all(sourceFiles.map(function(file) {
             return _this.node.createTmpFileForTarget(target).then(function(tmpfile) {
                 return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile, false, false).then(function() {
                     return vowFs.read(tmpfile, 'utf8').then(function(data) {
+                        var filename = node.relativePath(file.fullname);
                         vowFs.remove(tmpfile);
-                        return data;
+                        var pre = '/* ' + filename + ': begin */\n';
+                        var post = '\n/* ' + filename + ': end */';
+                        return pre + data + post;
                     });
                 });
             });

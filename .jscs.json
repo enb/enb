@@ -9,6 +9,7 @@
     "require_line_feed_at_file_end": true,
     "exclude_files": [
         "node_modules",
-        "tools"
+        "tools",
+        "test/fixtures"
     ]
 }

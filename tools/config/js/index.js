@@ -133,7 +133,7 @@ function ENBController($scope) {
                     return 'require("enb/techs/js")';
                 case 'priv.js':
                     return [
-                        'require("enb/techs/bemhtml")',
+                        'require("enb-bemhtml/techs/bemhtml")',
                         'require("enb/techs/priv-js")'
                     ];
                 case '{lang}.priv.js':
@@ -143,7 +143,7 @@ function ENBController($scope) {
                         '[ require("enb/techs/i18n-merge-keysets"), { lang: "{lang}" }]',
                         '[ require("enb/techs/i18n-lang-js"), { lang: "all" } ]',
                         '[ require("enb/techs/i18n-lang-js"), { lang: "{lang}" } ]',
-                        'require("enb/techs/bemhtml")',
+                        'require("enb-bemhtml/techs/bemhtml")',
                         'require("enb/techs/priv-js")',
                         '[ require("enb/techs/priv-js-i18n"), { lang: "{lang}" } ]'
                     ];
@@ -160,7 +160,7 @@ function ENBController($scope) {
                 case 'html':
                     return [
                         '[ require("enb/techs/file-provider"), { target: "?.bemjson.js" } ]',
-                        'require("enb/techs/bemhtml")',
+                        'require("enb-bemhtml/techs/bemhtml")',
                         'require("enb/techs/html-from-bemjson")'
                     ];
             }

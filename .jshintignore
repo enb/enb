@@ -1,3 +1,4 @@
 node_modules
 tools
 exlib
+test/fixtures

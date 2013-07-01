@@ -32,7 +32,8 @@ var Vow = require('vow'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),
     deps = require('../lib/deps/deps'),
-    OldDeps = require('../exlib/deps').OldDeps;
+    OldDeps = require('../exlib/deps').OldDeps,
+    asyncRequire = require('../lib/fs/async-require');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -65,20 +66,22 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('bemdecl-file', bemdeclSourcePath) ||
                 cache.needRebuildFileList('deps-file-list', depFiles)
             ) {
-                var bemdecl = require(bemdeclSourcePath);
-                return (new OldDeps(deps.toBemdecl(bemdecl)).expandByFS({
-                    levels: levels
-                }).then(function(resolvedDeps) {
-                    resolvedDeps = resolvedDeps.getDeps();
-                    return vowFs.write(
-                        depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8'
-                    ).then(function() {
-                        cache.cacheFileInfo('deps-file', depsTargetPath);
-                        cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
-                        cache.cacheFileList('deps-file-list', depFiles);
-                        _this.node.resolveTarget(depsTarget, resolvedDeps);
-                    });
-                }));
+                delete require.cache[bemdeclSourcePath];
+                return asyncRequire(bemdeclSourcePath).then(function(bemdecl) {
+                    return (new OldDeps(deps.toBemdecl(bemdecl)).expandByFS({
+                        levels: levels
+                    }).then(function(resolvedDeps) {
+                        resolvedDeps = resolvedDeps.getDeps();
+                        return vowFs.write(
+                            depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8'
+                        ).then(function() {
+                            cache.cacheFileInfo('deps-file', depsTargetPath);
+                            cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
+                            cache.cacheFileList('deps-file-list', depFiles);
+                            _this.node.resolveTarget(depsTarget, resolvedDeps);
+                        });
+                    }));
+                });
             } else {
                 _this.node.isValidTarget(depsTarget);
                 delete require.cache[depsTargetPath];

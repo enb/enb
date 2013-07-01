@@ -1,0 +1,1 @@
+BEM.I18N = function() {};

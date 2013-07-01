@@ -89,6 +89,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                             block.elems.forEach(function(elem){
                                 dep.addElem(block.name, elem.name);
                                 if (elem.mods) {
+                                    if (!Array.isArray(elem.mods)) {
+                                        elem.mods = [elem.mods];
+                                    }
                                     elem.mods.forEach(function(mod) {
                                         if (mod.vals) {
                                             mod.vals.forEach(function(val) {

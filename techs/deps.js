@@ -74,6 +74,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     bemdecl.blocks.forEach(function(block) {
                         dep.addBlock(block.name);
                         if (block.mods) {
+                            if (!Array.isArray(block.mods)) {
+                                block.mods = [block.mods];
+                            }
                             block.mods.forEach(function(mod) {
                                 if (mod.vals) {
                                     mod.vals.forEach(function(val) {

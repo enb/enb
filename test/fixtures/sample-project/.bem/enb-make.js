@@ -12,6 +12,7 @@ module.exports = function(config) {
             [ require(ENB_ROOT + "techs/bemdecl-from-bemjson"), { target: "?.bemdecl.js" } ],
             [ require("bh/techs/bh-server"), { bhFile: '../../../node_modules/bh/lib/bh.js' } ],
             require(ENB_ROOT + "techs/html-from-bemjson"),
+            require(ENB_ROOT + "techs/html-from-bemjson-i18n"),
             [ require(ENB_ROOT + "techs/i18n-merge-keysets"), { lang: "all" }],
             [ require(ENB_ROOT + "techs/i18n-merge-keysets"), { lang: "{lang}" }],
             [ require(ENB_ROOT + "techs/i18n-lang-js"), { lang: "all" } ],
@@ -21,7 +22,7 @@ module.exports = function(config) {
             require(ENB_ROOT + "techs/priv-js"),
             [ require(ENB_ROOT + "techs/priv-js-i18n"), { lang: "{lang}" } ]
         ]);
-        nodeConfig.addTargets(["?.html", "?.{lang}.js", "?.css", "?.{lang}.priv.js", "?.strict.deps.js"]);
+        nodeConfig.addTargets(["?.html", "?.en.html", "?.{lang}.js", "?.css", "?.{lang}.priv.js", "?.strict.deps.js"]);
 
         function getLevels() {
             return [

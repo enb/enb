@@ -21,7 +21,8 @@ var fs = require('graceful-fs'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),
     vm = require('vm'),
-    path = require('path');
+    path = require('path'),
+    asyncRequire = require('../lib/fs/async-require');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -43,8 +44,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     getBuildResult: function(target, bemhtmlFile, bemjson) {
         delete require.cache[bemhtmlFile];
-        var bemhtml = require(bemhtmlFile);
-        return bemhtml.BEMHTML.apply(bemjson);
+        return asyncRequire(bemhtmlFile).then(function(bemhtml) {
+            return bemhtml.BEMHTML.apply(bemjson);
+        });
     },
 
     isRebuildRequired: function(target) {

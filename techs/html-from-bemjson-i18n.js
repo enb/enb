@@ -24,7 +24,8 @@ var fs = require('graceful-fs'),
     vowFs = require('vow-fs'),
     inherit = require('inherit'),
     vm = require('vm'),
-    path = require('path');
+    path = require('path'),
+    asyncRequire = require('../lib/fs/async-require');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -65,19 +66,21 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     getBuildResult: function(target, bemhtmlFile, bemjson, allLangFile, langFile) {
         delete require.cache[bemhtmlFile];
-        var bemhtml = require(bemhtmlFile);
         delete require.cache[allLangFile];
-        require(allLangFile);
-        delete require.cache[langFile];
-        require(langFile);
-
-        var global = bemhtml.lib && bemhtml.lib.global;
-        if (global) {
-            global.lang = this.getOption('lang');
-            global.setTld(this.getOption('lang'));
-        }
-
-        return bemhtml.BEMHTML.apply(bemjson);
+        return Vow.all([
+            asyncRequire(bemhtmlFile),
+            asyncRequire(allLangFile)
+        ]).spread(function(bemhtml) {
+            delete require.cache[langFile];
+            return asyncRequire(langFile).then(function() {
+                var global = bemhtml.lib && bemhtml.lib.global;
+                if (global) {
+                    global.lang = this.getOption('lang');
+                    global.setTld(this.getOption('lang'));
+                }
+                return bemhtml.BEMHTML.apply(bemjson);
+            });
+        });
     },
 
     isRebuildRequired: function(target) {

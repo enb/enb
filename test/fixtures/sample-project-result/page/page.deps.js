@@ -1,5 +1,8 @@
 exports.deps = [
     {
+        "block": "input"
+    },
+    {
         "block": "button"
     },
     {
@@ -11,14 +14,11 @@ exports.deps = [
         "mod": "theme"
     },
     {
+        "block": "page"
+    },
+    {
         "block": "button",
         "mod": "theme",
         "val": "normal"
-    },
-    {
-        "block": "input"
-    },
-    {
-        "block": "page"
     }
 ];

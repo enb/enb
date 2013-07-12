@@ -122,7 +122,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     return dep.addDecls(decls).then(function() {
                         var resolvedDeps = dep.resolve();
                         return vowFs.write(
-                            depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';', 'utf8'
+                            depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';\n', 'utf8'
                         ).then(function() {
                             cache.cacheFileInfo('deps-file', depsTargetPath);
                             cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);

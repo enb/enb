@@ -1,3 +1,3 @@
 ({
-    mustDeps: 'button'
+    shouldDeps: 'button'
 })

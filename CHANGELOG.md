@@ -1,3 +1,6 @@
+Версия 0.8.18:
+ * Поддерка `yaml`-формата для описания deps'ов. Считается, что `deps` в формате `deps.yaml` содержит `shouldDeps`.
+
 Версия 0.8.17:
  * Исправлена ошибка EMFILES в технологиях `html-from-bemhtml` и `html-from-bemhtml-i18n`.
 

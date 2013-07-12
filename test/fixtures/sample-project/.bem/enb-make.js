@@ -5,8 +5,8 @@ module.exports = function(config) {
     config.node("page", function(nodeConfig) {
         nodeConfig.addTechs([
             [ require(ENB_ROOT + "techs/levels"), { levels: getLevels() } ],
-            require(ENB_ROOT + "techs/deps-old"),
-            [ require(ENB_ROOT + "techs/deps"), { depsTarget: '?.strict.deps.js' } ],
+            [ require(ENB_ROOT + "techs/deps-old"), { depsTarget: '?.old.deps.js' } ],
+            require(ENB_ROOT + "techs/deps"),
             require(ENB_ROOT + "techs/files"),
             [ require(ENB_ROOT + "techs/file-provider"), { target: "?.bemjson.js" } ],
             [ require(ENB_ROOT + "techs/bemdecl-from-bemjson"), { target: "?.bemdecl.js" } ],
@@ -22,7 +22,7 @@ module.exports = function(config) {
             require(ENB_ROOT + "techs/priv-js"),
             [ require(ENB_ROOT + "techs/priv-js-i18n"), { lang: "{lang}" } ]
         ]);
-        nodeConfig.addTargets(["?.html", "?.en.html", "?.{lang}.js", "?.css", "?.{lang}.priv.js", "?.strict.deps.js"]);
+        nodeConfig.addTargets(["?.html", "?.en.html", "?.{lang}.js", "?.css", "?.{lang}.priv.js", "?.old.deps.js"]);
 
         function getLevels() {
             return [

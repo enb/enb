@@ -62,7 +62,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             bemdeclSource = this._bemdeclTarget,
             bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
         return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function(levels) {
-            var depFiles = levels.getFilesBySuffix('deps.js');
+            var depFiles = levels.getFilesBySuffix('deps.js').concat(levels.getFilesBySuffix('deps.yaml'));
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('bemdecl-file', bemdeclSourcePath) ||
                 cache.needRebuildFileList('deps-file-list', depFiles)

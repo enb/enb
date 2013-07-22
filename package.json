@@ -2,7 +2,7 @@
     "author" : "Marat Dulin <mdevils@yandex.ru>",
     "description" : "Faster BEM tools",
     "name" : "enb",
-    "version" : "0.8.19",
+    "version" : "0.8.20",
     "repository" : "https://github.com/enb-make/enb",
     "contributors" : [
         {
@@ -21,7 +21,6 @@
         "vow": ">=0.3.3",
         "vow-fs": ">=0.1.12",
         "inherit": ">=1.0.4",
-        "colors": ">=0.6.0",
         "stylus": "0.32.1",
         "dom-js": "0.0.9",
         "express": "3.1.0",
@@ -53,7 +52,7 @@
         "unit-test": "./node_modules/.bin/mocha -u bdd -R spec --recursive test/lib",
         "func-test": "npm run-script bh-sym && npm run-script build-sample-proj &&./node_modules/.bin/mocha -u bdd -R spec --recursive test/func",
         "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
-        "build-sample-proj": "cd test/fixtures/sample-project && ../../../bin/enb make -n",
+        "build-sample-proj": "cd test/fixtures/sample-project && ../../../bin/enb make -n --graph",
         "check-style": "./node_modules/jscs/bin/jscs ."
     }
 }

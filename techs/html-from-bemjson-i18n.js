@@ -65,6 +65,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     getBuildResult: function(target, bemhtmlFile, bemjson, allLangFile, langFile) {
+        var _this = this;
         delete require.cache[bemhtmlFile];
         delete require.cache[allLangFile];
         return Vow.all([
@@ -75,8 +76,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             return asyncRequire(langFile).then(function() {
                 var global = bemhtml.lib && bemhtml.lib.global;
                 if (global) {
-                    global.lang = this.getOption('lang');
-                    global.setTld(this.getOption('lang'));
+                    global.lang = _this.getOption('lang');
+                    global.setTld(_this.getOption('lang'));
                 }
                 return bemhtml.BEMHTML.apply(bemjson);
             });

@@ -3,7 +3,7 @@
  * =======
  */
 var Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     FileList = require('../lib/file-list');
 
 module.exports = require('../lib/build-flow').create()

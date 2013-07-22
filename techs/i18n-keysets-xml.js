@@ -21,7 +21,7 @@
  */
 var inherit = require('inherit'),
     fs = require('graceful-fs'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     domjs = require('dom-js'),
     Vow = require('vow');
 

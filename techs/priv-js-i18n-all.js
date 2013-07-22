@@ -19,7 +19,7 @@
  * ```
  */
 var Vow = require('vow'),
-    vowFs = require('vow-fs');
+    vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('priv-js-i18n-all')

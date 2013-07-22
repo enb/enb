@@ -28,7 +28,7 @@ var fs = require('graceful-fs'),
     inherit = require('inherit'),
     childProcess = require('child_process'),
     Vow = require('vow'),
-    vowFs = require('vow-fs');
+    vowFs = require('../lib/fs/async-fs');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {

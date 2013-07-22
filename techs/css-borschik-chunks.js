@@ -29,7 +29,7 @@
 var inherit = require('inherit'),
     fs = require('graceful-fs'),
     Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     path = require('path'),
     crypto = require('crypto'),
     BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');

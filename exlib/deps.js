@@ -6,7 +6,7 @@
  */
 
 var inherit = require('inherit');
-var vowFs = require('vow-fs');
+var vowFs = require('../lib/fs/async-fs');
 var vm = require('vm');
 var Vow = require('vow');
 

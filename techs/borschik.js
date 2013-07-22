@@ -27,7 +27,7 @@
  */
 var fs = require('graceful-fs'),
     Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     inherit = require('inherit'),
     BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 

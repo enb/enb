@@ -21,7 +21,7 @@
 var inherit = require('inherit'),
     fs = require('graceful-fs'),
     Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 
 module.exports = require('../lib/build-flow').create()

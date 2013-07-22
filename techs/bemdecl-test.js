@@ -1,6 +1,6 @@
 var inherit = require('inherit'),
     Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     fs = require('graceful-fs'),
     vm = require('vm'),
     FileList = require('../lib/file-list'),

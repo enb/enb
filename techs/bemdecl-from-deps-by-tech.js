@@ -22,7 +22,7 @@
  * ```
  */
 var Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     inherit = require('inherit'),
     vm = require('vm'),
     deps = require('../lib/deps/deps');

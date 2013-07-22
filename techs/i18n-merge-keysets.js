@@ -22,7 +22,7 @@
  */
 var inherit = require('inherit'),
     Vow = require('vow'),
-    vowFs = require('vow-fs'),
+    vowFs = require('../lib/fs/async-fs'),
     vm = require('vm'),
     asyncRequire = require('../lib/fs/async-require');
 

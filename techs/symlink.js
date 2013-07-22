@@ -19,7 +19,10 @@
  * } ]);
  * ```
  */
-var fs = require('graceful-fs'), Vow = require('vow'), vowFs = require('vow-fs'), inherit = require('inherit');
+var fs = require('graceful-fs'),
+    Vow = require('vow'),
+    vowFs = require('../lib/fs/async-fs'),
+    inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {

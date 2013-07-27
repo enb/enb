@@ -29,7 +29,14 @@ module.exports = require('./css').buildFlow()
             promise = Vow.promise();
 
         var css = sourceFiles.map(function(file) {
-            return '@import "' + file.fullname + '";';
+            var path = file.fullname;
+            if (file.name.indexOf('.styl') !== -1) {
+                return '/* ' + path + ':begin */\n' +
+                    '@import "' + path + '";\n' +
+                    '/* ' + path + ':end */\n';
+            } else {
+                return '@import "' + path + '";';
+            }
         }).join('\n');
 
         var targetName = _this._target;

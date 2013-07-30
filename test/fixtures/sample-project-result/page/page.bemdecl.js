@@ -1,5 +1,5 @@
-exports.blocks = [
+exports.deps = [
     {
-        "name": "page"
+        "block": "page"
     }
 ];

@@ -19,13 +19,11 @@
  * nodeConfig.addTech(require('enb/techs/html-from-bemjson-i18n'));
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    vm = require('vm'),
-    path = require('path'),
-    asyncRequire = require('../lib/fs/async-require');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var requireOrEval = require('../lib/fs/require-or-eval');
+var asyncRequire = require('../lib/fs/async-require');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -71,9 +69,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         return Vow.all([
             asyncRequire(bemhtmlFile),
             asyncRequire(allLangFile)
-        ]).spread(function(bemhtml) {
+        ]).spread(function(bemhtml, i18n) {
             delete require.cache[langFile];
-            return asyncRequire(langFile).then(function() {
+            return asyncRequire(langFile).then(function(keysets) {
+                if (typeof i18n === 'function' && bemhtml.lib) {
+                    if (typeof keysets === 'function') {
+                        keysets(i18n);
+                    }
+                    bemhtml.lib.i18n = i18n;
+                }
                 var global = bemhtml.lib && bemhtml.lib.global;
                 if (global) {
                     global.lang = _this.getOption('lang');
@@ -120,32 +124,22 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     });
                 })).then(function() {
                     if (targetsToBuild.length) {
-                        return vowFs.read(_this.node.resolvePath(_this._bemjsonSource), 'utf8')
-                            .then(function(bemjson) {
-                                try {
-                                    bemjson = vm.runInThisContext(bemjson);
-                                } catch (e) {
-                                    throw new Error(
-                                        'Syntax error at "' +
-                                        _this.node.resolvePath(_this._bemjsonSource) +
-                                        '": ' + e.message
-                                    );
-                                }
-                                return Vow.all(targetsToBuild.map(function(target) {
-                                    return Vow.when(_this.getBuildResult(
-                                            target,
-                                            _this.node.resolvePath(_this._bemhtmlSource),
-                                            bemjson,
-                                            _this.node.resolvePath(_this._allLangSource),
-                                            _this.node.resolvePath(_this._langSource)
-                                        )).then(function(res) {
-                                            return vowFs.write(_this.node.resolvePath(target), res, 'utf8');
-                                        }).then(function() {
-                                            _this.node.resolveTarget(target);
-                                            _this.storeCache(target);
-                                        });
-                                }));
-                            });
+                        return requireOrEval(_this.node.resolvePath(_this._bemjsonSource)).then(function (bemjson) {
+                            return Vow.all(targetsToBuild.map(function(target) {
+                                return Vow.when(_this.getBuildResult(
+                                        target,
+                                        _this.node.resolvePath(_this._bemhtmlSource),
+                                        bemjson,
+                                        _this.node.resolvePath(_this._allLangSource),
+                                        _this.node.resolvePath(_this._langSource)
+                                    )).then(function(res) {
+                                        return vowFs.write(_this.node.resolvePath(target), res, 'utf8');
+                                    }).then(function() {
+                                        _this.node.resolveTarget(target);
+                                        _this.storeCache(target);
+                                    });
+                            }));
+                        });
                     }
                     return null;
                 });

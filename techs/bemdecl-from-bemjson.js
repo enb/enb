@@ -56,6 +56,9 @@ function addDepsFromBemjson(bemjson, deps, depsIndex, parentBlockName) {
                 deps.push(dep);
                 depsIndex[itemKey] = true;
             }
+            if (bemjson.elemMods) {
+                bemjson.mods = bemjson.elemMods;
+            }
             if (bemjson.mods) {
                 for (var j in bemjson.mods) {
                     if (bemjson.mods.hasOwnProperty(j)) {

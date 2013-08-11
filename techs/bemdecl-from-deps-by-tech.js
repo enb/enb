@@ -48,6 +48,9 @@ module.exports = require('../lib/build-flow').create()
                 depIndex = {};
             depResults.forEach(function(depResult) {
                 var fileDeps = vm.runInThisContext(depResult.text);
+                if (!fileDeps) {
+                    return;
+                }
                 fileDeps = Array.isArray(fileDeps) ? fileDeps : [fileDeps];
                 fileDeps.forEach(function(dep) {
                     if (dep.tech === sourceTech) {

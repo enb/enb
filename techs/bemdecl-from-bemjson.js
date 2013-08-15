@@ -59,6 +59,9 @@ function addDepsFromBemjson(bemjson, deps, depsIndex, parentBlockName) {
             if (bemjson.elemMods) {
                 bemjson.mods = bemjson.elemMods;
             }
+            if (bemjson.view && typeof bemjson.view === 'string') {
+                (bemjson.mods || (bemjson.mods = {})).view = bemjson.view;
+            }
             if (bemjson.mods) {
                 for (var j in bemjson.mods) {
                     if (bemjson.mods.hasOwnProperty(j)) {

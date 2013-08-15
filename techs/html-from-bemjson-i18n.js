@@ -83,7 +83,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                     global.lang = _this.getOption('lang');
                     global.setTld(_this.getOption('lang'));
                 }
-                return bemhtml.BEMHTML.apply(bemjson);
+                if (!bemhtml.BEMHTML && bemhtml.lib) {
+                    return bemhtml.apply(bemjson);
+                } else {
+                    return bemhtml.BEMHTML.apply(bemjson);
+                }
             });
         });
     },

@@ -27,7 +27,11 @@ module.exports = require('../lib/build-flow').create()
     .builder(function (bemhtmlFilename, bemjsonFilename) {
         return requireOrEval(bemjsonFilename).then(function (json) {
             return asyncRequire(bemhtmlFilename).then(function(bemhtml) {
-                return bemhtml.BEMHTML.apply(json);
+                if (!bemhtml.BEMHTML && bemhtml.lib) {
+                    return bemhtml.apply(json);
+                } else {
+                    return bemhtml.BEMHTML.apply(json);
+                }
             });
         });
     })

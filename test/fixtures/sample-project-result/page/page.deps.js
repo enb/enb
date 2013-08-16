@@ -14,11 +14,20 @@ exports.deps = [
         "mod": "theme"
     },
     {
+        "block": "button",
+        "mod": "view"
+    },
+    {
         "block": "page"
     },
     {
         "block": "button",
         "mod": "theme",
         "val": "normal"
+    },
+    {
+        "block": "button",
+        "mod": "view",
+        "val": "def"
     }
 ];

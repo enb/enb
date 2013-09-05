@@ -72,9 +72,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         ]).spread(function(bemhtml, i18n) {
             delete require.cache[langFile];
             return asyncRequire(langFile).then(function(keysets) {
-                if (typeof i18n === 'function' && bemhtml.lib) {
+                if ((typeof i18n === 'function' || typeof keysets === 'function') && bemhtml.lib) {
                     if (typeof keysets === 'function') {
-                        keysets(i18n);
+                        i18n = keysets(i18n);
                     }
                     bemhtml.lib.i18n = i18n;
                 }

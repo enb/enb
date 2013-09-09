@@ -25,7 +25,9 @@ module.exports = require('../lib/build-flow').create()
     .useSourceFilename('bemhtmlTarget', '?.bemhtml.js')
     .useSourceFilename('bemjsonTarget', '?.bemjson.js')
     .builder(function (bemhtmlFilename, bemjsonFilename) {
+        delete require.cache[bemjsonFilename];
         return requireOrEval(bemjsonFilename).then(function (json) {
+            delete require.cache[bemhtmlFilename];
             return asyncRequire(bemhtmlFilename).then(function(bemhtml) {
                 if (!bemhtml.BEMHTML && bemhtml.lib) {
                     return bemhtml.apply(json);

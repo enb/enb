@@ -30,14 +30,14 @@
  *   } ],
  *   require('enb/techs/css-chunks'),
  *   require('enb/techs/js-chunks'),
- *   require('enb/techs/js-bundle-component')
+ *   require('enb/techs/js-bembundle-component')
  * ]);
  * ```
  */
 var Vow = require('vow');
 
 module.exports = require('../lib/build-flow').create()
-    .name('js-bundle-component')
+    .name('js-bembundle-component')
     .useSourceListFilenames('jsChunksTargets', ['?.js-chunks.js'])
     .useSourceListFilenames('cssChunksTargets', ['?.css-chunks.js'])
     .target('target', '?.bembundle.js')

@@ -7,6 +7,7 @@
  * **Опции**
  *
  * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
+ * * *Object* **variables** — Дополнительные переменные окружения для `stylus`.
  * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
  *   (его предоставляет технология `files`). По умолчанию — `?.files`.
  *
@@ -23,6 +24,7 @@ var inherit = require('inherit'),
 
 module.exports = require('./css').buildFlow()
     .name('css-stylus')
+    .defineOption('variables')
     .useFileList(['css', 'styl'])
     .builder(function (sourceFiles) {
         var _this = this,
@@ -41,10 +43,15 @@ module.exports = require('./css').buildFlow()
 
         var targetName = _this._target;
         var renderer = stylus(css)
-            .define('url', function(url){
+            .define('url', function(url) {
                 return new stylus.nodes.Literal('url(' + _this._resolveCssUrl(url.val, url.filename) + ')');
-            })
-            .set('filename', _this.node.resolvePath(targetName));
+            });
+        if (this._variables) {
+            var variables = this._variables;
+            Object.keys(variables).forEach(function (key) {
+                renderer.define(key, variables[key]);
+            });
+        }
 
         _this._configureRenderer(renderer)
             .render(function(err, css) {

@@ -22,5 +22,5 @@ var inherit = require('inherit'),
 module.exports = require('./css').buildFlow()
     .name('css-ie7')
     .target('target', '?.ie7.css')
-    .useFileList(['css', 'ie7.css'])
+    .useFileList(['css', 'ie.css', 'ie7.css'])
     .createTech();

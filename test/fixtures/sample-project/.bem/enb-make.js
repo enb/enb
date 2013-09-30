@@ -19,10 +19,12 @@ module.exports = function(config) {
             [ require(ENB_ROOT + "techs/i18n-lang-js"), { lang: "{lang}" } ],
             [ require(ENB_ROOT + "techs/js-i18n"), { lang: "{lang}" } ],
             require(ENB_ROOT + "techs/css"),
+            require(ENB_ROOT + "techs/css-ie"),
+            require(ENB_ROOT + "techs/css-ie7"),
             require(ENB_ROOT + "techs/priv-js"),
             [ require(ENB_ROOT + "techs/priv-js-i18n"), { lang: "{lang}" } ]
         ]);
-        nodeConfig.addTargets(["?.html", "?.en.html", "?.{lang}.js", "?.css", "?.{lang}.priv.js", "?.old.deps.js"]);
+        nodeConfig.addTargets(["?.html", "?.en.html", "?.{lang}.js", "?.css", "?.ie.css", "?.ie7.css", "?.{lang}.priv.js", "?.old.deps.js"]);
 
         function getLevels() {
             return [

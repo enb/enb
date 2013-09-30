@@ -1,0 +1,13 @@
+/* ../blocks/page/page.css: begin */ /**/
+    .page {
+        background: #000 url(../blocks/page/1.png);
+    }
+    
+/* ../blocks/page/page.css: end */ /**/
+
+/* ../blocks/page/page.ie.css: begin */ /**/
+    .page {
+        background: #222 url(../blocks/page/1.png);
+    }
+    
+/* ../blocks/page/page.ie.css: end */ /**/

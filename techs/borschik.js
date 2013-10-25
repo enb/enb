@@ -13,6 +13,7 @@
  * * *String* **destTarget** — Результирующий таргет. Например, `_?.js`. Обязательная опция.
  * * *Boolean* **minify** — Минифицировать ли в процессе обработки. По умолчанию — `true`.
  * * *Boolean* **freeze** — Использовать ли фризинг в процессе обработки. По умолчанию — `false`.
+ * * *String* **tech** — Технология сборки. По умолчанию — соответствует расширению исходного таргета.
  *
  * **Пример**
  *
@@ -21,7 +22,8 @@
  *   sourceTarget: '?.css',
  *   destTarget: '_?.css',
  *   minify: true,
- *   freeze: true
+ *   freeze: true,
+ *   tech: 'css+'
  * } ]);
  * ```
  */
@@ -44,6 +46,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         this._target = this.node.unmaskTargetName(this.getRequiredOption('destTarget'));
         this._freeze = this.getOption('freeze', false);
         this._minify = this.getOption('minify', true);
+        this._tech = this.getOption('tech', null);
     },
 
     getTargets: function() {
@@ -63,7 +66,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             ) {
                 var borschikProcessor = BorschikProcessorSibling.fork();
                 return Vow.when(
-                    borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify)
+                    borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify, _this._tech)
                 ).then(function() {
                     cache.cacheFileInfo('source-file', sourcePath);
                     cache.cacheFileInfo('target-file', targetPath);
@@ -80,7 +83,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 });
 
 var BorschikProcessorSibling = require('sibling').declare({
-    process: function(sourcePath, targetPath, freeze, minify) {
-        return (new BorschikPreprocessor()).preprocessFile(sourcePath, targetPath, freeze, minify);
+    process: function(sourcePath, targetPath, freeze, minify, tech) {
+        return (new BorschikPreprocessor()).preprocessFile(sourcePath, targetPath, freeze, minify, tech);
     }
 });

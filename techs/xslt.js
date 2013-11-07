@@ -72,7 +72,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('xsl-file', xslFile)
             ) {
                 fs.open(targetPath, 'w', function(err, fd) {
-                    if(err) return promise.reject(err);
+                    if (err) return promise.reject(err);
 
                     childProcess.spawn('/usr/bin/xsltproc', args, { stdio: [null, fd, null] })
                         .on('error', function(err) {

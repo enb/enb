@@ -71,16 +71,20 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('xsl-file', xslFile)
             ) {
-                childProcess.execFile('/usr/bin/xsltproc', args, {}, function(err, xsltStdout, stderr) {
-                    if (err) return promise.reject(err);
-                    vowFs.write(targetPath, xsltStdout, "utf8").then(function() {
-                        cache.cacheFileInfo('target-file', targetPath);
-                        cache.cacheFileInfo('source-file', sourcePath);
-                        cache.cacheFileInfo('xsl-file', xslFile);
-                        _this.node.resolveTarget(target);
-                        promise.fulfill();
-                    });
-                    return null;
+                fs.open(targetPath, 'w', function(err, fd) {
+                    if(err) return promise.reject(err);
+
+                    childProcess.spawn('/usr/bin/xsltproc', args, { stdio: [null, fd, null] })
+                        .on('error', function(err) {
+                            promise.reject(err);
+                        })
+                        .on('close', function() {
+                            cache.cacheFileInfo('target-file', targetPath);
+                            cache.cacheFileInfo('source-file', sourcePath);
+                            cache.cacheFileInfo('xsl-file', xslFile);
+                            _this.node.resolveTarget(target);
+                            promise.fulfill();
+                        });
                 });
             } else {
                 _this.node.isValidTarget(target);

@@ -18,6 +18,7 @@
  */
 var requireOrEval = require('../lib/fs/require-or-eval');
 var asyncRequire = require('../lib/fs/async-require');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('html-from-bemjson')
@@ -25,9 +26,9 @@ module.exports = require('../lib/build-flow').create()
     .useSourceFilename('bemhtmlTarget', '?.bemhtml.js')
     .useSourceFilename('bemjsonTarget', '?.bemjson.js')
     .builder(function (bemhtmlFilename, bemjsonFilename) {
-        delete require.cache[bemjsonFilename];
+        dropRequireCache(require, bemjsonFilename);
         return requireOrEval(bemjsonFilename).then(function (json) {
-            delete require.cache[bemhtmlFilename];
+            dropRequireCache(require, bemhtmlFilename);
             return asyncRequire(bemhtmlFilename).then(function(bemhtml) {
                 if (!bemhtml.BEMHTML && bemhtml.lib) {
                     return bemhtml.apply(json);

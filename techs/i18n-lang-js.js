@@ -26,7 +26,8 @@ var inherit = require('inherit'),
     fs = require('graceful-fs'),
     vowFs = require('../lib/fs/async-fs'),
     Vow = require('vow'),
-    tanker = require('../exlib/tanker');
+    tanker = require('../exlib/tanker'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('i18n-lang-js')
@@ -34,7 +35,7 @@ module.exports = require('../lib/build-flow').create()
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function(keysetsFilename) {
-        delete require.cache[keysetsFilename];
+        dropRequireCache(require, keysetsFilename);
         var keysets = require(keysetsFilename),
             _this = this,
             lang = this._lang,

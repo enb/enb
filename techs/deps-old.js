@@ -33,7 +33,8 @@ var Vow = require('vow'),
     inherit = require('inherit'),
     deps = require('../lib/deps/deps'),
     OldDeps = require('../exlib/deps').OldDeps,
-    asyncRequire = require('../lib/fs/async-require');
+    asyncRequire = require('../lib/fs/async-require'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -66,7 +67,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 cache.needRebuildFile('bemdecl-file', bemdeclSourcePath) ||
                 cache.needRebuildFileList('deps-file-list', depFiles)
             ) {
-                delete require.cache[bemdeclSourcePath];
+                dropRequireCache(require, bemdeclSourcePath);
                 return asyncRequire(bemdeclSourcePath).then(function(bemdecl) {
                     return (new OldDeps(deps.toBemdecl(bemdecl)).expandByFS({
                         levels: levels
@@ -84,7 +85,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
             } else {
                 _this.node.isValidTarget(depsTarget);
-                delete require.cache[depsTargetPath];
+                dropRequireCache(require, depsTargetPath);
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;
             }

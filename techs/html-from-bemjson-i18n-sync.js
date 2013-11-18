@@ -24,6 +24,7 @@ var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
 var requireOrEval = require('../lib/fs/require-or-eval');
 var asyncRequire = require('../lib/fs/async-require');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -64,13 +65,13 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     getBuildResult: function(target, bemhtmlFile, bemjson, allLangFile, langFile) {
         var _this = this;
-        delete require.cache[bemhtmlFile];
+        dropRequireCache(require, bemhtmlFile);
         return Vow.all([
             asyncRequire(bemhtmlFile)
         ]).spread(function(bemhtml) {
-            delete require.cache[allLangFile];
+            dropRequireCache(require, allLangFile);
             var i18n = require(allLangFile);
-            delete require.cache[langFile];
+            dropRequireCache(require, langFile);
             var keysets = require(langFile);
             if ((typeof i18n === 'function' || typeof keysets === 'function') && bemhtml.lib) {
                 if (typeof keysets === 'function') {

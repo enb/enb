@@ -23,7 +23,8 @@ var Vow = require('vow'),
     vm = require('vm'),
     vowFs = require('../lib/fs/async-fs'),
     inherit = require('inherit'),
-    deps = require('../lib/deps/deps');
+    deps = require('../lib/deps/deps'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -61,7 +62,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var bemdeclResults = [];
                 sources.forEach(function(source) {
                     var sourcePath = _this.node.resolvePath(source);
-                    delete require.cache[sourcePath];
+                    dropRequireCache(require, sourcePath);
                     bemdeclResults.push(require(sourcePath));
                 });
                 var mergedDeps = deps.merge(bemdeclResults.map(function(bemdecl) {
@@ -78,7 +79,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
             } else {
                 _this.node.isValidTarget(bemdeclTarget);
-                delete require.cache[bemdeclTargetPath];
+                dropRequireCache(require, bemdeclTargetPath);
                 _this.node.resolveTarget(bemdeclTarget, require(bemdeclTargetPath).deps);
                 return null;
             }

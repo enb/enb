@@ -23,7 +23,8 @@ var inherit = require('inherit'),
     fs = require('graceful-fs'),
     vowFs = require('../lib/fs/async-fs'),
     domjs = require('dom-js'),
-    Vow = require('vow');
+    Vow = require('vow'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('i18n-keysets-xml')
@@ -31,7 +32,7 @@ module.exports = require('../lib/build-flow').create()
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function(keysetsFilename) {
-        delete require.cache[keysetsFilename];
+        dropRequireCache(require, keysetsFilename);
         var lang = this._lang,
             keysets = require(keysetsFilename),
             res = [];

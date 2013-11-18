@@ -28,7 +28,8 @@ var Vow = require('vow'),
     vm = require('vm'),
     vowFs = require('../lib/fs/async-fs'),
     inherit = require('inherit'),
-    deps = require('../lib/deps/deps');
+    deps = require('../lib/deps/deps'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
@@ -69,7 +70,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
             } else {
                 _this.node.isValidTarget(depsTarget);
-                delete require.cache[depsTargetPath];
+                dropRequireCache(require, depsTargetPath);
                 _this.node.resolveTarget(depsTarget, require(depsTargetPath).deps);
                 return null;
             }

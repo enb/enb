@@ -26,7 +26,8 @@ var inherit = require('inherit'),
     fs = require('graceful-fs'),
     vowFs = require('../lib/fs/async-fs'),
     Vow = require('vow'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    dropRequireCache = require('../lib/fs/drop-require-cache');
 
 var I18NLangJs = require('./i18n-lang-js');
 
@@ -37,7 +38,7 @@ module.exports = require('../lib/tech/chunks').buildFlow()
     .unuseFileList()
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function(keysetsFilename) {
-        delete require.cache[keysetsFilename];
+        dropRequireCache(require, keysetsFilename);
         var keysets = require(keysetsFilename),
             _this = this,
             filename = this.node.resolvePath(this._target),

@@ -28,7 +28,7 @@ var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function() {
-        return 'html-from-bemjson-i18n';
+        return 'html-from-bemjson-i18n-sync';
     },
 
     configure: function() {

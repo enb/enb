@@ -75,11 +75,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
                     if (bemdecl.blocks) {
                         bemdecl.blocks.forEach(function(block) {
+                            block.name = block.name || block.block;
                             decls.push({
                                 name: block.name
                             });
                             if (block.mods) {
-                                block.mods.forEach(function(mod) {
+                                [].concat(block.mods).forEach(function(mod) {
                                     if (mod.vals) {
                                         mod.vals.forEach(function(val) {
                                             decls.push({
@@ -88,11 +89,25 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                                                 modVal: val.name
                                             });
                                         });
+                                    } else {
+                                        Object.keys(mod).forEach(function (name) {
+                                            decls.push({
+                                                name: block.name,
+                                                modName: name,
+                                                modVal: mod[name]
+                                            });
+                                        })
                                     }
                                 });
                             }
                             if (block.elems) {
                                 block.elems.forEach(function(elem) {
+                                    if (typeof elem === 'string') {
+                                        return decls.push({
+                                            name: block.name,
+                                            elem: elem
+                                        });
+                                    }
                                     decls.push({
                                         name: block.name,
                                         elem: elem.name

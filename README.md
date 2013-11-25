@@ -364,10 +364,10 @@ module.exports = function(config) {
 };
 ```
 
-Автоматизация сборки
-====================
+Автоматизация с помощью express
+===============================
 
-При разработке `nodejs`-приложений можно сильно упростить использование `enb` в `development`-режиме.
+При разработке `nodejs`-приложений на базе `express` можно сильно упростить использование `enb` в `development`-режиме.
 
 Суть в том, что можно забыть о пересборке проекта, о других портах для статики и т.п. Можно просто отправлять в ENB
 запросы на сборку тогда, когда это необходимо. То есть, когда вы открываете в браузере свой проект.
@@ -392,6 +392,43 @@ app
     .use(require('enb/lib/server/server-middleware').createMiddleware())
     .get('/', function (req, res) {
         /* ... */
+    });
+```
+
+Сборка по требованию
+====================
+
+Помимо упрощения сборки статики в `dev`-режиме с помощью ENB в `express`-приложениях,
+можно собирать по требованию различные ресурсы, например, шаблоны.
+
+Если `nodejs` приложению в процессе работы требуется собирать шаблоны или локализацию (или что-нибудь еще),
+то можно воспользоваться методом `createBuilder` модуля `lib/server/server-middleware`.
+
+```javascript
+/**
+ * @param {Object} options
+ * @param {String} options.cdir Корневая директория проекта.
+ * @param {Boolean} options.noLog Не логгировать в консоль процесс сборки.
+ * @returns {Function}
+ */
+module.exports.createBuilder = function(options) { /* ... */ };
+```
+
+Пример использования:
+
+```javascript
+var enbBuilder = require('enb/lib/server/server-middleware').createBuilder();
+var dropRequireCache = require('enb/lib/fs/drop-require-cache');
+app
+    .get('/', function (req, res, next) {
+        var bemhtmlFilePath = 'pages/index/index.bemhtml.js';
+        enbBuilder(bemhtmlFilePath).then(function() {
+            var bemhtmlAbsFilePath = process.process.cwd() + '/' + bemhtmlFilePath;
+            dropRequireCache(require, bemhtmlAbsFilePath);
+            var bemhtml = require(bemhtmlAbsFilePath);
+            res.end(bemhtml.BEMHTML.apply({block: 'b-page', content: 'Hello World'}));
+            next();
+        }, next);
     });
 ```
 

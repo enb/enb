@@ -541,7 +541,7 @@ if (nodeConfig.getPath() === 'touch.bundles/common') {
 
     // Проходимся по существующим страницам
     fs.readdirSync('touch.bundles').map(function (page) {
-        if (page !== 'common' && fs.existsSync('touch.bundles/' + page + '/' + page + '.deps.js')) {
+        if (page !== 'common') {
             // Копируем депсы с каджой страницы внутрь common
             addTechsAttrs.push([ require('enb/techs/deps-provider'), { sourceNodePath: 'touch.bundles/' + page, depsTarget: page + '.deps.js' } ]);
 

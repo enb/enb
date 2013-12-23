@@ -1,13 +1,13 @@
 {
-    "require_space_after_keywords": ["if", "for", "while", "do", "switch", "try", "catch"],
-    "disallow_keywords_on_new_line" : ["else"],
-    "require_left_sticked_operators" : [","],
-    "disallow_muliple_line_breaks" : true,
-    "disallow_left_sticked_operators": ["?", "+", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
-    "disallow_right_sticked_operators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
-    "require_right_sticked_operators": ["!"],
-    "require_line_feed_at_file_end": true,
-    "exclude_files": [
+    "requireSpaceAfterKeywords": ["if", "for", "while", "do", "switch", "try", "catch"],
+    "disallowKeywordsOnNewLine" : ["else"],
+    "requireLeftStickedOperators" : [","],
+    "disallowMultipleLineBreaks" : true,
+    "disallowLeftStickedOperators": ["?", "+", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
+    "disallowRightStickedOperators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
+    "requireRightStickedOperators": ["!"],
+    "requireLineFeedAtFileEnd": true,
+    "excludeFiles": [
         "node_modules",
         "tools",
         "test/fixtures"

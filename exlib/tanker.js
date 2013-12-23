@@ -32,7 +32,6 @@ var DOM = require('dom-js'),
         return type === 'string' || type === 'number';
     };
 
-
 var parseXml = exports.parseXml = function(xml, cb) {
 
         isSimple(xml) || (xml = JSON.stringify(xml));
@@ -363,7 +362,6 @@ function _keyset(param) {
     // FIXME: get rid of Yandex.Tanker specifics
     return ((param.project && param.project === 'tanker') ? 'i-' + param.project + '__' : '') + param.keyset;
 }
-
 
 /** Helpers **/
 

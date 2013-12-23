@@ -75,7 +75,6 @@ module.exports = require('../lib/build-flow').create()
     })
     .createTech();
 
-
 function depKey(dep) {
    return dep.block +
        (dep.elem ? '__' + dep.elem : '') +

@@ -134,6 +134,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 5. Проверить, что ENB работает. Команда `node_modules/.bin/enb make` должна выполниться без ошибок.
 6. 
   Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
+
   ```javascript
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
@@ -143,6 +144,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Так объявляется нода в рамках make-платформы. В данный момент она не настроена, а лишь объявлена.
 7. 
   Объявим таргеты, которые надо собрать для ноды:
+
   ```javascript
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {

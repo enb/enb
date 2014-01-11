@@ -2,7 +2,7 @@
  * node-js
  * =======
  *
- * Склеивает *vanilla.js* и *node.js*-файлы по deps'ам, сохраняет в виде `?.node.js`.
+ * Собирает *vanilla.js* и *node.js*-файлы по deps'ам с помощью `require`, сохраняет в виде `?.node.js`.
  *
  * **Опции**
  *
@@ -20,5 +20,10 @@ module.exports = require('../lib/build-flow').create()
     .name('node-js')
     .target('target', '?.node.js')
     .useFileList(['vanilla.js', 'node.js'])
-    .justJoinFilesWithComments()
+    .builder(function(sourceFiles) {
+        var node = this.node;
+        return sourceFiles.map(function(file) {
+            return "require('" + node.relativePath(file.fullname) + "');";
+        }).join('\n');
+    })
     .createTech();

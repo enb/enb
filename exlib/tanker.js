@@ -53,6 +53,10 @@ var parseXml = exports.parseXml = function (xml, cb) {
 
         var code = expandNodes(toCommonNodes(nodes), jsExpander);
 
+        if (!code.length) {
+            return '\'\'';
+        }
+
         return code.length === 1 &&
             (code[0].charAt(0) === QUOTE_CHAR || code[0].charAt(0) === SINGLE_QUOTE_CHAR ) ?
                 code[0] : 'function (params) { return ' + code.join(' + ') + ' }';

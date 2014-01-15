@@ -53,10 +53,17 @@ var parseXml = exports.parseXml = function (xml, cb) {
 
         var code = expandNodes(toCommonNodes(nodes), jsExpander);
 
-        return code.length === 1 &&
-            (code[0].charAt(0) === QUOTE_CHAR || code[0].charAt(0) === SINGLE_QUOTE_CHAR ) ?
-                code[0] : 'function (params) { return ' + code.join(' + ') + ' }';
-
+        if (code.length === 0) {
+            return '\'\'';
+        } else {
+            var firstLine = code[0];
+            var firstChar = firstLine.charAt(0);
+            if (code.length === 1 && (firstChar === QUOTE_CHAR || firstChar === SINGLE_QUOTE_CHAR)) {
+                return firstLine;
+            } else {
+                return 'function (params) { return ' + code.join(' + ') + ' }';
+            }
+        }
     };
 
 exports.xmlToJs = function (xml, cb) {

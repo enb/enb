@@ -27,32 +27,32 @@ var Vow = require('vow'),
     dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'bemdecl-merge';
     },
 
-    configure: function() {
+    configure: function () {
         var _this = this;
-        this._sources = this.getRequiredOption('bemdeclSources').map(function(source) {
+        this._sources = this.getRequiredOption('bemdeclSources').map(function (source) {
             return _this.node.unmaskTargetName(source);
         });
         this._target = this.node.unmaskTargetName(this.getOption('bemdeclTarget', '?.bemdecl.js'));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             bemdeclTarget = this.node.unmaskTargetName(this._target),
             bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
             cache = this.node.getNodeCache(bemdeclTarget),
             sources = this._sources;
-        return this.node.requireSources(sources).then(function() {
+        return this.node.requireSources(sources).then(function () {
             var rebuildNeeded = cache.needRebuildFile('bemdecl-file', bemdeclTargetPath);
                 if (!rebuildNeeded) {
-                sources.forEach(function(source) {
+                sources.forEach(function (source) {
                     if (cache.needRebuildFile(source, _this.node.resolvePath(source))) {
                         rebuildNeeded = true;
                     }
@@ -60,19 +60,19 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             }
             if (rebuildNeeded) {
                 var bemdeclResults = [];
-                sources.forEach(function(source) {
+                sources.forEach(function (source) {
                     var sourcePath = _this.node.resolvePath(source);
                     dropRequireCache(require, sourcePath);
                     bemdeclResults.push(require(sourcePath));
                 });
-                var mergedDeps = deps.merge(bemdeclResults.map(function(bemdecl) {
+                var mergedDeps = deps.merge(bemdeclResults.map(function (bemdecl) {
                     return deps.fromBemdecl(bemdecl);
                 }));
                 return vowFs.write(
                     bemdeclTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';'
-                ).then(function() {
+                ).then(function () {
                     cache.cacheFileInfo('bemdecl-file', bemdeclTargetPath);
-                    sources.forEach(function(source) {
+                    sources.forEach(function (source) {
                         cache.cacheFileInfo(source, _this.node.resolvePath(source));
                     });
                     _this.node.resolveTarget(bemdeclTarget, mergedDeps);

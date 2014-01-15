@@ -42,25 +42,25 @@ module.exports = require('../lib/build-flow').create()
     .useSourceListFilenames('jsChunksTargets', ['?.js-chunks.js'])
     .useSourceListFilenames('cssChunksTargets', ['?.css-chunks.js'])
     .target('target', '?.bembundle.js')
-    .builder(function(jsChunkFilenames, cssChunkFilenames) {
+    .builder(function (jsChunkFilenames, cssChunkFilenames) {
         var _this = this,
             jsChunks = [],
             cssChunks = [];
-        cssChunkFilenames.forEach(function(cssChunksFilename) {
+        cssChunkFilenames.forEach(function (cssChunksFilename) {
             dropRequireCache(require, cssChunksFilename);
             cssChunks = cssChunks.concat(require(cssChunksFilename));
         });
-        jsChunkFilenames.forEach(function(jsChunksFilename) {
+        jsChunkFilenames.forEach(function (jsChunksFilename) {
             dropRequireCache(require, jsChunksFilename);
             jsChunks = jsChunks.concat(require(jsChunksFilename));
         });
         return this.buildBundle(jsChunks, cssChunks);
     })
     .methods({
-        buildBundle: function(jsChunks, cssChunks) {
+        buildBundle: function (jsChunks, cssChunks) {
             var _this = this;
-            return Vow.when(this.buildJsBody(jsChunks)).then(function(jsBody) {
-                var hcssChunks = cssChunks.map(function(chunk) {
+            return Vow.when(this.buildJsBody(jsChunks)).then(function (jsBody) {
+                var hcssChunks = cssChunks.map(function (chunk) {
                     return [chunk.hash, chunk.data];
                 });
                 return [
@@ -76,22 +76,22 @@ module.exports = require('../lib/build-flow').create()
                 ].join('');
             });
         },
-        buildJsBody: function(jsChunks) {
+        buildJsBody: function (jsChunks) {
             var _this = this;
-            return jsChunks.map(function(chunk) {
+            return jsChunks.map(function (chunk) {
                 return _this.__self.wrapWithOnceIf(chunk.data, chunk.fullname, chunk.hash);
             }).join('\n');
         }
     })
     .staticMethods({
-        getOnceFunctionDecl: function() {
+        getOnceFunctionDecl: function () {
             return '(function(){ this._ycssjs || ' +
                 '(this._ycssjs=function(a,b){return !(a in _ycssjs||_ycssjs[a]++)}) })();\n';
         },
-        wrapWithOnceIf: function(data, filename, hash) {
+        wrapWithOnceIf: function (data, filename, hash) {
             return 'if (_ycssjs("' + hash + '")) {\n' + '// ' + filename + '\n' + data + '\n}';
         },
-        getExistingChunkDecl: function(hash) {
+        getExistingChunkDecl: function (hash) {
             return '_ycssjs("' + hash + '");\n';
         }
     })

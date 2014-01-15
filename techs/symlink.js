@@ -25,31 +25,31 @@ var fs = require('graceful-fs'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'symlink';
     },
 
-    configure: function() {
+    configure: function () {
         this._symlinkTarget = this.getRequiredOption('symlinkTarget');
         this._fileTarget = this.getRequiredOption('fileTarget');
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._symlinkTarget)];
     },
 
-    build: function() {
+    build: function () {
         var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget),
             symlinkTargetPath = this.node.resolvePath(symlinkTarget),
             fileTarget = this.node.unmaskTargetName(this._fileTarget),
             _this = this;
         function createSymlink() {
-            return vowFs.symLink(fileTarget, symlinkTargetPath).then(function() {
+            return vowFs.symLink(fileTarget, symlinkTargetPath).then(function () {
                 _this.node.resolveTarget(symlinkTarget);
             });
         }
-        return this.node.requireSources([fileTarget]).then(function() {
-            return vowFs.exists(symlinkTargetPath).then(function(exists) {
+        return this.node.requireSources([fileTarget]).then(function () {
+            return vowFs.exists(symlinkTargetPath).then(function (exists) {
                 if (exists) {
                     return vowFs.remove(symlinkTargetPath).then(createSymlink);
                 } else {

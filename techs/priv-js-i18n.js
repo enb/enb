@@ -17,7 +17,7 @@
  *
  * ```javascript
  *  [ require('enb/techs/priv-js-i18n-all'), {
- *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.' + lang + '.js'})
+ *      langTargets: ['all'].concat(config.getLanguages()).map(function (lang) {return '?.lang.' + lang + '.js'})
  *  } ]
  * ```
  */

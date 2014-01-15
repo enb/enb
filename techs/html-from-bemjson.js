@@ -29,7 +29,7 @@ module.exports = require('../lib/build-flow').create()
         dropRequireCache(require, bemjsonFilename);
         return requireOrEval(bemjsonFilename).then(function (json) {
             dropRequireCache(require, bemhtmlFilename);
-            return asyncRequire(bemhtmlFilename).then(function(bemhtml) {
+            return asyncRequire(bemhtmlFilename).then(function (bemhtml) {
                 if (!bemhtml.BEMHTML && bemhtml.lib) {
                     return bemhtml.apply(json);
                 } else {

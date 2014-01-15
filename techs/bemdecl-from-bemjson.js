@@ -28,7 +28,7 @@ module.exports = require('../lib/build-flow').create()
     .name('bemdecl-from-bemjson')
     .target('destTarget', '?.bemdecl.js')
     .useSourceFilename('sourceTarget', '?.bemjson.js')
-    .builder(function(bemjsonFilename) {
+    .builder(function (bemjsonFilename) {
         return asyncOrEval(bemjsonFilename).then(function (json) {
             var deps = [];
             addDepsFromBemjson(json, deps, {}, null);

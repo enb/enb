@@ -11,15 +11,15 @@ module.exports = require('../lib/build-flow').create()
     .target('target', '?.test.js')
     .useFileList('test.js')
     .defineOption('fileMask', /.*/, '_fileMask')
-    .builder(function(testFiles) {
+    .builder(function (testFiles) {
         var fileMask = this._fileMask;
         testFiles = testFiles.filter(
-            typeof fileMask === 'function' ? fileMask : function(file) {
+            typeof fileMask === 'function' ? fileMask : function (file) {
                 return fileMask.test(file.fullname);
             });
-        return Vow.all(testFiles.map(function(file) {
+        return Vow.all(testFiles.map(function (file) {
             return vowFs.read(file.fullname, 'utf8');
-        })).then(function(chunks) {
+        })).then(function (chunks) {
             return chunks.join('\n');
         });
     })

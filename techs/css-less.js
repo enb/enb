@@ -37,7 +37,7 @@ module.exports = require('./css').buildFlow()
         var _this = this,
             promise = Vow.promise();
 
-        var css = sourceFiles.map(function(file) {
+        var css = sourceFiles.map(function (file) {
             return '@import "' + file.fullname + '";';
         }).join('\n');
 
@@ -56,20 +56,20 @@ module.exports = require('./css').buildFlow()
             this.currentFileInfo = currentFileInfo;
         };
         tree.URL.prototype = {
-            type: "Url",
+            type: 'Url',
             accept: function (visitor) {
                 this.value = visitor.visit(this.value);
             },
             toCSS: function () {
-                return "url(" + this.value.toCSS() + ")";
+                return 'url(' + this.value.toCSS() + ')';
             },
             eval: function (ctx) {
                 /*jshint -W061 */
                 var val = this.value.eval(ctx), rootpath;
                 rootpath = this.currentFileInfo && this.currentFileInfo.rootpath;
-                if (rootpath && typeof val.value === "string" && ctx.isPathRelative(val.value)) {
+                if (rootpath && typeof val.value === 'string' && ctx.isPathRelative(val.value)) {
                     if (!val.quote) {
-                        rootpath = rootpath.replace(/[\(\)'"\s]/g, function(match) { return "\\" + match; });
+                        rootpath = rootpath.replace(/[\(\)'"\s]/g, function (match) { return '\\' + match; });
                     }
                     var urlFilename = path.resolve(
                         path.dirname(this.currentFileInfo.filename),
@@ -86,14 +86,16 @@ module.exports = require('./css').buildFlow()
         };
 
         parser.parse(css, function (err, tree) {
-            if (err) return promise.reject(err);
+            if (err) {
+                return promise.reject(err);
+            }
             if (tree.URL === newURL) {
                 tree.URL = tree._originURL;
             }
             return promise.fulfill(tree.toCSS());
         });
 
-        return promise.then(function(css) {
+        return promise.then(function (css) {
             return _this._processIncludes(css, _this.node.resolvePath(targetName));
         });
     })

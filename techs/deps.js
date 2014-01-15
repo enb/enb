@@ -38,11 +38,11 @@ var Vow = require('vow'),
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
 
-    getName: function() {
+    getName: function () {
         return 'deps';
     },
 
-    configure: function() {
+    configure: function () {
         this._target = this.node.unmaskTargetName(
             this.getOption('depsTarget', this.node.getTargetName('deps.js')));
         this._bemdeclTarget = this.node.unmaskTargetName(
@@ -51,37 +51,37 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             this.getOption('levelsTarget', this.node.getTargetName('levels')));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             depsTarget = this._target,
             depsTargetPath = this.node.resolvePath(depsTarget),
             cache = this.node.getNodeCache(depsTarget),
             bemdeclSource = this._bemdeclTarget,
             bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
-        return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function(levels) {
+        return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function (levels) {
             var depFiles = levels.getFilesBySuffix('deps.js').concat(levels.getFilesBySuffix('deps.yaml'));
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('bemdecl-file', bemdeclSourcePath) ||
                 cache.needRebuildFileList('deps-file-list', depFiles)
             ) {
                 dropRequireCache(require, bemdeclSourcePath);
-                return asyncRequire(bemdeclSourcePath).then(function(bemdecl) {
+                return asyncRequire(bemdeclSourcePath).then(function (bemdecl) {
                     var decls = [],
                         dep = new DepsResolver(levels);
 
                     if (bemdecl.blocks) {
-                        bemdecl.blocks.forEach(function(block) {
+                        bemdecl.blocks.forEach(function (block) {
                             decls.push({
                                 name: block.name
                             });
                             if (block.mods) {
-                                block.mods.forEach(function(mod) {
+                                block.mods.forEach(function (mod) {
                                     if (mod.vals) {
-                                        mod.vals.forEach(function(val) {
+                                        mod.vals.forEach(function (val) {
                                             decls.push({
                                                 name: block.name,
                                                 modName: mod.name,
@@ -92,15 +92,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                                 });
                             }
                             if (block.elems) {
-                                block.elems.forEach(function(elem) {
+                                block.elems.forEach(function (elem) {
                                     decls.push({
                                         name: block.name,
                                         elem: elem.name
                                     });
                                     if (elem.mods) {
-                                        elem.mods.forEach(function(mod) {
+                                        elem.mods.forEach(function (mod) {
                                             if (mod.vals) {
-                                                mod.vals.forEach(function(val) {
+                                                mod.vals.forEach(function (val) {
                                                     decls.push({
                                                         name: block.name,
                                                         elem: elem.name,
@@ -120,11 +120,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                         decls = decls.concat(dep.normalizeDeps(bemdecl.deps));
                     }
 
-                    return dep.addDecls(decls).then(function() {
+                    return dep.addDecls(decls).then(function () {
                         var resolvedDeps = dep.resolve();
                         return vowFs.write(
                             depsTargetPath, 'exports.deps = ' + JSON.stringify(resolvedDeps, null, 4) + ';\n', 'utf8'
-                        ).then(function() {
+                        ).then(function () {
                             cache.cacheFileInfo('deps-file', depsTargetPath);
                             cache.cacheFileInfo('bemdecl-file', bemdeclSourcePath);
                             cache.cacheFileList('deps-file-list', depFiles);

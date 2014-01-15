@@ -23,7 +23,7 @@
 module.exports = require('./xsl').buildFlow()
     .name('xsl-html5')
     .methods({
-        getAppendXsl: function() {
+        getAppendXsl: function () {
             var res = [this._appendXsl];
             res.push(
                 '<xsl:output encoding="UTF-8" method="html" indent="no" ' +

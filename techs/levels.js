@@ -23,7 +23,7 @@
  *   levels: [
  *     {path: 'lego/blocks-desktop', check: false},
  *     'desktop.blocks'
- *   ].map(function(level) { return config.resolvePath(level); })
+ *   ].map(function (level) { return config.resolvePath(level); })
  * } ]);
  * ```
  */
@@ -34,21 +34,21 @@ var Level = require('../lib/levels/level'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'levels';
     },
 
-    init: function(node) {
+    init: function (node) {
         this.__base.apply(this, arguments);
         this._levelConfig = this.getRequiredOption('levels');
         this._target = this.node.unmaskTargetName(this.getOption('target', '?.levels'));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             promise = Vow.promise();
         try {
@@ -63,7 +63,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var
                     levelPath = levelInfo.path,
                     levelKey = 'level:' + levelPath;
-                if (levelsIndex[levelPath]) continue;
+                if (levelsIndex[levelPath]) {
+                    continue;
+                }
                 levelsIndex[levelPath] = true;
                 if (!this.node.buildState[levelKey]) {
                     var level = new Level(levelPath, this.node.getLevelNamingScheme(levelPath));
@@ -80,21 +82,21 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 levelList.push(this.node.buildState[levelKey]);
             }
             var pageBlocksPath = this.node.resolvePath('blocks');
-            fs.exists(pageBlocksPath, function(res) {
+            fs.exists(pageBlocksPath, function (res) {
                 try {
                     if (res && !levelsIndex[pageBlocksPath]) {
                         levelsIndex[pageBlocksPath] = true;
                         levelList.push(new Level(pageBlocksPath));
                     }
-                    return Vow.all(levelList.map(function(level) {
+                    return Vow.all(levelList.map(function (level) {
                         return level.load();
-                    })).then((function() {
-                        levelsToCache.forEach(function(level) {
+                    })).then((function () {
+                        levelsToCache.forEach(function (level) {
                             cache.set(level.getPath(), level.getBlocks());
                         });
                         _this.node.resolveTarget(target, new Levels(levelList));
                         return promise.fulfill();
-                    }), function(err) {
+                    }), function (err) {
                         return promise.reject(err);
                     });
                 } catch (err) {
@@ -107,5 +109,5 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         return promise;
     },
 
-    clean: function() {}
+    clean: function () {}
 });

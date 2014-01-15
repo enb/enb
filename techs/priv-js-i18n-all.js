@@ -14,7 +14,7 @@
  *
  * ```javascript
  *  [ require('enb/techs/priv-js-i18n-all'), {
- *      langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.' + lang + '.js'})
+ *      langTargets: ['all'].concat(config.getLanguages()).map(function (lang) {return '?.lang.' + lang + '.js'})
  *  } ]
  * ```
  */
@@ -26,12 +26,12 @@ module.exports = require('../lib/build-flow').create()
     .target('target', '?.all.priv.js')
     .useSourceListFilenames('langTargets', [])
     .useSourceText('privJsTarget', '?.priv.js')
-    .builder(function(langFilenames, privJs) {
+    .builder(function (langFilenames, privJs) {
         return Vow.all(
-            langFilenames.map(function(filename) {
+            langFilenames.map(function (filename) {
                 return vowFs.read(filename);
             })
-        ).then(function(langResults) {
+        ).then(function (langResults) {
             return langResults.join('\n') + privJs;
         });
     })

@@ -32,21 +32,21 @@ var Vow = require('vow'),
     dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'deps-provider';
     },
 
-    configure: function() {
+    configure: function () {
         this._sourceNodePath = this.getRequiredOption('sourceNodePath');
         this._sourceTarget = this.getOption('sourceTarget', '?.deps.js');
         this._target = this.node.unmaskTargetName(this.getOption('depsTarget', '?.deps.js'));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             depsTarget = this._target,
             depsTargetPath = this.node.resolvePath(depsTarget),
@@ -56,14 +56,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             cache = this.node.getNodeCache(depsTarget),
             requirements = {};
         requirements[fromNode] = [sourceTargetName];
-        return this.node.requireNodeSources(requirements).then(function(results) {
+        return this.node.requireNodeSources(requirements).then(function (results) {
             var deps = results[fromNode][0];
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('source-deps-file', sourceTargetPath)
             ) {
                 return vowFs.write(
                     depsTargetPath, 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';'
-                ).then(function() {
+                ).then(function () {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('source-deps-file', sourceTargetPath);
                     _this.node.resolveTarget(depsTarget, deps);

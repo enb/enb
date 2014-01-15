@@ -1,12 +1,23 @@
 {
-    "requireSpaceAfterKeywords": ["if", "for", "while", "do", "switch", "try", "catch"],
+    "requireCurlyBraces": ["if", "else", "for", "while", "do", "try", "catch"],
+    "requireSpaceAfterKeywords": ["if", "for", "while", "do", "switch", "try", "catch", "function", "return"],
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
     "disallowKeywordsOnNewLine" : ["else"],
-    "requireLeftStickedOperators" : [","],
     "disallowMultipleLineBreaks" : true,
     "disallowLeftStickedOperators": ["?", "+", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
     "disallowRightStickedOperators": ["?", "+", "/", "*", ":", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="],
-    "requireRightStickedOperators": ["!"],
+    "requireSpaceBeforeBinaryOperators": ["+", "-", "/", "*", "=", "==", "===", "!=", "!=="],
+    "disallowSpaceAfterPrefixUnaryOperators": ["++", "--", "+", "-"],
+    "disallowSpaceBeforePostfixUnaryOperators": ["++", "--"],
+    "requireRightStickedOperators": ["!" ],
+    "requireLeftStickedOperators": [","],
     "requireLineFeedAtFileEnd": true,
+    "validateLineBreaks": "LF",
+    "disallowSpaceAfterObjectKeys": true,
+    "disallowKeywords": [ "with" ],
+    "validateQuoteMarks": "'",
     "excludeFiles": [
         "node_modules",
         "tools",

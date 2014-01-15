@@ -31,18 +31,18 @@ module.exports = require('../lib/build-flow').create()
     .target('target', '?.keysets.{lang}.xml')
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
-    .builder(function(keysetsFilename) {
+    .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
         var lang = this._lang,
             keysets = require(keysetsFilename),
             res = [];
-        Object.keys(keysets).sort().map(function(keysetName) {
+        Object.keys(keysets).sort().map(function (keysetName) {
             var keyset = keysets[keysetName];
             res.push('<keyset id="' + keysetName + '">');
-            Object.keys(keyset).map(function(key) {
+            Object.keys(keyset).map(function (key) {
                 var value = keyset[key], dom = new domjs.DomJS();
                 try {
-                    dom.parse('<root>' + value + '</root>', function() {});
+                    dom.parse('<root>' + value + '</root>', function () {});
                 } catch (e) {
                     value = domjs.escape(value);
                 }
@@ -56,12 +56,12 @@ module.exports = require('../lib/build-flow').create()
 
     })
     .methods({
-        getPrependXml: function(lang) {
+        getPrependXml: function (lang) {
             return '<?xml version="1.0" encoding="utf-8"?>\n' +
                 '<tanker xmlns:xsl="http://www.w3.org/1999/XSL/Transform" ' +
                 'xmlns:i18n="urn:yandex-functions:internationalization">\n';
         },
-        getAppendXml: function(lang) {
+        getAppendXml: function (lang) {
             return '\n</tanker>';
         }
     })

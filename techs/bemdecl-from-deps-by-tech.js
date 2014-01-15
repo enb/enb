@@ -36,27 +36,27 @@ module.exports = require('../lib/build-flow').create()
     .defineRequiredOption('sourceTech')
     .defineRequiredOption('destTech')
     .useFileList('deps.js')
-    .builder(function(depsFiles) {
+    .builder(function (depsFiles) {
         var sourceTech = this._sourceTech,
             destTech = this._destTech;
-        return Vow.all(depsFiles.map(function(file) {
-            return vowFs.read(file.fullname, 'utf8').then(function(text) {
+        return Vow.all(depsFiles.map(function (file) {
+            return vowFs.read(file.fullname, 'utf8').then(function (text) {
                 return {file: file, text: text };
             });
-        })).then(function(depResults) {
+        })).then(function (depResults) {
             var result = [],
                 depIndex = {};
-            depResults.forEach(function(depResult) {
+            depResults.forEach(function (depResult) {
                 var fileDeps = vm.runInThisContext(depResult.text);
                 if (!fileDeps) {
                     return;
                 }
                 fileDeps = Array.isArray(fileDeps) ? fileDeps : [fileDeps];
-                fileDeps.forEach(function(dep) {
+                fileDeps.forEach(function (dep) {
                     if (dep.tech === sourceTech) {
-                        ['mustDeps', 'shouldDeps'].forEach(function(depType) {
+                        ['mustDeps', 'shouldDeps'].forEach(function (depType) {
                             if (dep[depType]) {
-                                deps.flattenDeps(dep[depType]).forEach(function(singleDep) {
+                                deps.flattenDeps(dep[depType]).forEach(function (singleDep) {
                                     if (singleDep.tech === destTech) {
                                         var key = depKey(singleDep);
                                         if (!depIndex[key]) {

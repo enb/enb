@@ -10,7 +10,7 @@ var vowFs = require('../lib/fs/async-fs');
 var vm = require('vm');
 var Vow = require('vow');
 
-module.exports.OldDeps = (function() {
+module.exports.OldDeps = (function () {
     /**
      * Класс, раскрывающий зависимости. Взят из bem-tools.
      *
@@ -24,7 +24,7 @@ module.exports.OldDeps = (function() {
          *
          * @param {Array} deps
          */
-        __constructor: function(deps) {
+        __constructor: function (deps) {
             this.items = {};
             this.itemsByOrder = [];
             this.uniqExpand = {};
@@ -43,7 +43,7 @@ module.exports.OldDeps = (function() {
          * @param {String} depsType shouldDeps/mustDeps
          * @param {OldDepsItem} item
          */
-        add: function(target, depsType, item) {
+        add: function (target, depsType, item) {
             var items = this.items,
                 targetKey = target.buildKey(),
                 itemKey = item.buildKey();
@@ -62,7 +62,7 @@ module.exports.OldDeps = (function() {
          * @param {OldDepsItem} target
          * @param {OldDepsItem} item
          */
-        remove: function(target, item) {
+        remove: function (target, item) {
             target = this.items[target.buildKey()];
             var itemKey = item.buildKey();
             removeFromArray(target.shouldDeps, itemKey);
@@ -75,12 +75,14 @@ module.exports.OldDeps = (function() {
          * @param {OldDeps} [target]
          * @returns {OldDeps}
          */
-        clone: function(target) {
+        clone: function (target) {
             target || (target = new this.__self());
 
             var items = this.items;
             for (var i in items) {
-                if (!items.hasOwnProperty(i)) continue;
+                if (!items.hasOwnProperty(i)) {
+                    continue;
+                }
                 target.items[i] = items[i].clone();
             }
 
@@ -99,13 +101,13 @@ module.exports.OldDeps = (function() {
          * @param {Function} [fn]
          * @returns {OldDeps}
          */
-        parse: function(deps, ctx, fn) {
-            fn || (fn = function(i) { this.add(this.rootItem, 'shouldDeps', i); });
+        parse: function (deps, ctx, fn) {
+            fn || (fn = function (i) { this.add(this.rootItem, 'shouldDeps', i); });
 
             var _this = this,
 
-                forEachItem = function(type, items, ctx) {
-                    items && !isEmptyObject(items) && (Array.isArray(items) ? items : [items]).forEach(function(item) {
+                forEachItem = function (type, items, ctx) {
+                    items && !isEmptyObject(items) && (Array.isArray(items) ? items : [items]).forEach(function (item) {
 
                         if (isSimple(item)) {
                             var i = item;
@@ -120,17 +122,17 @@ module.exports.OldDeps = (function() {
                         _this.parse(
                             item.mustDeps,
                             depsItem,
-                            function(i) { this.add(depsItem, 'mustDeps', i) });
+                            function (i) { this.add(depsItem, 'mustDeps', i); });
 
                         _this.parse(
                             item.shouldDeps,
                             depsItem,
-                            function(i) { this.add(depsItem, 'shouldDeps', i) });
+                            function (i) { this.add(depsItem, 'shouldDeps', i); });
 
                         _this.parse(
                             item.noDeps,
                             depsItem,
-                            function(i) { this.remove(depsItem, i) });
+                            function (i) { this.remove(depsItem, i); });
 
                         forEachItem('elem', item.elems, depsItem);
 
@@ -138,7 +140,9 @@ module.exports.OldDeps = (function() {
                         if (mods && !Array.isArray(mods)) { // Object
                             var modsArr = [];
                             for (var m in mods) {
-                                if (!mods.hasOwnProperty(m)) continue;
+                                if (!mods.hasOwnProperty(m)) {
+                                    continue;
+                                }
                                 modsArr.push({ mod: m });
                                 var mod = { mod: m }, v = mods[m];
                                 Array.isArray(v) ? (mod.vals = v) : (mod.val = v);
@@ -164,7 +168,7 @@ module.exports.OldDeps = (function() {
          * @param {Object} tech
          * @returns {Promise}
          */
-        expandByFS: function(tech) {
+        expandByFS: function (tech) {
 
             this.tech = tech;
 
@@ -192,16 +196,16 @@ module.exports.OldDeps = (function() {
          *
          * @returns {Promise}
          */
-        expandOnceByFS: function() {
+        expandOnceByFS: function () {
 
             var newDeps = this.clone();
-            var items = this.filter(function(item) {
+            var items = this.filter(function (item) {
                 return !newDeps.uniqExpand.hasOwnProperty(item.buildKey());
             });
 
             function keepWorking(item) {
                 newDeps.uniqExpand[item.buildKey()] = true;
-                return newDeps.expandItemByFS(item).then(function() {
+                return newDeps.expandItemByFS(item).then(function () {
                     if (items.length > 0) {
                         return keepWorking(items.shift());
                     } else {
@@ -211,7 +215,7 @@ module.exports.OldDeps = (function() {
             }
 
             if (items.length > 0) {
-                return keepWorking(items.shift()).then(function() {
+                return keepWorking(items.shift()).then(function () {
                     return newDeps;
                 });
             } else {
@@ -225,19 +229,21 @@ module.exports.OldDeps = (function() {
          * @param {OldDepsItem} item
          * @returns {Promise}
          */
-        expandItemByFS: function(item) {
+        expandItemByFS: function (item) {
 
             var _this = this,
                 tech = this.tech;
 
             var files = tech.levels.getFilesByDecl(item.item.block, item.item.elem, item.item.mod, item.item.val)
-                .filter(function(file) { return file.suffix === 'deps.js'; });
+                .filter(function (file) {
+                    return file.suffix === 'deps.js';
+                });
 
             var promise = Vow.fulfill();
 
-            files.forEach(function(file) {
-                promise = promise.then(function() {
-                    return vowFs.read(file.fullname, 'utf8').then(function(content) {
+            files.forEach(function (file) {
+                promise = promise.then(function () {
+                    return vowFs.read(file.fullname, 'utf8').then(function (content) {
                         try {
                             _this.parse(vm.runInThisContext(content, file.fullname), item);
                         } catch (e) {
@@ -256,12 +262,15 @@ module.exports.OldDeps = (function() {
          * @param {OldDeps} deps
          * @returns {OldDeps}
          */
-        subtract: function(deps) {
+        subtract: function (deps) {
             var items1 = this.items,
                 items2 = deps.items;
 
-            for (var k in items2)
-                if (k && items2.hasOwnProperty(k)) delete items1[k];
+            for (var k in items2) {
+                if (k && items2.hasOwnProperty(k)) {
+                    delete items1[k];
+                }
+            }
             return this;
         },
 
@@ -271,14 +280,15 @@ module.exports.OldDeps = (function() {
          * @param {OldDeps} deps
          * @returns {OldDeps}
          */
-        intersect: function(deps) {
+        intersect: function (deps) {
             var items1 = this.items,
                 items2 = deps.items,
                 newItems = {};
 
             for (var k in items2) {
-                if ((items2.hasOwnProperty(k) && items1.hasOwnProperty(k)) || !k)
+                if ((items2.hasOwnProperty(k) && items1.hasOwnProperty(k)) || !k) {
                     newItems[k] = items1[k];
+                }
             }
 
             this.items = newItems;
@@ -291,11 +301,13 @@ module.exports.OldDeps = (function() {
          *
          * @returns {Number}
          */
-        getCount: function() {
+        getCount: function () {
             var res = 0,
                 items = this.items;
 
-            for (var k in items) items.hasOwnProperty(k) && res++;
+            for (var k in items) {
+                items.hasOwnProperty(k) && res++;
+            }
 
             return res;
         },
@@ -308,11 +320,11 @@ module.exports.OldDeps = (function() {
          * @param {Array} [itemsByOrder]
          * @param {Object} [ctx]
          */
-        forEach: function(fn, uniq, itemsByOrder, ctx) {
+        forEach: function (fn, uniq, itemsByOrder, ctx) {
             uniq || (uniq = {});
             var _this = this;
 
-            (itemsByOrder || this.items[''].shouldDeps).forEach(function(i) {
+            (itemsByOrder || this.items[''].shouldDeps).forEach(function (i) {
                 if (i = _this.items[i]) {
                     var key = i.buildKey();
                     if (!uniq.hasOwnProperty(key)) {
@@ -332,9 +344,11 @@ module.exports.OldDeps = (function() {
          * @param {Function} fn
          * @returns {Array}
          */
-        map: function(fn) {
+        map: function (fn) {
             var res = [];
-            this.forEach(function(item) { res.push(fn.call(this, item)); });
+            this.forEach(function (item) {
+                res.push(fn.call(this, item));
+            });
             return res;
         },
 
@@ -343,9 +357,13 @@ module.exports.OldDeps = (function() {
          * @param {Function} fn
          * @returns {Array}
          */
-        filter: function(fn) {
+        filter: function (fn) {
             var res = [];
-            this.forEach(function(item) { if (fn.call(this, item)) res.push(item); });
+            this.forEach(function (item) {
+                if (fn.call(this, item)) {
+                    res.push(item);
+                }
+            });
             return res;
         },
 
@@ -354,9 +372,9 @@ module.exports.OldDeps = (function() {
          *
          * @returns {Object}
          */
-        serialize: function() {
+        serialize: function () {
             var byTech = {};
-            this.forEach(function(item, ctx) {
+            this.forEach(function (item, ctx) {
                 var t1 = ctx.item.tech || '',
                     t2 = item.item.tech || '',
                     techsByTech = byTech[t1] || (byTech[t1] = {}),
@@ -371,7 +389,7 @@ module.exports.OldDeps = (function() {
          *
          * @returns {String}
          */
-        stringify: function() {
+        stringify: function () {
             var res = [],
                 deps = this.serialize();
 
@@ -392,7 +410,7 @@ module.exports.OldDeps = (function() {
          *
          * @returns {Object|*|*|Array}
          */
-        getDeps: function() {
+        getDeps: function () {
             var serializedData = this.serialize();
             return (serializedData && serializedData[''] && serializedData['']['']) || [];
         }
@@ -406,7 +424,7 @@ module.exports.OldDeps = (function() {
      */
     var OldDepsItem = inherit({
 
-        __constructor: function(item, ctx) {
+        __constructor: function (item, ctx) {
             this.shouldDeps = [];
             this.mustDeps = [];
             this.item = {};
@@ -420,7 +438,7 @@ module.exports.OldDeps = (function() {
          * @param {Object} ctx
          * @returns {OldDepsItem}
          */
-        extendByCtx: function(ctx) {
+        extendByCtx: function (ctx) {
             if (ctx && (ctx = ctx.item)) {
                 var ks = ['tech', 'block', 'elem', 'mod', 'val'],
                     k;
@@ -441,7 +459,7 @@ module.exports.OldDeps = (function() {
          *
          * @returns {OldDepsItem}
          */
-        clone: function() {
+        clone: function () {
             var res = new this.__self({}, this);
             res.shouldDeps = this.shouldDeps.concat();
             res.mustDeps = this.mustDeps.concat();
@@ -455,18 +473,23 @@ module.exports.OldDeps = (function() {
          * @param {OldDepsItem} item
          * @returns {OldDepsItem}
          */
-        extend: function(item) {
-            if (!item) return this;
+        extend: function (item) {
+            if (!item) {
+                return this;
+            }
             var ds = ['mustDeps', 'shouldDeps'], d,
                 thisDeps, itemDeps;
             while (d = ds.shift()) {
                 itemDeps = item[d] || (item[d] = {});
                 if (thisDeps = this.item[d]) {
-                    for (var k in thisDeps)
+                    for (var k in thisDeps) {
                         if (thisDeps.hasOwnProperty(k)) {
-                            if (!thisDeps[k].extend) throw 'bla';
+                            if (!thisDeps[k].extend) {
+                                throw 'bla'; // FIXME: WTF?
+                            }
                             (itemDeps[k] = thisDeps[k].extend(itemDeps[k]));
                         }
+                    }
                 }
             }
             return item;
@@ -478,7 +501,7 @@ module.exports.OldDeps = (function() {
          * @param {Object} cache
          * @returns {OldDepsItem}
          */
-        cache: function(cache) {
+        cache: function (cache) {
             var key = this.buildKey();
             return cache[key] = this.extend(cache[key]);
         },
@@ -488,8 +511,10 @@ module.exports.OldDeps = (function() {
          *
          * @returns {String}
          */
-        buildKey: function() {
-            if ('key' in this) return this.key;
+        buildKey: function () {
+            if ('key' in this) {
+                return this.key;
+            }
 
             var i = this.item,
                 k = '';
@@ -511,12 +536,16 @@ module.exports.OldDeps = (function() {
          *
          * @returns {Object}
          */
-        serialize: function() {
+        serialize: function () {
             var res = {},
                 ks = ['tech', 'block', 'elem', 'mod', 'val'], k;
 
-            while (k = ks.shift()) this.item[k] && (res[k] = this.item[k]);
-            if (res.block) return res;
+            while (k = ks.shift()) {
+                this.item[k] && (res[k] = this.item[k]);
+            }
+            if (res.block) {
+                return res;
+            }
         }
 
     });
@@ -557,7 +586,9 @@ module.exports.OldDeps = (function() {
      * @returns {Boolean}
      */
     function isEmptyObject(obj) {
-        for (var i in obj) return false;
+        for (var i in obj) {
+            return false;
+        }
         return true;
     }
 

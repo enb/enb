@@ -7,11 +7,11 @@ var inherit = require('inherit'),
     DepsResolver = require('../lib/deps/deps-resolver');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'js-expand-includes';
     },
 
-    configure: function() {
+    configure: function () {
         this._fileMask = this.getOption('fileMask', /.*/);
         this._target = this.getOption('target', this.node.getTargetName('test.bemdecl.js'));
         this._levelsTarget = this.node.unmaskTargetName(
@@ -19,25 +19,25 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         );
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [
             this._target
         ];
     },
 
-    build: function() {
+    build: function () {
         var bemdeclTarget = this.node.unmaskTargetName(this._target),
             bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
             _this = this,
             cache = this.node.getNodeCache(bemdeclTarget);
-        return this.node.requireSources([this._levelsTarget]).spread(function(files) {
+        return this.node.requireSources([this._levelsTarget]).spread(function (files) {
             var sourceFiles = files.getFilesBySuffix('test.js'),
                 depsFiles = files.getFilesBySuffix('test.deps.js'),
                 filterFunction;
             if (typeof _this._fileMask === 'function') {
                 filterFunction = _this._fileMask;
             } else {
-                filterFunction = function(file) {
+                filterFunction = function (file) {
                     return _this._fileMask.test(file.fullname);
                 };
             }
@@ -49,7 +49,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             ) {
                 var deps = [];
 
-                sourceFiles.forEach(function(file) {
+                sourceFiles.forEach(function (file) {
                     var fileDeps = FileList.parseFilename(file.name).bem;
                     if (fileDeps.hasOwnProperty('modName')) {
                         fileDeps.mod = fileDeps.modName;
@@ -61,9 +61,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 });
 
                 var depsResolver = new DepsResolver(files);
-                depsFiles.forEach(function(file) {
+                depsFiles.forEach(function (file) {
                     var fileDecl = FileList.parseFilename(file.name).bem;
-                    var fileDeps = vm.runInThisContext(fs.readFileSync(file.fullname, "utf8"));
+                    var fileDeps = vm.runInThisContext(fs.readFileSync(file.fullname, 'utf8'));
                     var allDeps = [];
                     if (fileDeps.mustDeps) {
                         allDeps = allDeps.concat(
@@ -75,7 +75,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                             depsResolver.normalizeDeps(fileDeps.shouldDeps, fileDecl.block, fileDecl.elem)
                         );
                     }
-                    allDeps.forEach(function(dep) {
+                    allDeps.forEach(function (dep) {
                         dep.block = dep.name;
                         if (dep.hasOwnProperty('modName')) {
                             dep.mod = dep.modName;
@@ -89,7 +89,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
                 var bemdeclContent = 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';';
 
-                return vowFs.write(bemdeclTargetPath, bemdeclContent).then(function() {
+                return vowFs.write(bemdeclTargetPath, bemdeclContent).then(function () {
                     cache.cacheFileInfo('bemdecl-file', bemdeclTargetPath);
                     cache.cacheFileList('source-files', sourceFiles);
                     cache.cacheFileList('deps-files', depsFiles);

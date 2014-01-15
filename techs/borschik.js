@@ -37,11 +37,11 @@ var fs = require('graceful-fs'),
  * @type {Tech}
  */
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'borschik';
     },
 
-    configure: function() {
+    configure: function () {
         this._source = this.node.unmaskTargetName(this.getRequiredOption('sourceTarget'));
         this._target = this.node.unmaskTargetName(this.getRequiredOption('destTarget'));
         this._freeze = this.getOption('freeze', false);
@@ -49,25 +49,25 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         this._tech = this.getOption('tech', null);
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var target = this._target,
             targetPath = this.node.resolvePath(target),
             source = this._source,
             sourcePath = this.node.resolvePath(source),
             _this = this,
             cache = this.node.getNodeCache(target);
-        return this.node.requireSources([source]).then(function() {
+        return this.node.requireSources([source]).then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {
                 var borschikProcessor = BorschikProcessorSibling.fork();
                 return Vow.when(
                     borschikProcessor.process(sourcePath, targetPath, _this._freeze, _this._minify, _this._tech)
-                ).then(function() {
+                ).then(function () {
                     cache.cacheFileInfo('source-file', sourcePath);
                     cache.cacheFileInfo('target-file', targetPath);
                     _this.node.resolveTarget(target);
@@ -83,7 +83,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 });
 
 var BorschikProcessorSibling = require('sibling').declare({
-    process: function(sourcePath, targetPath, freeze, minify, tech) {
+    process: function (sourcePath, targetPath, freeze, minify, tech) {
         return (new BorschikPreprocessor()).preprocessFile(sourcePath, targetPath, freeze, minify, tech);
     }
 });

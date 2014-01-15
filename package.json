@@ -41,7 +41,7 @@
     "mocha": "1.11.0",
     "sinon": "1.7.3",
     "chai": "1.7.2",
-    "jscs": "~1.1.0",
+    "jscs": "~1.2.3",
     "bh": "0.1.14"
   },
   "bin": {
@@ -54,6 +54,6 @@
     "func-test": "npm run-script bh-sym && npm run-script build-sample-proj &&./node_modules/.bin/mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
     "build-sample-proj": "cd test/fixtures/sample-project && ../../../bin/enb make -n --graph",
-    "check-style": "./node_modules/jscs/bin/jscs ."
+    "check-style": "./node_modules/jscs/bin/jscs lib exlib techs test"
   }
 }

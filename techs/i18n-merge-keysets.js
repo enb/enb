@@ -31,26 +31,26 @@ module.exports = require('../lib/build-flow.js').create()
     .defineRequiredOption('lang')
     .useDirList('i18n')
     .target('target', '?.keysets.{lang}.js')
-    .builder(function(langKeysetDirs) {
+    .builder(function (langKeysetDirs) {
         var lang = this._lang,
             langJs = lang + '.js',
-            langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function(dir) {
+            langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function (dir) {
                 return dir.files;
-            })).filter(function(fileInfo) {
+            })).filter(function (fileInfo) {
                 return fileInfo.name === langJs;
             });
 
         var result = {};
-        return Vow.all(langKeysetFiles.map(function(keysetFile) {
-            return asyncRequire(keysetFile.fullname).then(function(keysets) {
+        return Vow.all(langKeysetFiles.map(function (keysetFile) {
+            return asyncRequire(keysetFile.fullname).then(function (keysets) {
                 if (lang === 'all') { // XXX: Why the hell they break the pattern?
                     keysets = keysets.all || {};
                 }
-                Object.keys(keysets).forEach(function(keysetName) {
+                Object.keys(keysets).forEach(function (keysetName) {
                     var keyset = keysets[keysetName];
                     result[keysetName] = (result[keysetName] || {});
                     if (typeof keyset !== 'string') {
-                        Object.keys(keyset).forEach(function(keyName) {
+                        Object.keys(keyset).forEach(function (keyName) {
                             result[keysetName][keyName] = keyset[keyName];
                         });
                     } else {
@@ -58,7 +58,7 @@ module.exports = require('../lib/build-flow.js').create()
                     }
                 });
             });
-        })).then(function() {
+        })).then(function () {
             return 'module.exports = ' + JSON.stringify(result) + ';';
         });
     })

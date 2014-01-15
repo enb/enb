@@ -32,21 +32,21 @@ var Vow = require('vow'),
     dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'bemdecl-provider';
     },
 
-    configure: function() {
+    configure: function () {
         this._sourceNodePath = this.getRequiredOption('sourceNodePath');
         this._sourceTarget = this.getOption('sourceTarget', '?.bemdecl.js');
         this._target = this.node.unmaskTargetName(this.getOption('bemdeclTarget', '?.bemdecl.js'));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             bemdeclTarget = this._target,
             bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
@@ -56,13 +56,13 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             sourceTargetName = this.node.unmaskNodeTargetName(fromNode, this._sourceTarget),
             sourceTargetPath = this.node.resolveNodePath(fromNode, sourceTargetName);
         requirements[fromNode] = [sourceTargetName];
-        return this.node.requireNodeSources(requirements).then(function(results) {
+        return this.node.requireNodeSources(requirements).then(function (results) {
             var deps = results[fromNode][0];
             if (cache.needRebuildFile('bemdecl-file', bemdeclTargetPath) ||
                 cache.needRebuildFile('bemdecl-source-file', sourceTargetPath)
             ) {
-                return vowFs.read(sourceTargetPath, 'utf8').then(function(data) {
-                    vowFs.write(bemdeclTargetPath, data).then(function() {
+                return vowFs.read(sourceTargetPath, 'utf8').then(function (data) {
+                    vowFs.write(bemdeclTargetPath, data).then(function () {
                         cache.cacheFileInfo('bemdecl-file', bemdeclTargetPath);
                         cache.cacheFileInfo('bemdecl-source-file', sourceTargetPath);
                         _this.node.resolveTarget(bemdeclTarget, deps);

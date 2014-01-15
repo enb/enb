@@ -30,11 +30,11 @@ module.exports = require('../lib/build-flow').create()
     .defineRequiredOption('sources')
     .target('target', '?.target')
     .useSourceListFilenames('sources')
-    .builder(function(sources) {
+    .builder(function (sources) {
         var divider = this._divider;
-        return Vow.all(sources.map(function(sourceFilename) {
+        return Vow.all(sources.map(function (sourceFilename) {
             return vowFs.read(sourceFilename, 'utf8');
-        })).then(function(results) {
+        })).then(function (results) {
             return results.join(divider);
         });
     })

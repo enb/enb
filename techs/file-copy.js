@@ -25,32 +25,32 @@ var fs = require('graceful-fs'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'file-copy';
     },
 
-    configure: function() {
+    configure: function () {
         this._source = this.getRequiredOption('sourceTarget');
         this._target = this.getRequiredOption('destTarget');
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function() {
+    build: function () {
         var target = this.node.unmaskTargetName(this._target),
             targetPath = this.node.resolvePath(target),
             source = this.node.unmaskTargetName(this._source),
             sourcePath = this.node.resolvePath(source),
             _this = this,
             cache = this.node.getNodeCache(target);
-        return this.node.requireSources([source]).then(function() {
+        return this.node.requireSources([source]).then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {
-                return vowFs.read(sourcePath, 'utf8').then(function(data) {
-                    return vowFs.write(targetPath, data, 'utf8').then(function() {
+                return vowFs.read(sourcePath, 'utf8').then(function (data) {
+                    return vowFs.write(targetPath, data, 'utf8').then(function () {
                         cache.cacheFileInfo('source-file', sourcePath);
                         cache.cacheFileInfo('target-file', targetPath);
                         _this.node.resolveTarget(target);

@@ -39,13 +39,13 @@ module.exports = require('./css-chunks').buildFlow()
     .defineOption('freeze', false)
     .defineOption('minify', false)
     .methods({
-        processChunkData: function(sourceFilename, data) {
+        processChunkData: function (sourceFilename, data) {
             var _this = this,
                 target = this._target;
-            return this.node.createTmpFileForTarget(target).then(function(tmpFile) {
+            return this.node.createTmpFileForTarget(target).then(function (tmpFile) {
                 return (new BorschikPreprocessor())
-                    .preprocessFile(sourceFilename, tmpFile, _this._freeze, _this._minify).then(function() {
-                        return vowFs.read(tmpFile, 'utf8').then(function(data) {
+                    .preprocessFile(sourceFilename, tmpFile, _this._freeze, _this._minify).then(function () {
+                        return vowFs.read(tmpFile, 'utf8').then(function (data) {
                             vowFs.remove(tmpFile);
                             return data;
                         });

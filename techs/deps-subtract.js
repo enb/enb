@@ -34,21 +34,21 @@ var Vow = require('vow'),
     dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'deps-subtract';
     },
 
-    configure: function() {
+    configure: function () {
         this._subtractWhatTarget = this.getRequiredOption('subtractWhatTarget');
         this._subtractFromTarget = this.getRequiredOption('subtractFromTarget');
         this._target = this.node.unmaskTargetName(this.getOption('depsTarget', '?.deps.js'));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this._target];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             depsTarget = this.node.unmaskTargetName(this._target),
             depsTargetPath = this.node.resolvePath(depsTarget),
@@ -56,7 +56,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             substractFromTargetPath = this.node.resolvePath(this._subtractFromTarget),
             subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget),
             sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
-        return this.node.requireSources(sourceTargets).spread(function(subtractFrom, subtractWhat) {
+        return this.node.requireSources(sourceTargets).spread(function (subtractFrom, subtractWhat) {
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('deps-from-file', substractFromTargetPath) ||
                 cache.needRebuildFile('deps-what-file', subtractWhatTargetPath)
@@ -64,7 +64,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var subtractedDeps = deps.subtract(subtractFrom, subtractWhat);
                 return vowFs.write(
                     depsTargetPath, 'exports.deps = ' + JSON.stringify(subtractedDeps, null, 4) + ';'
-                ).then(function() {
+                ).then(function () {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
                     cache.cacheFileInfo('deps-from-file', substractFromTargetPath);
                     cache.cacheFileInfo('deps-what-file', subtractWhatTargetPath);

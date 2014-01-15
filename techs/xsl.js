@@ -30,28 +30,28 @@ module.exports = require('../lib/build-flow').create()
     .useSourceListFilenames('includes', [])
     .defineOption('prependXsl', '')
     .defineOption('appendXsl', '')
-    .builder(function(sourceFiles, imports, includes) {
+    .builder(function (sourceFiles, imports, includes) {
         var node = this.node,
-            importFilenames = sourceFiles.map(function(sourceFile) {
+            importFilenames = sourceFiles.map(function (sourceFile) {
                 return sourceFile.fullname;
             }).concat(imports);
         return this.getPrependXsl() +
-            importFilenames.map(function(filename) {
+            importFilenames.map(function (filename) {
                 return '<xsl:import href="' + node.relativePath(filename) + '"/>';
             }).join('\n') +
             '\n' +
-            includes.map(function(filename) {
+            includes.map(function (filename) {
                 return '<xsl:include href="' + node.relativePath(filename) + '"/>';
             }) +
             this.getAppendXsl();
     })
     .methods({
-        getPrependXsl: function() {
+        getPrependXsl: function () {
             return '<?xml version="1.0" encoding="utf-8"?>\n' +
                 '<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">\n' +
                 this._prependXsl;
         },
-        getAppendXsl: function() {
+        getAppendXsl: function () {
             return this._appendXsl + '\n</xsl:stylesheet>';
         }
     })

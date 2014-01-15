@@ -27,11 +27,11 @@ var asyncRequire = require('../lib/fs/async-require');
 var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'html-from-bemjson-i18n-sync';
     },
 
-    configure: function() {
+    configure: function () {
         this._bemhtmlSource = this.node.unmaskTargetName(
             this.getOption('bemhtmlTarget', this.node.getTargetName('bemhtml.js'))
         );
@@ -59,16 +59,16 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         );
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    getBuildResult: function(target, bemhtmlFile, bemjson, allLangFile, langFile) {
+    getBuildResult: function (target, bemhtmlFile, bemjson, allLangFile, langFile) {
         var _this = this;
         dropRequireCache(require, bemhtmlFile);
         return Vow.all([
             asyncRequire(bemhtmlFile)
-        ]).spread(function(bemhtml) {
+        ]).spread(function (bemhtml) {
             dropRequireCache(require, allLangFile);
             var i18n = require(allLangFile);
             dropRequireCache(require, langFile);
@@ -92,7 +92,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         });
     },
 
-    isRebuildRequired: function(target) {
+    isRebuildRequired: function (target) {
         var cache = this.node.getNodeCache(target);
         return cache.needRebuildFile('bemhtml-file', this.node.resolvePath(this._bemhtmlSource)) ||
             cache.needRebuildFile('bemjson-file', this.node.resolvePath(this._bemjsonSource)) ||
@@ -101,7 +101,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             cache.needRebuildFile('html-file', this.node.resolvePath(target));
     },
 
-    storeCache: function(target) {
+    storeCache: function (target) {
         var cache = this.node.getNodeCache(target);
         cache.cacheFileInfo('bemhtml-file', this.node.resolvePath(this._bemhtmlSource));
         cache.cacheFileInfo('bemjson-file', this.node.resolvePath(this._bemjsonSource));
@@ -110,15 +110,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         cache.cacheFileInfo('html-file', this.node.resolvePath(target));
     },
 
-    build: function() {
+    build: function () {
         var _this = this;
         return this.node.requireSources(
             [this._bemhtmlSource, this._bemjsonSource, this._allLangSource, this._langSource]
-        ).then(function() {
-            return Vow.when(_this.getTargets()).then(function(targets) {
+        ).then(function () {
+            return Vow.when(_this.getTargets()).then(function (targets) {
                 var targetsToBuild = [];
-                return Vow.when(targets.map(function(target) {
-                    return Vow.when(_this.isRebuildRequired(target)).then(function(rebuildRequired) {
+                return Vow.when(targets.map(function (target) {
+                    return Vow.when(_this.isRebuildRequired(target)).then(function (rebuildRequired) {
                         if (!rebuildRequired) {
                             _this.node.isValidTarget(target);
                             _this.node.resolveTarget(target);
@@ -126,19 +126,19 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                             targetsToBuild.push(target);
                         }
                     });
-                })).then(function() {
+                })).then(function () {
                     if (targetsToBuild.length) {
                         return requireOrEval(_this.node.resolvePath(_this._bemjsonSource)).then(function (bemjson) {
-                            return Vow.all(targetsToBuild.map(function(target) {
+                            return Vow.all(targetsToBuild.map(function (target) {
                                 return Vow.when(_this.getBuildResult(
                                         target,
                                         _this.node.resolvePath(_this._bemhtmlSource),
                                         bemjson,
                                         _this.node.resolvePath(_this._allLangSource),
                                         _this.node.resolvePath(_this._langSource)
-                                    )).then(function(res) {
+                                    )).then(function (res) {
                                         return vowFs.write(_this.node.resolvePath(target), res, 'utf8');
-                                    }).then(function() {
+                                    }).then(function () {
                                         _this.node.resolveTarget(target);
                                         _this.storeCache(target);
                                     });

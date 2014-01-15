@@ -18,25 +18,25 @@
 var fs = require('graceful-fs'), Vow = require('vow'), inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'file-provider';
     },
 
-    configure: function() {
+    configure: function () {
         this._target = this.getRequiredOption('target');
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function() {
+    build: function () {
         var promise, target, targetPath,
             _this = this;
         promise = Vow.promise();
         target = this.node.unmaskTargetName(this._target);
         targetPath = this.node.resolvePath(target);
-        fs.exists(targetPath, function(exists) {
+        fs.exists(targetPath, function (exists) {
             if (exists) {
                 _this.node.resolveTarget(target);
             } else {
@@ -47,5 +47,5 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         return promise;
     },
 
-    clean: function() {}
+    clean: function () {}
 });

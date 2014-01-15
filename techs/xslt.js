@@ -31,21 +31,21 @@ var fs = require('graceful-fs'),
     vowFs = require('../lib/fs/async-fs');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'xslt';
     },
 
-    init: function(node) {
+    init: function (node) {
         this.__base.apply(this, arguments);
         this._sourceTarget = this.getRequiredOption('sourceTarget');
         this._destTarget = this.getRequiredOption('destTarget');
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._destTarget)];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             options = this._options,
             promise = Vow.promise(),
@@ -64,21 +64,23 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             sources.push(xslSource);
         }
 
-        this.node.requireSources(sources).then(function() {
+        this.node.requireSources(sources).then(function () {
             var args = (options.args || []).concat([xslFile, sourcePath]);
             // TODO: XSL Include deps tree.
             if (cache.needRebuildFile('target-file', targetPath) ||
                 cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('xsl-file', xslFile)
             ) {
-                fs.open(targetPath, 'w', function(err, fd) {
-                    if (err) return promise.reject(err);
+                fs.open(targetPath, 'w', function (err, fd) {
+                    if (err) {
+                        return promise.reject(err);
+                    }
 
                     childProcess.spawn('/usr/bin/xsltproc', args, { stdio: [null, fd, null] })
-                        .on('error', function(err) {
+                        .on('error', function (err) {
                             promise.reject(err);
                         })
-                        .on('close', function() {
+                        .on('close', function () {
                             cache.cacheFileInfo('target-file', targetPath);
                             cache.cacheFileInfo('source-file', sourcePath);
                             cache.cacheFileInfo('xsl-file', xslFile);

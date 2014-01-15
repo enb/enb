@@ -37,19 +37,19 @@ module.exports = require('../lib/tech/chunks').buildFlow()
     .target('target', '?.js-chunks.lang.{lang}.js')
     .unuseFileList()
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
-    .builder(function(keysetsFilename) {
+    .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
         var keysets = require(keysetsFilename),
             _this = this,
             filename = this.node.resolvePath(this._target),
             lang = this._lang;
-        return Vow.fulfill().then(function() {
-            return Vow.all(Object.keys(keysets).sort().map(function(keysetName) {
+        return Vow.fulfill().then(function () {
+            return Vow.all(Object.keys(keysets).sort().map(function (keysetName) {
                 return _this.processChunk(
                     filename,
                     I18NLangJs.getKeysetBuildResult(keysetName, keysets[keysetName], lang)
                 );
-            })).then(function(chunks) {
+            })).then(function (chunks) {
                 return 'module.exports = ' + JSON.stringify(chunks) + ';';
             });
         });

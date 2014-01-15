@@ -27,33 +27,33 @@ var Vow = require('vow'),
     dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
-    getName: function() {
+    getName: function () {
         return 'deps-merge';
     },
 
-    configure: function() {
+    configure: function () {
         var _this = this;
-        this._sources = this.getRequiredOption('depsSources').map(function(source) {
+        this._sources = this.getRequiredOption('depsSources').map(function (source) {
             return _this.node.unmaskTargetName(source);
         });
         this._target = this.node.unmaskTargetName(
             this.getOption('depsTarget', this.node.getTargetName('deps.js')));
     },
 
-    getTargets: function() {
+    getTargets: function () {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function() {
+    build: function () {
         var _this = this,
             depsTarget = this.node.unmaskTargetName(this._target),
             depsTargetPath = this.node.resolvePath(depsTarget),
             cache = this.node.getNodeCache(depsTarget),
             sources = this._sources;
-        return this.node.requireSources(sources).then(function(depResults) {
+        return this.node.requireSources(sources).then(function (depResults) {
             var rebuildNeeded = cache.needRebuildFile('deps-file', depsTargetPath);
                 if (!rebuildNeeded) {
-                sources.forEach(function(source) {
+                sources.forEach(function (source) {
                     if (cache.needRebuildFile(source, _this.node.resolvePath(source))) {
                         rebuildNeeded = true;
                     }
@@ -63,9 +63,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
                 var mergedDeps = deps.merge(depResults);
                 return vowFs.write(
                     depsTargetPath, 'exports.deps = ' + JSON.stringify(mergedDeps) + ';'
-                ).then(function() {
+                ).then(function () {
                     cache.cacheFileInfo('deps-file', depsTargetPath);
-                    sources.forEach(function(source) {
+                    sources.forEach(function (source) {
                         cache.cacheFileInfo(source, _this.node.resolvePath(source));
                     });
                     _this.node.resolveTarget(depsTarget, mergedDeps);

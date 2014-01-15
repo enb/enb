@@ -33,10 +33,10 @@ module.exports = require('../lib/tech/chunks').buildFlow()
     .target('target', '?.css-chunks.js')
     .useFileList('css')
     .methods({
-        processChunkData: function(sourceFilename, data) {
+        processChunkData: function (sourceFilename, data) {
             var _this = this,
                 preprocessCss = new CssPreprocessor();
-            preprocessCss.setCssRelativeUrlBuilder(function(url, filename) {
+            preprocessCss.setCssRelativeUrlBuilder(function (url, filename) {
                 var urlFilename = path.resolve(path.dirname(filename), url);
                 return _this.node.wwwRootPath(urlFilename);
             });

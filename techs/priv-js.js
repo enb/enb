@@ -29,15 +29,15 @@ module.exports = require('../lib/build-flow').create()
     .target('target', '?.priv.js')
     .useFileList('priv.js')
     .useSourceText('bemhtmlTarget', '?.bemhtml.js')
-    .builder(function(sourceFiles, bemhtml) {
+    .builder(function (sourceFiles, bemhtml) {
         var _this = this,
             target = this._target,
             jsBorschikPreprocessor = new BorschikPreprocessor();
         var node = this.node;
-        return Vow.all(sourceFiles.map(function(file) {
-            return _this.node.createTmpFileForTarget(target).then(function(tmpfile) {
-                return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile, false, false).then(function() {
-                    return vowFs.read(tmpfile, 'utf8').then(function(data) {
+        return Vow.all(sourceFiles.map(function (file) {
+            return _this.node.createTmpFileForTarget(target).then(function (tmpfile) {
+                return jsBorschikPreprocessor.preprocessFile(file.fullname, tmpfile, false, false).then(function () {
+                    return vowFs.read(tmpfile, 'utf8').then(function (data) {
                         var filename = node.relativePath(file.fullname);
                         vowFs.remove(tmpfile);
                         var pre = '/* ' + filename + ': begin */\n';
@@ -46,7 +46,7 @@ module.exports = require('../lib/build-flow').create()
                     });
                 });
             });
-        })).then(function(res) {
+        })).then(function (res) {
             res.push(
                 '\nif (typeof exports !== "undefined" && typeof blocks !== "undefined") { exports.blocks = blocks; }\n'
             );

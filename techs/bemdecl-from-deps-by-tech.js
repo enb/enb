@@ -70,7 +70,8 @@ module.exports = require('../lib/build-flow').create()
                     }
                 });
             });
-            return 'exports.deps = ' + JSON.stringify(result, null, 4) + ';';
+            var bemdecl = deps.toBemdecl({deps: result});
+            return 'exports.blocks = ' + JSON.stringify(bemdecl, null, 4) + ';\n';
         });
     })
     .createTech();

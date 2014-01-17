@@ -20,6 +20,7 @@ var Vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
 var asyncOrEval = require('../lib/fs/require-or-eval');
+var deps = require('../lib/deps/deps');
 
 /**
  * @type {Tech}
@@ -30,9 +31,10 @@ module.exports = require('../lib/build-flow').create()
     .useSourceFilename('sourceTarget', '?.bemjson.js')
     .builder(function (bemjsonFilename) {
         return asyncOrEval(bemjsonFilename).then(function (json) {
-            var deps = [];
-            addDepsFromBemjson(json, deps, {}, null);
-            return 'exports.deps = ' + JSON.stringify(deps, null, 4) + ';\n';
+            var result = [];
+            addDepsFromBemjson(json, result, {}, null);
+            var bemdecl = deps.toBemdecl({deps: result});
+            return 'exports.blocks = ' + JSON.stringify(bemdecl, null, 4) + ';\n';
         });
     })
     .createTech();

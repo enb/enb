@@ -164,9 +164,11 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
           require('enb/techs/deps-old'),
           require('enb/techs/files')
         ]);
+
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
+
   function getLevels(config) {
       return [
         {path: 'bem-bl/blocks-common', check: false},
@@ -203,9 +205,11 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
           require('enb/techs/js'),
           require('enb/techs/css')
         ]);
+
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
+
   function getLevels(config) {
       return [
         {path: 'bem-bl/blocks-common', check: false},
@@ -232,9 +236,11 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
           [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
           [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
         ]);
+
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
+
   function getLevels(config) {
       return [
         {path: 'bem-bl/blocks-common', check: false},
@@ -262,21 +268,25 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
           require('enb/techs/js'),
           require('enb/techs/css')
         ]);
+
         nodeConfig.mode('development', function(nodeConfig) {
           nodeConfig.addTechs([
             [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js' } ],
             [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css' } ]
           ]);
         });
+
         nodeConfig.mode('production', function(nodeConfig) {
           nodeConfig.addTechs([
             [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js', minify: true } ],
             [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css', minify: true } ]
           ]);
         });
+
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
+
   function getLevels(config) {
       return [
         {path: 'bem-bl/blocks-common', check: false},
@@ -309,8 +319,10 @@ module.exports = function(config) {
   config.node('pages/index', function(nodeConfig) {
     // Переопределение языков для конкретной ноды.
     nodeConfig.setLanguages(['ru']);
+
     // Добавление одной технологии с опциями.
     nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
+
     // Добавление нескольких технологий.
     nodeConfig.addTechs([
       [ require('enb/techs/levels'), {
@@ -321,12 +333,15 @@ module.exports = function(config) {
       }],
       require('enb/techs/deps'),
       require('enb/techs/files'),
+
       // Добавление технологии с опциями
       [ require('enb/techs/js'), { target: '?.new.js' } ],
       require('enb/techs/css')
     ]);
+
     // Добавление одного таргета.
     nodeConfig.addTarget('?.css');
+
     // Добавление нескольких таргетов.
     nodeConfig.addTargets(['?.css', '?.js']);
   });

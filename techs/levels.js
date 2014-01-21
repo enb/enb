@@ -5,7 +5,7 @@
  * Собирает информацию об уровнях переопределения проекта, предоставляет `?.levels`. Результат выполнения этой
  * технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`.
  *
- * Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`.
+ * Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks` и/или уровни `<путь_к_ноде>/*.blocks`.
  * Например, для ноды `pages/index` — `pages/index/blocks`.
  *
  * **Опции**
@@ -29,8 +29,8 @@
  */
 var Level = require('../lib/levels/level'),
     Levels = require('../lib/levels/levels'),
-    fs = require('graceful-fs'),
     Vow = require('vow'),
+    VowFs = require('../lib/fs/async-fs'),
     inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
@@ -50,63 +50,66 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     build: function () {
         var _this = this,
-            promise = Vow.promise();
-        try {
-            var target = this._target,
-                levelList = [],
-                levelsToCache = [],
-                levelsIndex = {},
-                cache = this.node.getNodeCache(target);
-            for (var i = 0, l = this._levelConfig.length; i < l; i++) {
-                var levelInfo = this._levelConfig[i];
-                levelInfo = typeof levelInfo === 'object' ? levelInfo : {path: levelInfo};
-                var
-                    levelPath = levelInfo.path,
-                    levelKey = 'level:' + levelPath;
-                if (levelsIndex[levelPath]) {
-                    continue;
-                }
-                levelsIndex[levelPath] = true;
-                if (!this.node.buildState[levelKey]) {
-                    var level = new Level(levelPath, this.node.getLevelNamingScheme(levelPath));
-                    if (levelInfo.check === false) {
-                        var blocks = cache.get(levelPath);
-                        if (blocks) {
-                            level.loadFromCache(blocks);
-                        } else {
-                            levelsToCache.push(level);
-                        }
-                    }
-                    this.node.buildState[levelKey] = level;
-                }
-                levelList.push(this.node.buildState[levelKey]);
+            target = this._target,
+            levelList = [],
+            levelsToCache = [],
+            levelsIndex = {},
+            cache = this.node.getNodeCache(target);
+
+        for (var i = 0, l = this._levelConfig.length; i < l; i++) {
+            var levelInfo = this._levelConfig[i];
+            levelInfo = typeof levelInfo === 'object' ? levelInfo : {path: levelInfo};
+            var
+                levelPath = levelInfo.path,
+                levelKey = 'level:' + levelPath;
+            if (levelsIndex[levelPath]) {
+                continue;
             }
-            var pageBlocksPath = this.node.resolvePath('blocks');
-            fs.exists(pageBlocksPath, function (res) {
-                try {
-                    if (res && !levelsIndex[pageBlocksPath]) {
-                        levelsIndex[pageBlocksPath] = true;
-                        levelList.push(new Level(pageBlocksPath));
+            levelsIndex[levelPath] = true;
+            if (!this.node.buildState[levelKey]) {
+                var level = new Level(levelPath, this.node.getLevelNamingScheme(levelPath));
+                if (levelInfo.check === false) {
+                    var blocks = cache.get(levelPath);
+                    if (blocks) {
+                        level.loadFromCache(blocks);
+                    } else {
+                        levelsToCache.push(level);
                     }
-                    return Vow.all(levelList.map(function (level) {
+                }
+                this.node.buildState[levelKey] = level;
+            }
+            levelList.push(this.node.buildState[levelKey]);
+        }
+
+        return VowFs.listDir(_this.node.getPath())
+            .then(function (list) {
+                return list.filter(function (path) {
+                    return (/^(.*\.)?blocks$/).test(path);
+                });
+            })
+            .then(function (list) {
+                return Vow.all(list.map(function (path) {
+                    var pageBlocksPath = _this.node.resolvePath(path);
+                    return VowFs.isDir(pageBlocksPath)
+                        .then(function (res) {
+                            if (res && !levelsIndex[pageBlocksPath]) {
+                                levelsIndex[pageBlocksPath] = true;
+                                levelList.push(new Level(pageBlocksPath));
+                            }
+                        });
+                }));
+            })
+            .then(function () {
+                return Vow.all(levelList.map(function (level) {
                         return level.load();
-                    })).then((function () {
+                    }))
+                    .then(function () {
                         levelsToCache.forEach(function (level) {
                             cache.set(level.getPath(), level.getBlocks());
                         });
                         _this.node.resolveTarget(target, new Levels(levelList));
-                        return promise.fulfill();
-                    }), function (err) {
-                        return promise.reject(err);
                     });
-                } catch (err) {
-                    return promise.reject(err);
-                }
             });
-        } catch (err) {
-            promise.reject(err);
-        }
-        return promise;
     },
 
     clean: function () {}

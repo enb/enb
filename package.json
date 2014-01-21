@@ -42,18 +42,19 @@
     "sinon": "1.7.3",
     "chai": "1.7.2",
     "jscs": "~1.2.3",
-    "bh": "0.1.14"
+    "bh": "0.1.14",
+    "enb-validate-code": "0.0.1"
   },
   "bin": {
     "enb": "./bin/enb"
   },
   "scripts": {
     "test": "npm run-script jshint && npm run-script check-style && npm run-script unit-test && npm run-script func-test",
-    "jshint": "./node_modules/.bin/jshint .",
-    "unit-test": "./node_modules/.bin/mocha -u bdd -R spec --recursive test/lib",
-    "func-test": "npm run-script bh-sym && npm run-script build-sample-proj &&./node_modules/.bin/mocha -u bdd -R spec --recursive test/func",
+    "jshint": "jshint .",
+    "unit-test": "mocha -u bdd -R spec --recursive test/lib",
+    "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
     "build-sample-proj": "cd test/fixtures/sample-project && ../../../bin/enb make -n --graph",
-    "check-style": "./node_modules/jscs/bin/jscs lib exlib techs test"
+    "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test"
   }
 }

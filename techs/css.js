@@ -16,10 +16,8 @@
  * nodeConfig.addTech(require('enb/techs/css'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    path = require('path'),
-    CssPreprocessor = require('../lib/preprocess/css-preprocessor');
+var path = require('path');
+var CssPreprocessor = require('../lib/preprocess/css-preprocessor');
 
 /**
  *
@@ -43,8 +41,8 @@ module.exports = require('../lib/build-flow').create()
             return this._getCssPreprocessor().preprocessIncludes(data, filename);
         },
         _getCssPreprocessor: function () {
-            var _this = this,
-                preprocessCss = new CssPreprocessor();
+            var _this = this;
+            var preprocessCss = new CssPreprocessor();
             preprocessCss.setCssRelativeUrlBuilder(function (url, filename) {
                 var urlFilename = path.resolve(path.dirname(filename), url);
                 return _this.node.relativePath(urlFilename);

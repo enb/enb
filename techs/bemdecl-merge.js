@@ -18,13 +18,10 @@
  *} ]);
  *```
  */
-var Vow = require('vow'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var deps = require('../lib/deps/deps');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -44,11 +41,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            bemdeclTarget = this.node.unmaskTargetName(this._target),
-            bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
-            cache = this.node.getNodeCache(bemdeclTarget),
-            sources = this._sources;
+        var _this = this;
+        var bemdeclTarget = this.node.unmaskTargetName(this._target);
+        var bemdeclTargetPath = this.node.resolvePath(bemdeclTarget);
+        var cache = this.node.getNodeCache(bemdeclTarget);
+        var sources = this._sources;
         return this.node.requireSources(sources).then(function () {
             var rebuildNeeded = cache.needRebuildFile('bemdecl-file', bemdeclTargetPath);
                 if (!rebuildNeeded) {

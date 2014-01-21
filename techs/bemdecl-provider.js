@@ -23,13 +23,9 @@
  * }]);
  * ```
  */
-var Vow = require('vow'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -47,14 +43,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            bemdeclTarget = this._target,
-            bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
-            fromNode = this._sourceNodePath,
-            cache = this.node.getNodeCache(bemdeclTarget),
-            requirements = {},
-            sourceTargetName = this.node.unmaskNodeTargetName(fromNode, this._sourceTarget),
-            sourceTargetPath = this.node.resolveNodePath(fromNode, sourceTargetName);
+        var _this = this;
+        var bemdeclTarget = this._target;
+        var bemdeclTargetPath = this.node.resolvePath(bemdeclTarget);
+        var fromNode = this._sourceNodePath;
+        var cache = this.node.getNodeCache(bemdeclTarget);
+        var requirements = {};
+        var sourceTargetName = this.node.unmaskNodeTargetName(fromNode, this._sourceTarget);
+        var sourceTargetPath = this.node.resolveNodePath(fromNode, sourceTargetName);
         requirements[fromNode] = [sourceTargetName];
         return this.node.requireNodeSources(requirements).then(function (results) {
             var deps = results[fromNode][0];

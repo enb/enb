@@ -16,10 +16,8 @@
  * nodeConfig.addTech(require('enb/techs/css-less'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    Vow = require('vow'),
-    path = require('path');
+var Vow = require('vow');
+var path = require('path');
 
 module.exports = require('./css').buildFlow()
     .name('css-less')
@@ -34,8 +32,8 @@ module.exports = require('./css').buildFlow()
             );
         }
 
-        var _this = this,
-            promise = Vow.promise();
+        var _this = this;
+        var promise = Vow.promise();
 
         var css = sourceFiles.map(function (file) {
             return '@import "' + file.fullname + '";';
@@ -65,8 +63,8 @@ module.exports = require('./css').buildFlow()
             },
             eval: function (ctx) {
                 /*jshint -W061 */
-                var val = this.value.eval(ctx), rootpath;
-                rootpath = this.currentFileInfo && this.currentFileInfo.rootpath;
+                var val = this.value.eval(ctx);
+                var rootpath = this.currentFileInfo && this.currentFileInfo.rootpath;
                 if (rootpath && typeof val.value === 'string' && ctx.isPathRelative(val.value)) {
                     if (!val.quote) {
                         rootpath = rootpath.replace(/[\(\)'"\s]/g, function (match) { return '\\' + match; });

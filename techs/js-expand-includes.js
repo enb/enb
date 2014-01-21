@@ -19,11 +19,11 @@
  * ]);
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    path = require('path');
+var fs = require('graceful-fs');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var path = require('path');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -41,28 +41,28 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     // TODO: Кеширование?
     build: function () {
-        var target = this.node.unmaskTargetName(this._target),
-            targetPath = this.node.resolvePath(target),
-            source = this.node.unmaskTargetName(this._source),
-            sourcePath = this.node.resolvePath(source),
-            _this = this;
+        var target = this.node.unmaskTargetName(this._target);
+        var targetPath = this.node.resolvePath(target);
+        var source = this.node.unmaskTargetName(this._source);
+        var sourcePath = this.node.resolvePath(source);
+        var _this = this;
         return this.node.requireSources([source]).then(function () {
-                return vowFs.read(sourcePath, 'utf8').then(function (data) {
-                    return Vow.when(_this._processIncludesPromised(data, targetPath)).then(function (data) {
-                        return vowFs.write(targetPath, data, 'utf8').then(function () {
-                            _this.node.resolveTarget(target);
-                        });
+            return vowFs.read(sourcePath, 'utf8').then(function (data) {
+                return Vow.when(_this._processIncludesPromised(data, targetPath)).then(function (data) {
+                    return vowFs.write(targetPath, data, 'utf8').then(function () {
+                        _this.node.resolveTarget(target);
                     });
                 });
+            });
         });
     },
 
     _processIncludesPromised: function (data, filename) {
-        var _this = this,
-            targetsToWaitFor = [],
-            regex = /include\(["']([^"']+)["']\);/g,
-            match;
-        while (!!(match = regex.exec(data))) {
+        var _this = this;
+        var targetsToWaitFor = [];
+        var regex = /include\(["']([^"']+)["']\);/g;
+        var match;
+        while (Boolean(match = regex.exec(data))) {
             if (this.node.hasRegisteredTarget(match[1])) {
                 targetsToWaitFor.push(match[1]);
             }
@@ -76,10 +76,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     _processIncludes: function (data, filename) {
         var _this = this;
         return data.replace(/([^\.]|^)include\(["']([^"']+)["']\);/g, function (s, preChar, url) {
-            var importFilename = path.resolve(path.dirname(filename), url),
-                rootRelImportFilename = importFilename.slice(1),
-                pre = preChar + '/* ' + rootRelImportFilename + ': begin */ /**/\n',
-                post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n';
+            var importFilename = path.resolve(path.dirname(filename), url);
+            var rootRelImportFilename = importFilename.slice(1);
+            var pre = preChar + '/* ' + rootRelImportFilename + ': begin */ /**/\n';
+            var post = '\n/* ' + rootRelImportFilename + ': end */ /**/\n';
             return pre +
                 '    ' +
                 _this._processIncludes(fs.readFileSync(importFilename, 'utf8'), importFilename)

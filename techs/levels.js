@@ -27,18 +27,18 @@
  * } ]);
  * ```
  */
-var Level = require('../lib/levels/level'),
-    Levels = require('../lib/levels/levels'),
-    fs = require('graceful-fs'),
-    Vow = require('vow'),
-    inherit = require('inherit');
+var Level = require('../lib/levels/level');
+var Levels = require('../lib/levels/levels');
+var fs = require('graceful-fs');
+var Vow = require('vow');
+var inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
         return 'levels';
     },
 
-    init: function (node) {
+    init: function () {
         this.__base.apply(this, arguments);
         this._levelConfig = this.getRequiredOption('levels');
         this._target = this.node.unmaskTargetName(this.getOption('target', '?.levels'));
@@ -49,20 +49,19 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            promise = Vow.promise();
+        var _this = this;
+        var promise = Vow.promise();
         try {
-            var target = this._target,
-                levelList = [],
-                levelsToCache = [],
-                levelsIndex = {},
-                cache = this.node.getNodeCache(target);
+            var target = this._target;
+            var levelList = [];
+            var levelsToCache = [];
+            var levelsIndex = {};
+            var cache = this.node.getNodeCache(target);
             for (var i = 0, l = this._levelConfig.length; i < l; i++) {
                 var levelInfo = this._levelConfig[i];
                 levelInfo = typeof levelInfo === 'object' ? levelInfo : {path: levelInfo};
-                var
-                    levelPath = levelInfo.path,
-                    levelKey = 'level:' + levelPath;
+                var levelPath = levelInfo.path;
+                var levelKey = 'level:' + levelPath;
                 if (levelsIndex[levelPath]) {
                     continue;
                 }

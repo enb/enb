@@ -19,10 +19,8 @@
  * } ]);
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -39,12 +37,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var target = this.node.unmaskTargetName(this._target),
-            targetPath = this.node.resolvePath(target),
-            source = this.node.unmaskTargetName(this._source),
-            sourcePath = this.node.resolvePath(source),
-            _this = this,
-            cache = this.node.getNodeCache(target);
+        var target = this.node.unmaskTargetName(this._target);
+        var targetPath = this.node.resolvePath(target);
+        var source = this.node.unmaskTargetName(this._source);
+        var sourcePath = this.node.resolvePath(source);
+        var _this = this;
+        var cache = this.node.getNodeCache(target);
         return this.node.requireSources([source]).then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)

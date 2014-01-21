@@ -16,8 +16,6 @@
  * nodeConfig.addTech(require('enb/techs/css-ie7'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs');
 
 module.exports = require('./css').buildFlow()
     .name('css-ie7')

@@ -19,8 +19,6 @@
  * nodeConfig.addTech([ require('xsl-html5-18n'), { lang: '{lang}' } ]);
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs');
 
 module.exports = require('./xsl-html5').buildFlow()
     .name('xsl-html5-i18n')

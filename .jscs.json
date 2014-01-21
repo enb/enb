@@ -18,6 +18,7 @@
     "disallowSpaceAfterObjectKeys": true,
     "disallowKeywords": [ "with" ],
     "validateQuoteMarks": "'",
+    "disallowMultipleVarDecl": true,
     "excludeFiles": [
         "node_modules",
         "tools",

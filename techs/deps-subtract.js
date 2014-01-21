@@ -25,13 +25,10 @@
  * ]);
  * ```
  */
-var Vow = require('vow'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var deps = require('../lib/deps/deps');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -49,13 +46,13 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            depsTarget = this.node.unmaskTargetName(this._target),
-            depsTargetPath = this.node.resolvePath(depsTarget),
-            cache = this.node.getNodeCache(depsTarget),
-            substractFromTargetPath = this.node.resolvePath(this._subtractFromTarget),
-            subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget),
-            sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
+        var _this = this;
+        var depsTarget = this.node.unmaskTargetName(this._target);
+        var depsTargetPath = this.node.resolvePath(depsTarget);
+        var cache = this.node.getNodeCache(depsTarget);
+        var substractFromTargetPath = this.node.resolvePath(this._subtractFromTarget);
+        var subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget);
+        var sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
         return this.node.requireSources(sourceTargets).spread(function (subtractFrom, subtractWhat) {
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('deps-from-file', substractFromTargetPath) ||

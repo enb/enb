@@ -17,18 +17,16 @@
  * nodeConfig.addTech(require('enb/techs/css-stylus'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    Vow = require('vow'),
-    stylus = require('stylus');
+var Vow = require('vow');
+var stylus = require('stylus');
 
 module.exports = require('./css').buildFlow()
     .name('css-stylus')
     .defineOption('variables')
     .useFileList(['css', 'styl'])
     .builder(function (sourceFiles) {
-        var _this = this,
-            promise = Vow.promise();
+        var _this = this;
+        var promise = Vow.promise();
 
         var css = sourceFiles.map(function (file) {
             var path = file.fullname;

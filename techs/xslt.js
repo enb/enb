@@ -24,18 +24,17 @@
  * }]);
  * ```
  */
-var fs = require('graceful-fs'),
-    inherit = require('inherit'),
-    childProcess = require('child_process'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs');
+var fs = require('graceful-fs');
+var inherit = require('inherit');
+var childProcess = require('child_process');
+var Vow = require('vow');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
         return 'xslt';
     },
 
-    init: function (node) {
+    init: function () {
         this.__base.apply(this, arguments);
         this._sourceTarget = this.getRequiredOption('sourceTarget');
         this._destTarget = this.getRequiredOption('destTarget');
@@ -46,16 +45,16 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            options = this._options,
-            promise = Vow.promise(),
-            source = this.node.unmaskTargetName(this._sourceTarget),
-            sourcePath = this.node.resolvePath(source),
-            target = this.node.unmaskTargetName(this._destTarget),
-            targetPath = this.node.resolvePath(target),
-            cache = this.node.getNodeCache(target),
-            sources = [source],
-            xslFile = options.xslFile;
+        var _this = this;
+        var options = this._options;
+        var promise = Vow.promise();
+        var source = this.node.unmaskTargetName(this._sourceTarget);
+        var sourcePath = this.node.resolvePath(source);
+        var target = this.node.unmaskTargetName(this._destTarget);
+        var targetPath = this.node.resolvePath(target);
+        var cache = this.node.getNodeCache(target);
+        var sources = [source];
+        var xslFile = options.xslFile;
 
         if (options.xslSource) {
             var xslSource = options.xslSource;

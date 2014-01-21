@@ -18,10 +18,8 @@
  * nodeConfig.addTech(require('enb/techs/files'));
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    FileList = require('../lib/file-list'),
-    inherit = require('inherit');
+var FileList = require('../lib/file-list');
+var inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech.js'), {
     configure: function () {
@@ -40,14 +38,16 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
         ];
     },
     build: function () {
-        var _this = this,
-            filesTarget = this._filesTarget,
-            dirsTarget = this._dirsTarget;
+        var _this = this;
+        var filesTarget = this._filesTarget;
+        var dirsTarget = this._dirsTarget;
         return this.node.requireSources([this._depsTarget, this._levelsTarget])
             .spread(function (deps, levels) {
-                var files = new FileList(), dirs = new FileList();
+                var files = new FileList();
+                var dirs = new FileList();
                 for (var i = 0, l = deps.length; i < l; i++) {
-                    var dep = deps[i], entities;
+                    var dep = deps[i];
+                    var entities;
                     if (dep.elem) {
                         entities = levels.getElemEntities(dep.block, dep.elem, dep.mod, dep.val || '');
                     } else {

@@ -18,13 +18,10 @@
  * } ]);
  * ```
  */
-var Vow = require('vow'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    deps = require('../lib/deps/deps'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
+var deps = require('../lib/deps/deps');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -45,11 +42,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            depsTarget = this.node.unmaskTargetName(this._target),
-            depsTargetPath = this.node.resolvePath(depsTarget),
-            cache = this.node.getNodeCache(depsTarget),
-            sources = this._sources;
+        var _this = this;
+        var depsTarget = this.node.unmaskTargetName(this._target);
+        var depsTargetPath = this.node.resolvePath(depsTarget);
+        var cache = this.node.getNodeCache(depsTarget);
+        var sources = this._sources;
         return this.node.requireSources(sources).then(function (depResults) {
             var rebuildNeeded = cache.needRebuildFile('deps-file', depsTargetPath);
                 if (!rebuildNeeded) {

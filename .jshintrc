@@ -1,4 +1,16 @@
 {
     "eqeqeq": true,
-    "maxlen": 120
+    "maxlen": 120,
+    "unused": true,
+    "undef": true,
+    "node": true,
+    "globals"   : {
+        /* MOCHA */
+        "describe": false,
+        "it": false,
+        "before"     : false,
+        "beforeEach" : false,
+        "after"      : false,
+        "afterEach"  : false
+      }
 }

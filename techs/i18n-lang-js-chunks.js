@@ -22,12 +22,8 @@
  * ]);
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    vowFs = require('../lib/fs/async-fs'),
-    Vow = require('vow'),
-    crypto = require('crypto'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var Vow = require('vow');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 var I18NLangJs = require('./i18n-lang-js');
 
@@ -39,10 +35,10 @@ module.exports = require('../lib/tech/chunks').buildFlow()
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
-        var keysets = require(keysetsFilename),
-            _this = this,
-            filename = this.node.resolvePath(this._target),
-            lang = this._lang;
+        var keysets = require(keysetsFilename);
+        var _this = this;
+        var filename = this.node.resolvePath(this._target);
+        var lang = this._lang;
         return Vow.fulfill().then(function () {
             return Vow.all(Object.keys(keysets).sort().map(function (keysetName) {
                 return _this.processChunk(

@@ -19,10 +19,8 @@
  * } ]);
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit');
+var vowFs = require('../lib/fs/async-fs');
+var inherit = require('inherit');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -39,10 +37,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget),
-            symlinkTargetPath = this.node.resolvePath(symlinkTarget),
-            fileTarget = this.node.unmaskTargetName(this._fileTarget),
-            _this = this;
+        var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
+        var symlinkTargetPath = this.node.resolvePath(symlinkTarget);
+        var fileTarget = this.node.unmaskTargetName(this._fileTarget);
+        var _this = this;
         function createSymlink() {
             return vowFs.symLink(fileTarget, symlinkTargetPath).then(function () {
                 _this.node.resolveTarget(symlinkTarget);

@@ -18,11 +18,9 @@
  * nodeConfig.addTech(require('enb/techs/priv-js'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
+var BorschikPreprocessor = require('../lib/preprocess/borschik-preprocessor');
 
 module.exports = require('../lib/build-flow').create()
     .name('priv-js')
@@ -30,9 +28,9 @@ module.exports = require('../lib/build-flow').create()
     .useFileList('priv.js')
     .useSourceText('bemhtmlTarget', '?.bemhtml.js')
     .builder(function (sourceFiles, bemhtml) {
-        var _this = this,
-            target = this._target,
-            jsBorschikPreprocessor = new BorschikPreprocessor();
+        var _this = this;
+        var target = this._target;
+        var jsBorschikPreprocessor = new BorschikPreprocessor();
         var node = this.node;
         return Vow.all(sourceFiles.map(function (file) {
             return _this.node.createTmpFileForTarget(target).then(function (tmpfile) {

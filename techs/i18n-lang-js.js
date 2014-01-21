@@ -22,12 +22,8 @@
  * ]);
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    vowFs = require('../lib/fs/async-fs'),
-    Vow = require('vow'),
-    tanker = require('../exlib/tanker'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var tanker = require('../exlib/tanker');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('i18n-lang-js')
@@ -36,17 +32,17 @@ module.exports = require('../lib/build-flow').create()
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
         dropRequireCache(require, keysetsFilename);
-        var keysets = require(keysetsFilename),
-            _this = this,
-            lang = this._lang,
-            res = [];
+        var keysets = require(keysetsFilename);
+        var _this = this;
+        var lang = this._lang;
+        var res = [];
         Object.keys(keysets).sort().forEach(function (keysetName) {
             res.push(_this.__self.getKeysetBuildResult(keysetName, keysets[keysetName], lang));
         });
         return this.getPrependJs(lang) + res.join('\n\n') + this.getAppendJs(lang);
     })
     .methods({
-        getPrependJs: function (lang) {
+        getPrependJs: function () {
             return '';
         },
         getAppendJs: function (lang) {

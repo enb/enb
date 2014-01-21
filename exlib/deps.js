@@ -44,9 +44,9 @@ module.exports.OldDeps = (function () {
          * @param {OldDepsItem} item
          */
         add: function (target, depsType, item) {
-            var items = this.items,
-                targetKey = target.buildKey(),
-                itemKey = item.buildKey();
+            var items = this.items;
+            var targetKey = target.buildKey();
+            var itemKey = item.buildKey();
 
             if (!items[itemKey]) {
                 items[itemKey] = item;
@@ -104,9 +104,9 @@ module.exports.OldDeps = (function () {
         parse: function (deps, ctx, fn) {
             fn || (fn = function (i) { this.add(this.rootItem, 'shouldDeps', i); });
 
-            var _this = this,
+            var _this = this;
 
-                forEachItem = function (type, items, ctx) {
+            var forEachItem = function (type, items, ctx) {
                     items && !isEmptyObject(items) && (Array.isArray(items) ? items : [items]).forEach(function (item) {
 
                         if (isSimple(item)) {
@@ -144,7 +144,8 @@ module.exports.OldDeps = (function () {
                                     continue;
                                 }
                                 modsArr.push({ mod: m });
-                                var mod = { mod: m }, v = mods[m];
+                                var mod = { mod: m };
+                                var v = mods[m];
                                 Array.isArray(v) ? (mod.vals = v) : (mod.val = v);
                                 modsArr.push(mod);
                             }
@@ -172,9 +173,9 @@ module.exports.OldDeps = (function () {
 
             this.tech = tech;
 
-            var _this = this,
-                depsCount1 = this.getCount(),
-                depsCount2;
+            var _this = this;
+            var depsCount1 = this.getCount();
+            var depsCount2;
 
             return Vow.when(this.expandOnceByFS())
                 .then(function again(newDeps) {
@@ -231,8 +232,8 @@ module.exports.OldDeps = (function () {
          */
         expandItemByFS: function (item) {
 
-            var _this = this,
-                tech = this.tech;
+            var _this = this;
+            var tech = this.tech;
 
             var files = tech.levels.getFilesByDecl(item.item.block, item.item.elem, item.item.mod, item.item.val)
                 .filter(function (file) {
@@ -263,8 +264,8 @@ module.exports.OldDeps = (function () {
          * @returns {OldDeps}
          */
         subtract: function (deps) {
-            var items1 = this.items,
-                items2 = deps.items;
+            var items1 = this.items;
+            var items2 = deps.items;
 
             for (var k in items2) {
                 if (k && items2.hasOwnProperty(k)) {
@@ -281,9 +282,9 @@ module.exports.OldDeps = (function () {
          * @returns {OldDeps}
          */
         intersect: function (deps) {
-            var items1 = this.items,
-                items2 = deps.items,
-                newItems = {};
+            var items1 = this.items;
+            var items2 = deps.items;
+            var newItems = {};
 
             for (var k in items2) {
                 if ((items2.hasOwnProperty(k) && items1.hasOwnProperty(k)) || !k) {
@@ -302,8 +303,8 @@ module.exports.OldDeps = (function () {
          * @returns {Number}
          */
         getCount: function () {
-            var res = 0,
-                items = this.items;
+            var res = 0;
+            var items = this.items;
 
             for (var k in items) {
                 items.hasOwnProperty(k) && res++;
@@ -375,11 +376,13 @@ module.exports.OldDeps = (function () {
         serialize: function () {
             var byTech = {};
             this.forEach(function (item, ctx) {
-                var t1 = ctx.item.tech || '',
-                    t2 = item.item.tech || '',
-                    techsByTech = byTech[t1] || (byTech[t1] = {}),
-                    i = item.serialize();
-                i && (techsByTech[t2] || (techsByTech[t2] = [])).push(i);
+                var t1 = ctx.item.tech || '';
+                var t2 = item.item.tech || '';
+                var techsByTech = byTech[t1] || (byTech[t1] = {});
+                var i = item.serialize();
+                if (i) {
+                    (techsByTech[t2] || (techsByTech[t2] = [])).push(i);
+                }
             });
             return byTech;
         },
@@ -390,8 +393,8 @@ module.exports.OldDeps = (function () {
          * @returns {String}
          */
         stringify: function () {
-            var res = [],
-                deps = this.serialize();
+            var res = [];
+            var deps = this.serialize();
 
             if (deps['']) {
                 res.push('exports.deps = ' + JSON.stringify(deps[''][''], null, 4) + ';\n');
@@ -440,8 +443,8 @@ module.exports.OldDeps = (function () {
          */
         extendByCtx: function (ctx) {
             if (ctx && (ctx = ctx.item)) {
-                var ks = ['tech', 'block', 'elem', 'mod', 'val'],
-                    k;
+                var ks = ['tech', 'block', 'elem', 'mod', 'val'];
+                var k;
 
                 while (k = ks.shift()) {
                     if (this.item[k]) {
@@ -477,8 +480,10 @@ module.exports.OldDeps = (function () {
             if (!item) {
                 return this;
             }
-            var ds = ['mustDeps', 'shouldDeps'], d,
-                thisDeps, itemDeps;
+            var ds = ['mustDeps', 'shouldDeps'];
+            var d;
+            var thisDeps;
+            var itemDeps;
             while (d = ds.shift()) {
                 itemDeps = item[d] || (item[d] = {});
                 if (thisDeps = this.item[d]) {
@@ -516,8 +521,8 @@ module.exports.OldDeps = (function () {
                 return this.key;
             }
 
-            var i = this.item,
-                k = '';
+            var i = this.item;
+            var k = '';
 
             if (i.block) {
                 k += i.block;
@@ -527,7 +532,9 @@ module.exports.OldDeps = (function () {
                     i.val && (k += '_' + i.val);
                 }
             }
-            i.tech && (k += '.' + i.tech);
+            if (i.tech) {
+                k += '.' + i.tech;
+            }
             return this.key = k;
         },
 
@@ -537,11 +544,14 @@ module.exports.OldDeps = (function () {
          * @returns {Object}
          */
         serialize: function () {
-            var res = {},
-                ks = ['tech', 'block', 'elem', 'mod', 'val'], k;
+            var res = {};
+            var ks = ['tech', 'block', 'elem', 'mod', 'val'];
+            var k;
 
             while (k = ks.shift()) {
-                this.item[k] && (res[k] = this.item[k]);
+                if (this.item[k]) {
+                    res[k] = this.item[k];
+                }
             }
             if (res.block) {
                 return res;

@@ -2,9 +2,8 @@
  * js-test
  * =======
  */
-var Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    FileList = require('../lib/file-list');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('js')

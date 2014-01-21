@@ -16,8 +16,6 @@
  * ```javascript
  * nodeConfig.addTech(require('enb/techs/js-includes'));
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('js')

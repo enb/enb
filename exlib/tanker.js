@@ -5,66 +5,68 @@
  * Заимствованный.
  */
 
-var DOM = require('dom-js'),
+var DOM = require('dom-js');
 
-    QUOTE_CHAR = '"',
-    SINGLE_QUOTE_CHAR = '\'',
+var QUOTE_CHAR = '"';
+var SINGLE_QUOTE_CHAR = '\'';
 
-    isArray = Array.isArray,
+var isArray = Array.isArray;
 
-    isJson = function (obj) {
-        try {
-            if (isString(obj)) {
-                var jsonStart = obj.trim().charAt(0);
-                if (jsonStart === '{' || jsonStart === '[') {
-                    return JSON.parse(obj);
-                }
+var isJson = function (obj) {
+    try {
+        if (isString(obj)) {
+            var jsonStart = obj.trim().charAt(0);
+            if (jsonStart === '{' || jsonStart === '[') {
+                return JSON.parse(obj);
             }
-            return false;
-        } catch (e) {
-            return false;
         }
-    },
-    isString = function (str) {
-        return typeof str === 'string';
-    },
-    isSimple = function (obj) {
-        var type = typeof obj;
-        return type === 'string' || type === 'number';
-    };
+        return false;
+    } catch (e) {
+        return false;
+    }
+};
+
+var isString = function (str) {
+    return typeof str === 'string';
+};
+
+var isSimple = function (obj) {
+    var type = typeof obj;
+    return type === 'string' || type === 'number';
+};
 
 var parseXml = exports.parseXml = function (xml, cb) {
+    if (!isSimple(xml)) {
+        xml = JSON.stringify(xml);
+    }
 
-        isSimple(xml) || (xml = JSON.stringify(xml));
-
-        try {
-            new DOM.DomJS().parse('<root>' + xml + '</root>', function (err, dom) {
-                if (err) {
-                    return;
-                }
-                cb(dom.children);
-            });
-        } catch (e) {
-            parseXml(DOM.escape(xml), cb);
-        }
-
-    },
-    domToJs = exports.domToJs = function (nodes) {
-
-        var code = expandNodes(toCommonNodes(nodes), jsExpander);
-
-        if (code.length === 0) {
-            return '\'\'';
-        } else {
-            var firstLine = code[0];
-            var firstChar = firstLine.charAt(0);
-            if (code.length === 1 && (firstChar === QUOTE_CHAR || firstChar === SINGLE_QUOTE_CHAR)) {
-                return firstLine;
-            } else {
-                return 'function (params) { return ' + code.join(' + ') + ' }';
+    try {
+        new DOM.DomJS().parse('<root>' + xml + '</root>', function (err, dom) {
+            if (err) {
+                return;
             }
+            cb(dom.children);
+        });
+    } catch (e) {
+        parseXml(DOM.escape(xml), cb);
+    }
+};
+
+var domToJs = exports.domToJs = function (nodes) {
+    var code = expandNodes(toCommonNodes(nodes), jsExpander);
+
+    if (code.length === 0) {
+        return '\'\'';
+    } else {
+        var firstLine = code[0];
+        var firstChar = firstLine.charAt(0);
+        if (code.length === 1 && (firstChar === QUOTE_CHAR || firstChar === SINGLE_QUOTE_CHAR)) {
+            return firstLine;
+        } else {
+            return 'function (params) { return ' + code.join(' + ') + ' }';
         }
-    };
+    }
+};
 
 exports.xmlToJs = function (xml, cb) {
 
@@ -96,12 +98,14 @@ function expandNodes(node, expanderFn) {
  */
 function jsExpander(node, _raw) {
 
-    _raw == null && (_raw = false);
+    if (_raw == null) {
+        _raw = false;
+    }
 
     var currentExpander = function (node) {
             return jsExpander(node, _raw);
-        },
-        rawExpander = function (node) {
+        };
+    var rawExpander = function (node) {
             return jsExpander(node, true);
         };
 
@@ -111,8 +115,8 @@ function jsExpander(node, _raw) {
         return '';
     }
 
-    var nodeclass = node.pop(),
-        code;
+    var nodeclass = node.pop();
+    var code;
 
     switch (nodeclass) {
 
@@ -132,14 +136,18 @@ function jsExpander(node, _raw) {
 
     case 'XML':
         // [ tag, attrs, [content] ]
-        var tag = node[0],
-            attrs = node[1],
-            prop = [],
-            s = '', t, c;
+        var tag = node[0];
+        var attrs = node[1];
+        var prop = [];
+        var s = '';
+        var t;
+        var c;
 
         code = [];
 
-        for (c in attrs) { prop.push([c, SINGLE_QUOTE_CHAR + attrs[c] + SINGLE_QUOTE_CHAR].join('=')); };
+        for (c in attrs) {
+            prop.push([c, SINGLE_QUOTE_CHAR + attrs[c] + SINGLE_QUOTE_CHAR].join('='));
+        }
         prop = prop.length ? jsQuote(' ' + prop.join(' ')) : '';
 
         c = '';
@@ -250,8 +258,8 @@ function _node(node) {
         var attrs = node.attributes;
         if (attrs && attrs.key) {
             // tanker dynamic
-            var keyset = _keyset(attrs),
-                params = _params(node.children);
+            var keyset = _keyset(attrs);
+            var params = _params(node.children);
 
             return [keyset, attrs.key, params, 'TANKER_DYNAMIC'];
 
@@ -361,8 +369,8 @@ function _params(nodes) {
  * @returns {AST}
  */
 function _param(param) {
-    var name = param.name.replace(/i18n:/, ''),
-        val = toCommonNodes(param.children);
+    var name = param.name.replace(/i18n:/, '');
+    var val = toCommonNodes(param.children);
 
     val.length || val.push(_empty());
 

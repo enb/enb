@@ -41,7 +41,6 @@
  * ]);
  * ```
  */
-var inherit = require('inherit');
 
 module.exports = require('./js-bembundle-component').buildFlow()
     .name('js-bembundle-component-i18n')

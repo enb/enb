@@ -21,11 +21,10 @@
  * });
  * ```
  */
-var Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    vm = require('vm'),
-    deps = require('../lib/deps/deps');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
+var vm = require('vm');
+var deps = require('../lib/deps/deps');
 
 /**
  * @type {Tech}
@@ -37,15 +36,15 @@ module.exports = require('../lib/build-flow').create()
     .defineRequiredOption('destTech')
     .useFileList('deps.js')
     .builder(function (depsFiles) {
-        var sourceTech = this._sourceTech,
-            destTech = this._destTech;
+        var sourceTech = this._sourceTech;
+        var destTech = this._destTech;
         return Vow.all(depsFiles.map(function (file) {
             return vowFs.read(file.fullname, 'utf8').then(function (text) {
                 return {file: file, text: text };
             });
         })).then(function (depResults) {
-            var result = [],
-                depIndex = {};
+            var result = [];
+            var depIndex = {};
             depResults.forEach(function (depResult) {
                 var fileDeps = vm.runInThisContext(depResult.text);
                 if (!fileDeps) {

@@ -17,8 +17,6 @@
  * nodeConfig.addTech(require('enb/techs/css-ie-includes'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs');
 
 module.exports = require('./css-includes').buildFlow()
     .name('css-ie-includes')

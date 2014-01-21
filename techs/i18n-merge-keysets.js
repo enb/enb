@@ -20,11 +20,8 @@
  * ]);
  * ```
  */
-var inherit = require('inherit'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    vm = require('vm'),
-    asyncRequire = require('../lib/fs/async-require');
+var Vow = require('vow');
+var asyncRequire = require('../lib/fs/async-require');
 
 module.exports = require('../lib/build-flow.js').create()
     .name('i18n-merge-keysets')
@@ -32,9 +29,9 @@ module.exports = require('../lib/build-flow.js').create()
     .useDirList('i18n')
     .target('target', '?.keysets.{lang}.js')
     .builder(function (langKeysetDirs) {
-        var lang = this._lang,
-            langJs = lang + '.js',
-            langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function (dir) {
+        var lang = this._lang;
+        var langJs = lang + '.js';
+        var langKeysetFiles = [].concat.apply([], langKeysetDirs.map(function (dir) {
                 return dir.files;
             })).filter(function (fileInfo) {
                 return fileInfo.name === langJs;

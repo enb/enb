@@ -18,8 +18,6 @@
  * nodeConfig.addTech(require('enb/techs/css-includes'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('css-includes')

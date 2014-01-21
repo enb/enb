@@ -27,14 +27,11 @@
  * } ]);
  * ```
  */
-var Vow = require('vow'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    vowFs = require('../lib/fs/async-fs'),
-    DepsResolver = require('../lib/deps/deps-resolver'),
-    inherit = require('inherit'),
-    asyncRequire = require('../lib/fs/async-require'),
-    dropRequireCache = require('../lib/fs/drop-require-cache');
+var vowFs = require('../lib/fs/async-fs');
+var DepsResolver = require('../lib/deps/deps-resolver');
+var inherit = require('inherit');
+var asyncRequire = require('../lib/fs/async-require');
+var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
 
@@ -56,12 +53,12 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var _this = this,
-            depsTarget = this._target,
-            depsTargetPath = this.node.resolvePath(depsTarget),
-            cache = this.node.getNodeCache(depsTarget),
-            bemdeclSource = this._bemdeclTarget,
-            bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
+        var _this = this;
+        var depsTarget = this._target;
+        var depsTargetPath = this.node.resolvePath(depsTarget);
+        var cache = this.node.getNodeCache(depsTarget);
+        var bemdeclSource = this._bemdeclTarget;
+        var bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
         return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function (levels) {
             var depFiles = levels.getFilesBySuffix('deps.js').concat(levels.getFilesBySuffix('deps.yaml'));
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
@@ -70,8 +67,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             ) {
                 dropRequireCache(require, bemdeclSourcePath);
                 return asyncRequire(bemdeclSourcePath).then(function (bemdecl) {
-                    var decls = [],
-                        dep = new DepsResolver(levels);
+                    var decls = [];
+                    var dep = new DepsResolver(levels);
 
                     if (bemdecl.blocks) {
                         bemdecl.blocks.forEach(function (block) {

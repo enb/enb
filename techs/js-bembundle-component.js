@@ -43,9 +43,8 @@ module.exports = require('../lib/build-flow').create()
     .useSourceListFilenames('cssChunksTargets', ['?.css-chunks.js'])
     .target('target', '?.bembundle.js')
     .builder(function (jsChunkFilenames, cssChunkFilenames) {
-        var _this = this,
-            jsChunks = [],
-            cssChunks = [];
+        var jsChunks = [];
+        var cssChunks = [];
         cssChunkFilenames.forEach(function (cssChunksFilename) {
             dropRequireCache(require, cssChunksFilename);
             cssChunks = cssChunks.concat(require(cssChunksFilename));

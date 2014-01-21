@@ -18,9 +18,6 @@
  * nodeConfig.addTech(require('enb/techs/xsl'));
  * ```
  */
-var inherit = require('inherit'),
-    fs = require('graceful-fs'),
-    Vow = require('vow');
 
 module.exports = require('../lib/build-flow').create()
     .name('xsl')
@@ -31,8 +28,8 @@ module.exports = require('../lib/build-flow').create()
     .defineOption('prependXsl', '')
     .defineOption('appendXsl', '')
     .builder(function (sourceFiles, imports, includes) {
-        var node = this.node,
-            importFilenames = sourceFiles.map(function (sourceFile) {
+        var node = this.node;
+        var importFilenames = sourceFiles.map(function (sourceFile) {
                 return sourceFile.fullname;
             }).concat(imports);
         return this.getPrependXsl() +

@@ -19,9 +19,8 @@
  * } ]);
  * ```
  */
-var fs = require('graceful-fs'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs');
+var Vow = require('vow');
+var vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('file-merge')

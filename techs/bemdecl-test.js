@@ -1,10 +1,9 @@
-var inherit = require('inherit'),
-    Vow = require('vow'),
-    vowFs = require('../lib/fs/async-fs'),
-    fs = require('graceful-fs'),
-    vm = require('vm'),
-    FileList = require('../lib/file-list'),
-    DepsResolver = require('../lib/deps/deps-resolver');
+var inherit = require('inherit');
+var vowFs = require('../lib/fs/async-fs');
+var fs = require('graceful-fs');
+var vm = require('vm');
+var FileList = require('../lib/file-list');
+var DepsResolver = require('../lib/deps/deps-resolver');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -26,14 +25,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var bemdeclTarget = this.node.unmaskTargetName(this._target),
-            bemdeclTargetPath = this.node.resolvePath(bemdeclTarget),
-            _this = this,
-            cache = this.node.getNodeCache(bemdeclTarget);
+        var bemdeclTarget = this.node.unmaskTargetName(this._target);
+        var bemdeclTargetPath = this.node.resolvePath(bemdeclTarget);
+        var _this = this;
+        var cache = this.node.getNodeCache(bemdeclTarget);
         return this.node.requireSources([this._levelsTarget]).spread(function (files) {
-            var sourceFiles = files.getFilesBySuffix('test.js'),
-                depsFiles = files.getFilesBySuffix('test.deps.js'),
-                filterFunction;
+            var sourceFiles = files.getFilesBySuffix('test.js');
+            var depsFiles = files.getFilesBySuffix('test.deps.js');
+            var filterFunction;
             if (typeof _this._fileMask === 'function') {
                 filterFunction = _this._fileMask;
             } else {

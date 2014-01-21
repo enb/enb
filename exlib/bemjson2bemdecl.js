@@ -53,7 +53,8 @@ function isSimple(obj) {
 function iterateJson(obj, fn) {
     if (obj && !isSimple(obj)) {
         if (Array.isArray(obj)) {
-            var i = 0, l = obj.length;
+            var i = 0;
+            var l = obj.length;
             while (i < l) {
                 iterateJson(obj[i++], fn);
             }
@@ -70,7 +71,9 @@ function getBuilder(decl, block) {
         block = obj.block || block;
         obj.block && decl.push({ name: block });
         obj.elem && decl.push({ name: block, elems: [{ name: obj.elem }] });
-        var mods, n, props;
+        var mods;
+        var n;
+        var props;
         if (mods = obj.mods) {
             for (n in mods) {
                 if (mods.hasOwnProperty(n)) {

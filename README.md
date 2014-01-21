@@ -518,7 +518,7 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
 // ...
 ```
 
-p.s. директория pages/common должна сущестовать (можно создавать динамически)
+Директория `pages/common` должна сущестовать (можно создавать динамически)
 ```javascript
 // ...
   // Создание директории common
@@ -530,7 +530,7 @@ p.s. директория pages/common должна сущестовать (мо
 
 Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это динамически:
 
-Необходимо подключать модуль fs
+Необходимо подключать модуль `fs`
 ```javascript
 var fs = require('fs');
 //...
@@ -569,7 +569,7 @@ if (nodeConfig.getPath() === 'touch.bundles/common') {
 
 В алфавитном порядке.
 
-Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из make-файла с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
+Все технологии, включенные в пакет `ENB`, находятся в папке `techs` пакета. Подключаются из make-файла с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
 
 Если при настройке технологии в опциях указана подстрока `{lang}`, то будет создано столько копий технологии, сколько языков установлено для ноды или проекта (если у ноды не указаны языки).
 

@@ -288,9 +288,9 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
       ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
-  Теперь для production-режима (который запускается командой `YENV=production node_modules/.bin/enb make`) конечные файлы обрабатываются Борщиком (https://github.com/bem/borschik).
+  Теперь для production-режима конечные файлы обрабатываются [Борщиком](https://github.com/bem/borschik). Production-режим запускается командой `YENV=production node_modules/.bin/enb make`
 
-11. Сборка js и css работает. Если в вашем проекте присутствуют другие цели или мультиязычность, то можно продолжить чтение данной документации в поисках информации о небходимых технологиях.
+11. Сборка `js` и `css` работает. Если в вашем проекте присутствуют другие цели или мультиязычность, то можно продолжить чтение данной документации в поисках информации о небходимых технологиях.
 12. Собираем `node_modules/.bin/enb make`.
 
 Настройка сборки

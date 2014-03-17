@@ -2046,12 +2046,12 @@ node.getDir
 String Node::getDir()
 ```
 
-node.getRoot
-------------
+node.getRootDir
+---------------
 
 ```javascript
 // Возвращает полный путь к корневой папке проекта.
-String Node::getRoot()
+String Node::getRootDir()
 ```
 
 node.getLogger

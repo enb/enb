@@ -54,7 +54,7 @@
     "unit-test": "mocha -u bdd -R spec --recursive test/lib",
     "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
-    "build-sample-proj": "cd test/fixtures/sample-project && ../../../bin/enb make -n --graph",
+    "build-sample-proj": "./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test"
   }
 }

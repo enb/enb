@@ -32,6 +32,7 @@ var Levels = require('../lib/levels/levels');
 var Vow = require('vow');
 var VowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
+var path = require('path');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -81,7 +82,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             levelList.push(this.node.buildState[levelKey]);
         }
 
-        return VowFs.listDir(_this.node.getPath())
+        return VowFs.listDir(path.join(_this.node.getRootDir(), _this.node.getPath()))
             .then(function (listDir) {
                 return _this._sublevelDirectories.filter(function (path) {
                     return listDir.indexOf(path) !== -1;

@@ -51,7 +51,7 @@
   "scripts": {
     "test": "npm run-script jshint && npm run-script check-style && npm run-script unit-test && npm run-script func-test",
     "jshint": "jshint .",
-    "unit-test": "mocha -u bdd -R spec --recursive test/lib",
+    "unit-test": "mocha -u bdd -R spec --recursive test/lib test/techs",
     "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
     "build-sample-proj": "./bin/enb make -n --graph --dir test/fixtures/sample-project",

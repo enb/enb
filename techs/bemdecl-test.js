@@ -1,6 +1,6 @@
 var inherit = require('inherit');
 var vowFs = require('../lib/fs/async-fs');
-var fs = require('graceful-fs');
+var fs = require('fs');
 var vm = require('vm');
 var FileList = require('../lib/file-list');
 var DepsResolver = require('../lib/deps/deps-resolver');

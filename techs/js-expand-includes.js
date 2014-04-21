@@ -19,7 +19,7 @@
  * ]);
  * ```
  */
-var fs = require('graceful-fs');
+var fs = require('fs');
 var Vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');

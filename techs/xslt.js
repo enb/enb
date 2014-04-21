@@ -24,7 +24,7 @@
  * }]);
  * ```
  */
-var fs = require('graceful-fs');
+var fs = require('fs');
 var inherit = require('inherit');
 var childProcess = require('child_process');
 var Vow = require('vow');

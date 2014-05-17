@@ -1,5 +1,4 @@
 var dirGlob = require('../../../lib/fs/dir-glob');
-var path = require('path');
 require('chai').should();
 
 describe('lib', function () {

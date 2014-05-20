@@ -13,7 +13,7 @@ describe('lib', function () {
                 var nodes = 'test-bundles/*';
                 var mask = rootPath + '/' + nodes;
 
-                globSync(mask).should.deep.equal([
+                globSync(mask).sort().should.deep.equal([
                     rootPath + '/test-bundles/bundle1',
                     rootPath + '/test-bundles/bundle2'
                 ]);

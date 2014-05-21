@@ -2,28 +2,14 @@
  * css-stylus
  * ==========
  *
- * Собирает *css*-файлы вместе со *styl*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
- * * *Object* **variables** — Дополнительные переменные окружения для `stylus`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет.
- *    По умолчанию — ['css', 'styl'].
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/css-stylus'));
- * ```
+ * Технология устарела. Используйте пакет `enb-stylus`.
  */
 var Vow = require('vow');
 var stylus = require('stylus');
 
 module.exports = require('./css').buildFlow()
     .name('css-stylus')
+    .deprecated('enb', 'enb-stylus')
     .defineOption('variables')
     .useFileList(['css', 'styl'])
     .builder(function (sourceFiles) {

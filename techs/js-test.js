@@ -2,7 +2,7 @@
  * js-test
  * =======
  */
-var Vow = require('vow');
+var vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
@@ -16,7 +16,7 @@ module.exports = require('../lib/build-flow').create()
             typeof fileMask === 'function' ? fileMask : function (file) {
                 return fileMask.test(file.fullname);
             });
-        return Vow.all(testFiles.map(function (file) {
+        return vow.all(testFiles.map(function (file) {
             return vowFs.read(file.fullname, 'utf8');
         })).then(function (chunks) {
             return chunks.join('\n');

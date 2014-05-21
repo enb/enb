@@ -124,7 +124,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 1. Прописать в `package.json` проекта зависимость от пакета `enb` (желательно в виде ">=последняя_версия").
 2. Выполнить `npm install`.
 3. Проверить, что `ENB` установлен. Команда `node_modules/.bin/enb` должна выполниться без ошибок.
-4. 
+4.
   Создать make-файл `.bem/enb-make.js` вида:
 
   ```javascript
@@ -132,7 +132,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   };
   ```
 5. Проверить, что `ENB` работает. Команда `node_modules/.bin/enb make` должна выполниться без ошибок.
-6. 
+6.
   Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
 
   ```javascript
@@ -142,7 +142,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   };
   ```
   Так объявляется нода в рамках make-платформы. В данный момент она не настроена, а лишь объявлена.
-7. 
+7.
   Объявим таргеты, которые надо собрать для ноды:
 
   ```javascript
@@ -153,7 +153,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   };
   ```
   Таргеты объявлены, но при попытке выполнить `node_modules/.bin/enb make` будет ошибка, т.к. не зарегистрированы технологии, которые могут предоставить таргеты.
-8. 
+8.
   Зарегистрируем базовые технологии:
   ```javascript
   module.exports = function(config) {
@@ -181,9 +181,9 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   }
   ```
   Чтобы не засорять конфиг ноды, функцию `getLevels` мы выносим в нижнюю часть файла.
-  
+
   Рассмотрим каждую технологию:
-  
+
   **enb/techs/levels** — собирает информацию об уровнях переопределения проекта. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`. Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`. Например, для ноды `pages/index` — `pages/index/blocks`.
 
   **enb/techs/file-provider** — сообщает make-платформе, что таргет (переданный в опции `target`) уже готов. В нашем случае, исходным файлом для сборки является `index.bemdecl.js`. Он лежит в репозитории и отдельная сборка для него не требуется.
@@ -192,7 +192,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 
   **enb/techs/files** — собирает полный список файлов со всех уровней переопределения в том порядке, в котором они идут в финальном `index.deps.js`. Результат этой технологии может использоваться, например, в технологии `enb/techs/js`.
 
-9. 
+9.
   Регистрируем технологии, необходимые для сборки js и css.
   ```javascript
   module.exports = function(config) {
@@ -255,7 +255,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Теперь можно выполнить команду `node_modules/.bin/enb make` и в папке `pages/index` будут столь нужные нам `_index.js` и `_index.css`.
   Окей, мы получили результат, с которым можно работать. Но как же production-режим?
 
-10. 
+10.
   Разделяем сборку финальных файлов для разных режимов.
   ```javascript
   module.exports = function(config) {
@@ -345,7 +345,7 @@ module.exports = function(config) {
     // Добавление нескольких таргетов.
     nodeConfig.addTargets(['?.css', '?.js']);
   });
-  
+
   // Настройки для режима development.
   config.mode('development', function() {
     // Настройка нод по маске (regex).
@@ -456,7 +456,7 @@ app
 -----------------------------
 
 >  Merged бандл — это бандл, который объединяет в себе декларации всех бандлов уровня. Соответственно по такой объединенной декларации собираются и объединенные конечные файлы. Например, css будет включать в себе все стили, используемые всеми бандлами.
-> 
+>
 >  Merged бандл может быть полезен, например, если вы хотите использовать общие файлы статики (js, css) для нескольких страниц проекта.
 >  (c) bem.info
 
@@ -497,7 +497,7 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
 
             require("enb/techs/js"),
             require("enb/techs/css"),
-            require("enb/techs/css-ie9")
+            [ require("enb/techs/css"), {target: '?.ie9.css', sourceSuffixes: ['css', 'ie9.css'] } ]
         ]);
         // Собираем необходимые файлы
         nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css"]);
@@ -517,7 +517,7 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
             [ require("enb/techs/i18n-lang-js"), { lang: "{lang}" } ],
             [ require("enb/techs/js-i18n"), { lang: "{lang}" } ],
             require("enb/techs/css"),
-            require("enb/techs/css-ie9")
+            [ require("enb/techs/css"), {target: '?.ie9.css', sourceSuffixes: ['css', 'ie9.css'] } ]
         ]);
         nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css", "?.html"]);
     }
@@ -681,52 +681,15 @@ nodeConfig.addTech([ require('enb/techs/bemdecl-provider'), {
 }]);
 ```
 
-bemhtml
--------
-
-Технология перенесена в пакет `enb-bemhtml`.
-
 borschik
 --------
 
-Обрабатывает файл Борщиком (раскрытие borschik-ссылок, минификация, фризинг).
-
-Настройки фризинга и путей описываются в конфиге Борщика (`.borschik`) в корне проекта (https://github.com/veged/borschik/blob/master/README.ru.md).
-
-**Опции**
-
-* *String* **sourceTarget** — Исходный таргет. Например, `?.js`. Обязательная опция.
-* *String* **destTarget** — Результирующий таргет. Например, `_?.js`. Обязательная опция.
-* *Boolean* **minify** — Минифицировать ли в процессе обработки. По умолчанию — `true`.
-* *Boolean* **freeze** — Использовать ли фризинг в процессе обработки. По умолчанию — `false`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('enb/techs/borschik'), {
-  sourceTarget: '?.css',
-  destTarget: '_?.css',
-  minify: true,
-  freeze: true
-} ]);
-```
+Технология переехала в пакет `enb-borschik`.
 
 browser-js
 ----------
 
-Склеивает `vanilla.js`, `js` и `browser.js`-файлы по deps'ам, сохраняет в виде `?.browser.js`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.browser.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['vanilla.js', 'js', 'browser.js']`
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/browser-js'));
-```
+Технология переехала в пакет `enb-diverse-js`.
 
 css
 ---
@@ -748,100 +711,43 @@ nodeConfig.addTech(require('enb/techs/css'));
 css-borschik-chunks
 -------------------
 
-Из *css*-файлов по deps'ам, собирает `css-chunks.js`-файл, обрабатывая инклуды, ссылки. Умеет минифицировать и фризить.
+Технология переехала в пакет `enb-borschik`.
 
-`css-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *Boolean* **minify** — Минифицировать ли в процессе обработки. По умолчанию — `true`.
-* *Boolean* **freeze** — Использовать ли фризинг в процессе обработки. По умолчанию — `false`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('enb/techs/css-borschik-chunks'), {
-  minify: true,
-  freeze: true
-} ]);
-```
 
 css-chunks
 ----------
 
-Из *css*-файлов по deps'ам, собирает `css-chunks.js`-файл, обрабатывая инклуды, ссылки.
-
-`css-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'css'`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-chunks'));
-```
+Технология переехала в пакет `enb-bembundle`.
 
 css-ie
 ------
 
-Склеивает *ie.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie.css`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию `?.ie.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'ie.css']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-ie'));
-```
+Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
 
 css-ie6
 -------
 
-По аналогии с css-ie.
+Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
 
 css-ie7
 -------
 
-По аналогии с css-ie.
+Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
 
 css-ie8
 -------
 
-По аналогии с css-ie.
+Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
 
 css-ie9
 -------
 
-По аналогии с css-ie.
+Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
 
 css-ie-includes
 ---------------
 
-Собирает *ie.css*-файлы по deps'ам инклудами, сохраняет в виде `?.ie.css`. Может пригодиться в паре с ycssjs (как fastcgi-модуль).
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию `?.ie.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'ie.css']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-ie-includes'));
-```
+Технология устарела. Используйте технологию `css-includes` с опцией `sourceSuffixes`.
 
 css-includes
 ------------
@@ -863,19 +769,7 @@ nodeConfig.addTech(require('enb/techs/css-includes'));
 css-less
 --------
 
-Собирает *css*-файлы вместе со *less*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию `?.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'less']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-less'));
-```
+Технология устарела и будет удалена.
 
 css-stylus
 ----------
@@ -885,7 +779,8 @@ css-stylus
 **Опции**
 
 * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список
+  исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
 * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'styl']`.
 
 **Пример**
@@ -903,7 +798,8 @@ css-stylus-with-nib
 **Опции**
 
 * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
+* *String* **filesTarget** — files-таргет, на основе которого получается список
+  исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
 * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'styl']`.
 
 **Пример**
@@ -915,7 +811,10 @@ nodeConfig.addTech(require('enb/techs/css-stylus-with-nib'));
 deps
 ----
 
-Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Следует использовать с осторожностью: в lego не хватает зависимостей, потому проект может собраться иначе, чем с помощью bem-tools.
+Быстро собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости.
+Сохраняет в виде `?.deps.js`.
+Следует использовать с осторожностью: в lego не хватает зависимостей,
+потому проект может собраться иначе, чем с помощью bem-tools.
 
 Имя *levels*-таргета в данный момент не настраивается (нет запросов на эту функцию).
 
@@ -962,7 +861,8 @@ nodeConfig.addTech([ require('enb/techs/deps-merge'), {
 deps-old
 --------
 
-Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости. Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
+Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости.
+Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
 
 Имя *levels*-таргета в данный момент не настраивается (нет запросов на эту функцию).
 
@@ -990,7 +890,8 @@ nodeConfig.addTech([ require('enb/techs/deps-old'), {
 deps-provider
 -------------
 
-Копирует *deps* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например, для объединения deps'ов.
+Копирует *deps* в текущую ноду под нужным именем из другой ноды.
+Может понадобиться, например, для объединения deps'ов.
 
 **Опции**
 
@@ -1011,7 +912,8 @@ nodeConfig.addTech([ require('enb/techs/deps-provider'), {
 deps-subtract
 -------------
 
-Формирует *deps* с помощью вычитания одного deps-файла из другого. Может применяться в паре с `deps-provider` для получения deps для bembundle.
+Формирует *deps* с помощью вычитания одного deps-файла из другого.
+Может применяться в паре с `deps-provider` для получения deps для bembundle.
 
 **Опции**
 
@@ -1036,7 +938,8 @@ nodeConfig.addTechs([
 file-copy
 ---------
 
-Копирует один таргет в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
+Копирует один таргет в другой.
+Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
 
 **Опции**
 
@@ -1075,7 +978,8 @@ nodeConfig.addTech([ require('enb/techs/file-merge'), {
 file-provider
 -------------
 
-Предоставляет существующий файл для make-платформы. Может, например, использоваться для предоставления исходного *bemdecl*-файла.
+Предоставляет существующий файл для make-платформы.
+Может, например, использоваться для предоставления исходного *bemdecl*-файла.
 
 **Опции**
 
@@ -1090,7 +994,8 @@ nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js
 files
 -----
 
-Собирает список исходных файлов для сборки на основе *deps* и *levels*, предоставляет `?.files` и `?.dirs`. Используется многими технологиями, которые объединяют множество файлов из различных уровней переопределения в один.
+Собирает список исходных файлов для сборки на основе *deps* и *levels*, предоставляет `?.files` и `?.dirs`.
+Используется многими технологиями, которые объединяют множество файлов из различных уровней переопределения в один.
 
 **Опции**
 
@@ -1247,145 +1152,27 @@ nodeConfig.addTech(require('enb/techs/js'));
 js-bundle-component
 -------------------
 
-Собирает `?.bembundle.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
-
-Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
-
-**Опции**
-
-* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
-* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.js`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  [ require('enb/techs/levels'), { levels: /* ... */ } ],
-  require('enb/techs/files'),
-  [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
-  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
-  [ require('enb/techs/deps-subtract'), {
-    subtractWhatTarget: 'index.deps.js',
-    subtractFromTarget: 'router.tmp.deps.js',
-    depsTarget: 'router.deps.js'
-  } ],
-  require('enb/techs/css-chunks'),
-  require('enb/techs/js-chunks'),
-  require('enb/techs/js-bundle-component')
-]);
-```
+Технология переехала в пакет `enb-bembundle`.
 
 js-bembundle-component-i18n
 ---------------------------
 
-Собирает `?.bembundle.<язык>.js`-файл из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
-
-Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
-
-Имена результирующих файлов в данный момент не настраиваются (нет запросов на эту функцию).
-
-**Опции**
-
-* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
-* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  [ require('enb/techs/levels'), { levels: /* ... */ } ],
-  require('enb/techs/files'),
-  [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
-  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
-  [ require('enb/techs/deps-subtract'), {
-    subtractWhatTarget: 'index.deps.js',
-    subtractFromTarget: 'router.tmp.deps.js',
-    depsTarget: 'router.deps.js'
-  } ],
-  require('enb/techs/css-chunks'),
-  require('enb/techs/js-chunks'),
-  [ require('enb/techs/i18n-merge-keysets'), { lang: 'all' } ],
-  [ require('enb/techs/i18n-merge-keysets'), { lang: '{lang}' } ],
-  [ require('enb/techs/i18n-lang-js-chunks'), { lang: 'all' } ],
-  [ require('enb/techs/i18n-lang-js-chunks'), { lang: '{lang}' } ],
-  [ require('enb/techs/js-bembundle-component-i18n'), { lang: '{lang}' } ]
-]);
-```
+Технология переехала в пакет `enb-bembundle`.
 
 js-bundle-page
 --------------
 
-Собирает страничный `?.js`-файл из `?.css-chunks.js` и `?.js-chunks.js`.
-
-Результирующий файл готов к догрузке кода из бандлов (JS и CSS, приходящий из бандлов, повторно не выполняется на странице).
-
-**Опции**
-
-* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
-* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.js`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  /* ... */
-  require('enb/techs/css-chunks'),
-  require('enb/techs/js-chunks'),
-  require('enb/techs/js-bundle-page')
-]);
-```
+Технология переехала в пакет `enb-bembundle`.
 
 js-bembundle-page-i18n
 ----------------------
 
-Собирает страничный `?.<язык>.js`-файл из `?.css-chunks.js`,  `?.js-chunks.lang.<язык>.js` и `?.js-chunks.js`.
-
-Используется вместе с `deps-subtract`, `deps-provider`, `js-chunks`, `i18n-lang-js-chunks`, `css-chunks` для построения догружаемой части функционала сайта.
-
-**Опции**
-
-* *String* **cssChunksTargets** — Имена `css-chunks.js`-таргетов, которые предоставляют CSS-чанки. По умолчанию — `[ '?.css-chunks.js' ]`.
-* *String* **jsChunksTargets** — Имена `js-chunks.js`-таргетов, которые предоставляют JS-чанки. По умолчанию — `[ '?.js-chunks.js' ]`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.bembundle.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  /* ... */
-  require('enb/techs/css-chunks'),
-  require('enb/techs/js-chunks'),
-  [ require('enb/techs/i18n-merge-keysets'), { lang: 'all' } ],
-  [ require('enb/techs/i18n-merge-keysets'), { lang: '{lang}' } ],
-  [ require('enb/techs/i18n-lang-js-chunks'), { lang: 'all' } ],
-  [ require('enb/techs/i18n-lang-js-chunks'), { lang: '{lang}' } ],
-  [ require('enb/techs/js-bembundle-page-i18n'), { lang: '{lang}' } ]
-]);
-```
+Технология переехала в пакет `enb-bembundle`.
 
 js-chunks
 ---------
 
-Из *js*-файлов по deps'ам, собирает `js-chunks.js`-файл.
-
-`js-chunks.js`-файлы нужны для создания bembundle-файлов или bembundle-страниц. Технология bembundle активно используется в bem-tools для выделения из проекта догружаемых кусков функционала и стилей (js/css).
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'js'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.js-chunks.js`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/js-chunks'));
-```
+Технология переехала в пакет `enb-bembundle`.
 
 js-expand-includes
 ------------------
@@ -1462,80 +1249,27 @@ nodeConfig.addTech([ require('enb/techs/levels'), {
 node-js
 -------
 
-Склеивает `vanilla.js` и `node.js`-файлы по deps'ам, сохраняет в виде `?.node.js`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.node.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет.  По умолчанию — `['vanilla.js', 'node.js']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/node-js'));
-```
+Технология переехала в пакет `enb-diverse-js`.
 
 priv-js
 -------
 
-Собирает `?.priv.js` по deps'ам, обрабатывая Борщиком, добавляет BEMHTML в начало.
+Технология переехала в пакет `enb-priv-js`.
 
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
+priv-js-i18n
+------------
 
-**Опции**
-
-* *String* **bemhtmlTarget** — Имя `bemhtml.js`-таргета. По умолчанию — `?.bemhtml.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'priv.js'`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/priv-js'));
-```
+Технология переехала в пакет `enb-priv-js`.
 
 priv-js-i18n-all
 ----------------
 
-Собирает *all.priv.js*-файл из *priv.js* и массива языков.
-
-**Опции**
-
-* *Array* **langTargets** — Массив lang.js-таргетов. По умолчанию — `[]`.
-* *String* **privJsTarget** — Исходный priv.js-файл. По умолчанию — `?.priv.js`.
-* *String* **target** — Результирующий priv.js-файл. По умолчанию — `?.all.priv.js`.
-
-**Пример**
-
-```javascript
-[ require('enb/techs/priv-js-i18n-all'), {
-    langTargets: ['all'].concat(config.getLanguages()).map(function(lang) {return '?.lang.' + lang + '.js'})
-} ]
-```
+Технология переехала в пакет `enb-priv-js`.
 
 pub-js-i18n
 -----------
 
-Собирает *{lang}.pub.js*-файл из *js*, языковых файлов и *bemhtml*.
-
-**Опции**
-
-* *String* **target** — Результирующий `pub.js`-файл. По умолчанию — `?.all.pub.js`.
-* *String* **jsTarget** — Исходный `js`-файл. По умолчанию — `?.js`.
-* *String* **lang** — Язык. Обязательная опция.
-* *Array* **langTarget** — `lang.js`-файл конкретного языка. Например, `?.lang.ru.js`. По умолчанию — `?.lang.{lang}.js`.
-* *Array* **allLangTarget** — `lang.all.js`-файл. По умолчанию — `?.lang.all.js`.
-* *Array* **bemhtmlTarget** — `bemhtml.js`-файл. По умолчанию — `?.bemhtml.js`.
-
-**Пример**
-
-```javascript
-[ require('enb/techs/pub-js-i18n'), {
-    jsTarget: '?.js',
-    target: '?.pub.js'
-} ]
-```
+Технология переехала в пакет `enb-priv-js`.
 
 symlink
 -------
@@ -1559,144 +1293,37 @@ nodeConfig.addTech([ require('enb/techs/symlink'), {
 vanilla-js
 ----------
 
-Склеивает `vanilla.js`-файлы по deps'ам, сохраняет в виде `?.vanilla.js`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.vanilla.js`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'vanilla.js'`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/vanilla-js'));
-```
+Технология переехала в пакет `enb-diverse-js`.
 
 xsl
 ---
 
-Собирает `?.xsl` по deps'ам.
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'xsl'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.xsl`.
-* *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
-* *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/xsl'));
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 xsl-2lego
 ---------
 
-Собирает `?.2lego.xsl` по deps'ам.
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'2lego.xsl'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.2lego.xsl`.
-* *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
-* *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/2lego.xsl'));
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 xsl-convert2xml
 ---------------
 
-Собирает `?.convert2xml.xsl` по deps'ам.
-
-**Опции**
-
-* *String* **transformXslFile** — Путь к convert2xml.xsl из lego/tools.
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'convert2xml.xsl'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.convert2xml.xsl`.
-* *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
-* *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('enb/techs/xsl-convert2xml'), {
-  transformXslFile: config.resolvePath('blocks/lego/tools/convert2xml.xsl')
-} ]);
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 xsl-html5
 ---------
 
-Собирает `?.xsl` по deps'ам для HTML5-страницы.
-
-Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'xsl'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.xsl`.
-* *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
-* *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/xsl-html5'));
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 xsl-html5-i18n
 --------------
 
-Собирает `?.<язык>.xsl`-файл по deps'ам, добавляя `?.lang.<язык>.xsl`-файл.
-
-**Опции**
-
-* *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'xsl'`.
-* *String* **target** — Результирующий таргет. По умолчанию — `?.{lang}.xsl`.
-* *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
-* *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
-
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('xsl-html5-18n'), { lang: '{lang}' } ]);
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 xslt
 ----
 
-Выполняет XSLT-преобразование.
-
-**Опции**
-
-* *String* **sourceTarget** — Исходный таргет. Обязательная опция.
-* *String* **destTarget** — Результирующий таргет. Обязательная опция.
-* *String* **xslSource** — XSL-Таргет, с помощью которого производится трансформация.
-* *String* **xslFile** — XSL-Файл, с помощью которого производится трансформация (используется, если XSL-файл не является таргетом).
-* *String[]* **args** — Аргументы для xsltproc. По умолчанию — `[]`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('enb/techs/xslt'))({
-    sourceTarget: '?.keysets.{lang}.xml',
-    destTarget: '?.lang.{lang}.xsl',
-    xslFile: config.resolvePath('blocks/lego/tools/tanker/tools/generate/i18n.xsl.xsl'),
-    args: ['--xinclude']
-}]);
-```
+Технология переехала в пакет `enb-lego-xml`.
 
 ## Как написать свою технологию
 
@@ -2021,7 +1648,7 @@ node.requireSources
 -------------------
 
 ```javascript
-// Требует у ноды таргеты для дальнейшей сборки, возвращает промис. 
+// Требует у ноды таргеты для дальнейшей сборки, возвращает промис.
 // Промис выполняется, возвращая массив результатов, которыми резолвились требуемые таргеты.
 // ВАЖНО: Не все технологии резолвят таргеты с результатом.
 // В данный момент резолвят с результатом технологии: levels, deps*, files.

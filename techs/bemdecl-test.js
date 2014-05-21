@@ -7,7 +7,7 @@ var DepsResolver = require('../lib/deps/deps-resolver');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
-        return 'js-expand-includes';
+        return 'bemdecl-test';
     },
 
     configure: function () {

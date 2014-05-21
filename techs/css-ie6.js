@@ -2,25 +2,12 @@
  * css-ie6
  * =======
  *
- * Склеивает *css* и *ie6.css*-файлы по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.ie6.css`.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию `?.ie6.css`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет.
- *    По умолчанию — ['css', 'ie6.css'].
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/css-ie6'));
- * ```
+ * Технология устарела. Используйте технологию `css` с опцией `sourceSuffixes`.
  */
 
 module.exports = require('./css').buildFlow()
     .name('css-ie6')
+    .deprecated('enb', 'enb', 'css')
     .target('target', '?.ie6.css')
     .useFileList(['css', 'ie6.css'])
     .createTech();

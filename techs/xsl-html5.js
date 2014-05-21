@@ -2,27 +2,11 @@
  * xsl-html5
  * =========
  *
- * Собирает `?.xsl` по deps'ам для HTML5-страницы.
- *
- * Имя результирующего файла в данный момент не настраивается (нет запросов на эту функцию).
- *
- * **Опции**
- *
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — 'xsl'.
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.xsl`.
- * * *String* **prependXsl** — Xsl для вставки в начало документа. По умолчанию пусто.
- * * *String* **appendXsl** — Xsl для вставки в конец документа. По умолчанию пусто.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/xsl-html5'));
- * ```
+ * Технология переехала в пакет `enb-lego-xml`.
  */
 module.exports = require('./xsl').buildFlow()
     .name('xsl-html5')
+    .deprecated('enb', 'enb-lego-xml')
     .methods({
         getAppendXsl: function () {
             var res = [this._appendXsl];

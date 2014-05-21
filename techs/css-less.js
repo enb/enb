@@ -2,27 +2,14 @@
  * css-less
  * ========
  *
- * Собирает *css*-файлы вместе со *less*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию `?.css`.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет.
- *    По умолчанию — ['css', 'less'].
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/css-less'));
- * ```
+ * Технология устарела и будет удалена.
  */
 var Vow = require('vow');
 var path = require('path');
 
 module.exports = require('./css').buildFlow()
     .name('css-less')
+    .deprecated('enb')
     .useFileList(['css', 'less'])
     .builder(function (sourceFiles) {
         var less;

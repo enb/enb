@@ -2,29 +2,11 @@
  * pub-js-i18n
  * ===========
  *
- * Собирает *{lang}.pub.js*-файл из *js*, языковых файлов и *bemhtml*.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий `pub.js`-файл. По умолчанию — `?.all.pub.js`.
- * * *String* **jsTarget** — Исходный `js`-файл. По умолчанию — `?.js`.
- * * *String* **lang** — Язык. Обязательная опция.
- * * *Array* **langTarget** — `lang.js`-файл конкретного языка. Например, `?.lang.ru.js`.
- *   По умолчанию — `?.lang.{lang}.js`.
- * * *Array* **allLangTarget** — `lang.all.js`-файл. По умолчанию — `?.lang.all.js`.
- * * *Array* **bemhtmlTarget** — `bemhtml.js`-файл. По умолчанию — `?.bemhtml.js`.
- *
- * **Пример**
- *
- * ```javascript
- *  [ require('enb/techs/pub-js-i18n'), {
- *      jsTarget: '?.js',
- *      target: '?.pub.js'
- *  } ]
- * ```
+ * Технология переехала в пакет `enb-priv-js`.
  */
 module.exports = require('../lib/build-flow').create()
     .name('pub-js-i18n')
+    .deprecated('enb', 'enb-priv-js')
     .target('target', '?.{lang}.pub.js')
     .defineRequiredOption('lang')
     .useSourceFilename('bemhtmlTarget', '?.bemhtml.js')

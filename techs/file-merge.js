@@ -24,10 +24,10 @@ var vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
     .name('file-merge')
+    .target('target', '?.target')
     .defineOption('divider', '\n')
     .defineRequiredOption('target')
     .defineRequiredOption('sources')
-    .target('target', '?.target')
     .useSourceListFilenames('sources')
     .builder(function (sources) {
         var divider = this._divider;

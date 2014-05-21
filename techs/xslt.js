@@ -2,26 +2,7 @@
  * xslt
  * ====
  *
- * Выполняет XSLT-преобразование.
- *
- * **Опции**
- *
- * * *String* **sourceTarget** — Исходный таргет. Обязательная опция.
- * * *String* **destTarget** — Результирующий таргет. Обязательная опция.
- * * *String* **xslSource** — XSL-Таргет, с помощью которого производится трансформация.
- * * *String* **xslFile** — XSL-Файл, с помощью которого производится трансформация
- *   (используется, если XSL-файл не является таргетом).
- * * *String[]* **args** — Аргументы для xsltproc. По умолчанию — `[]`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/xslt'))({
- *     sourceTarget: '?.keysets.{lang}.xml',
- *     destTarget: '?.lang.{lang}.xsl',
- *     xslFile: config.resolvePath('blocks/lego/tools/tanker/tools/generate/i18n.xsl.xsl'),
- *     args: ['--xinclude']
- * }]);
+ * Технология переехала в пакет `enb-lego-xml`.
  * ```
  */
 var fs = require('fs');
@@ -55,6 +36,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var cache = this.node.getNodeCache(target);
         var sources = [source];
         var xslFile = options.xslFile;
+
+        this.node.getLogger().logTechIsDeprecated(
+            target,
+            'xslt',
+            'enb',
+            'xslt',
+            'enb-lego-xml'
+        );
 
         if (options.xslSource) {
             var xslSource = options.xslSource;

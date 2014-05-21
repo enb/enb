@@ -2,30 +2,7 @@
  * borschik
  * ========
  *
- * Обрабатывает файл Борщиком (раскрытие borschik-ссылок, минификация, фризинг).
- *
- * Настройки фризинга и путей описываются в конфиге Борщика (`.borschik`) в корне проекта
- * (https://github.com/veged/borschik/blob/master/README.ru.md).
- *
- * **Опции**
- *
- * * *String* **sourceTarget** — Исходный таргет. Например, `?.js`. Обязательная опция.
- * * *String* **destTarget** — Результирующий таргет. Например, `_?.js`. Обязательная опция.
- * * *Boolean* **minify** — Минифицировать ли в процессе обработки. По умолчанию — `true`.
- * * *Boolean* **freeze** — Использовать ли фризинг в процессе обработки. По умолчанию — `false`.
- * * *String* **tech** — Технология сборки. По умолчанию — соответствует расширению исходного таргета.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/borschik'), {
- *   sourceTarget: '?.css',
- *   destTarget: '_?.css',
- *   minify: true,
- *   freeze: true,
- *   tech: 'css+'
- * } ]);
- * ```
+ * Технология переехала в пакет `enb-borschik`.
  */
 var Vow = require('vow');
 var inherit = require('inherit');
@@ -53,6 +30,15 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     build: function () {
         var target = this._target;
+
+        this.node.getLogger().logTechIsDeprecated(
+            target,
+            'borschik',
+            'enb',
+            'borschik',
+            'enb-borschik'
+        );
+
         var targetPath = this.node.resolvePath(target);
         var source = this._source;
         var sourcePath = this.node.resolvePath(source);

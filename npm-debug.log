@@ -1,0 +1,23 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node',
+1 verbose cli   '/Users/mdevils/.nvm/v0.10.26/bin/npm',
+1 verbose cli   'version',
+1 verbose cli   '-f',
+1 verbose cli   '0.11.0' ]
+2 info using npm@1.4.3
+3 info using node@v0.10.26
+4 warn using --force I sure hope you know what you are doing.
+5 error Error: Version not changed
+5 error     at /Users/mdevils/.nvm/v0.10.26/lib/node_modules/npm/lib/version.js:59:45
+5 error     at fs.js:266:14
+5 error     at /Users/mdevils/.nvm/v0.10.26/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:105:5
+5 error     at Object.oncomplete (fs.js:107:15)
+6 error If you need help, you may report this *entire* log,
+6 error including the npm and node versions, at:
+6 error     <http://github.com/npm/npm/issues>
+7 error System Darwin 13.1.0
+8 error command "node" "/Users/mdevils/.nvm/v0.10.26/bin/npm" "version" "-f" "0.11.0"
+9 error cwd /Users/mdevils/Work/enb
+10 error node -v v0.10.26
+11 error npm -v 1.4.3
+12 verbose exit [ 1, true ]

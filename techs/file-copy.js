@@ -7,15 +7,15 @@
  *
  * **Опции**
  *
- * * *String* **sourceTarget** — Исходный таргет. Обязательная опция.
- * * *String* **destTarget** — Результирующий таргет. Обязательная опция.
+ * * *String* **source** — Исходный таргет. Обязательная опция.
+ * * *String* **target** — Результирующий таргет. Обязательная опция.
  *
  * **Пример**
  *
  * ```javascript
  * nodeConfig.addTech([ require('enb/techs/file-copy'), {
- *   sourceTarget: '?.css',
- *   destTarget: '_?.css'
+ *   source: '?.css',
+ *   target: '_?.css'
  * } ]);
  * ```
  */
@@ -28,8 +28,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     configure: function () {
-        this._source = this.getRequiredOption('sourceTarget');
-        this._target = this.getRequiredOption('destTarget');
+        this._source = this.getOption('sourceTarget');
+        if (!this._source) {
+            this._source = this.getRequiredOption('source');
+        }
+        this._target = this.getOption('destTarget');
+        if (!this._target) {
+            this._target = this.getRequiredOption('target');
+        }
     },
 
     getTargets: function () {

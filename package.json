@@ -1,6 +1,6 @@
 {
   "author": "Marat Dulin <mdevils@yandex.ru>",
-  "description": "Faster BEM tools",
+  "description": "Faster BEM/BEViS assembler",
   "name": "enb",
   "version": "0.11.1",
   "repository": "https://github.com/enb-make/enb",

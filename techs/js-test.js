@@ -6,7 +6,7 @@ var vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
 
 module.exports = require('../lib/build-flow').create()
-    .name('js')
+    .name('js-test')
     .target('target', '?.test.js')
     .useFileList('test.js')
     .defineOption('fileMask', /.*/, '_fileMask')

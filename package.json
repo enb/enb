@@ -39,6 +39,7 @@
     "mocha": "1.11.0",
     "sinon": "1.7.3",
     "chai": "1.7.2",
+    "istanbul": "0.2.10",
     "jscs": "~1.2.3",
     "bh": "0.1.14",
     "enb-validate-code": "0.0.1"
@@ -47,9 +48,10 @@
     "enb": "./bin/enb"
   },
   "scripts": {
-    "test": "npm run-script jshint && npm run-script check-style && npm run-script unit-test && npm run-script func-test",
+    "test": "npm run-script jshint && npm run-script check-style && npm run-script unit-test-coverage && npm run-script func-test",
     "jshint": "jshint .",
     "unit-test": "mocha -u bdd -R spec --recursive test/lib test/techs",
+    "unit-test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- -u bdd -R spec --recursive test/lib test/techs",
     "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
     "build-sample-proj": "./bin/enb make -n --graph --dir test/fixtures/sample-project",

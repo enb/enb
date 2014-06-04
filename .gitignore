@@ -5,3 +5,4 @@ test/fixtures/sample-project/page/*
 !test/fixtures/sample-project/page/page.bemjson.js
 !test/fixtures/sample-project/page/blocks/page/*
 test/fixtures/sample-project/.bem/tmp
+coverage

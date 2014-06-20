@@ -1,4 +1,4 @@
-ENB [![Build Status](https://travis-ci.org/enb-make/enb.svg?branch=master)](https://travis-ci.org/enb-make/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/bh.svg?branch=master)](https://coveralls.io/r/enb-make/enb)
+ENB [![Build Status](https://travis-ci.org/enb-make/enb.svg?branch=master)](https://travis-ci.org/enb-make/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?branch=master)](https://coveralls.io/r/enb-make/enb)
 ===
 
 Сборщик проектов. С помощью ENB можно собрать любой проект, который строится на модели node / target.

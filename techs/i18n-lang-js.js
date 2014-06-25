@@ -12,6 +12,8 @@
  *
  * * *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
  * * *String* **lang** — Язык, для которого небходимо собрать файл.
+ * * *String* **prependJs** — Код js для добавления перед результатом сборки
+ * * *String* **appendJs** — Код js для добавления после результата сборки
  *
  * **Пример**
  *
@@ -28,6 +30,8 @@ var dropRequireCache = require('../lib/fs/drop-require-cache');
 module.exports = require('../lib/build-flow').create()
     .name('i18n-lang-js')
     .target('target', '?.lang.{lang}.js')
+    .defineOption('prependJs')
+    .defineOption('appendJs')
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')
     .builder(function (keysetsFilename) {
@@ -43,9 +47,12 @@ module.exports = require('../lib/build-flow').create()
     })
     .methods({
         getPrependJs: function () {
-            return '';
+			return this._prependJs || '';
         },
         getAppendJs: function (lang) {
+			if (this._appendJs) {
+				return this._appendJs;
+			}
             return lang === 'all' ? '' : '\n\nBEM.I18N.lang(\'' + lang + '\');\n';
         }
     })

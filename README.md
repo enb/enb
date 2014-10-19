@@ -450,30 +450,35 @@ app
 
 Предположим у нас есть 3 ноды: 
 
-* pages/index; 
-* pages/search; 
-* pages/order.
+* desktop.bundles/index; 
+* desktop.bundles/search; 
+* desktop.bundles/order.
 
-У каждой страницы свои уникальными стили и скрипты. Нам нужно собрать общий js и css с этих страниц и положить их внутрь pages/common/ как common.js и common.css соответственно.
+У каждой страницы свои уникальными стили и скрипты. Нам нужно собрать общий js и css с этих страниц и положить их внутрь desktop.bundles/merged/ как merged.js и merged.css соответственно.
 
 
 ```javascript
 // Пробегаемся по всем директориям внутри "pages"
 // ...
 config.nodeMask(/pages\/.*/, function (nodeConfig) {
-    // Если текущая нода common
-    if (nodeConfig.getPath() === 'pages/common') {
+    // Если текущая нода merged
+    if (nodeConfig.getPath() === 'desktop.bundles/merged') {
         nodeConfig.addTechs([
             [ require("enb/techs/levels"), { levels: getLevels() } ],
             require("enb/techs/files"),
 
             // Копируем депсы с каждоый страницы внутрь текущей ноды (pages/common)
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/search', depsTarget: 'search.deps.js' } ],
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/order', depsTarget: 'order.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/index', depsTarget: 'index.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/search', depsTarget: 'search.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/order', depsTarget: 'order.deps.js' } ],
 
-            // Склеиваем наши депсы в один (common.deps.js)
-            [ require('enb/techs/deps-merge'), { depsSources: ['index.deps.js', 'search.deps.js', 'order.deps.js'] } ],
+            // Склеиваем наши депсы в один (merged.deps.js)
+            [ require('enb/techs/deps-merge'), 
+                { 
+                    depsSources: ['index.deps.js', 'search.deps.js', 'order.deps.js'],
+                    depsTarget: 'merged.deps.js'
+                } 
+            ],
 
             require("enb/techs/js"),
             require("enb/techs/css"),
@@ -513,50 +518,52 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
 // ...
 ```
 
-p.s. директория pages/common должна сущестовать (можно создавать динамически)
-```javascript
-// ...
-  // Создание директории common
-  if (!fs.existsSync('pages/common')) {
-      fs.mkdirSync('pages/common');
-  }
-// ...
-```
+p.s. директория desktop.bundles/merged должна сущестовать, ее можно создавать динамически, см. пример ниже.
 
 Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это динамически:
 
 Необходимо подключать модуль fs
 ```javascript
 var fs = require('fs');
-//...
-if (nodeConfig.getPath() === 'touch.bundles/common') {
-    var pagesDeps = [],
-        addTechsAttrs = [
+
+// Динамическое создание директории merged
+if (!fs.existsSync('desktop.bundles/merged')) {
+  fs.mkdirSync('desktop.bundles/merged');
+}
+
+if (nodeConfig.getPath() === 'desktop.bundles/merged') {
+    var mergedDeps = [],
+        addTechs = [
             [ require("enb/techs/levels"), { levels: getLevels() } ],
             require("enb/techs/files"),
-            require("enb/techs/js"),
-            require("enb/techs/css"),
-            require("enb/techs/css-ie9")
+            require("enb-diverse-js/techs/browser-js"),
+            require("enb-modules/techs/prepend-modules"), // YM
+            require("enb/techs/css")
         ];
 
     // Проходимся по существующим страницам
-    fs.readdirSync('touch.bundles').map(function (page) {
-        if (page !== 'common') {
-            // Копируем депсы с каджой страницы внутрь common
-            addTechsAttrs.push([ require('enb/techs/deps-provider'), { sourceNodePath: 'touch.bundles/' + page, depsTarget: page + '.deps.js' } ]);
+    fs.readdirSync('desktop.bundles').map(function (bundle) {
+        if (bundle !== 'merge') {
+            // Копируем депсы с каждой страницы внутрь desktop.bundles/merged
+            addTechs.push([
+                require('enb/techs/deps-provider'),
+                    {
+                        sourceNodePath: 'desktop.bundles/' + bundle, 
+                        depsTarget: bundle + '.deps.js' 
+                    } 
+                ]);
 
-            pagesDeps.push(page + '.deps.js');
+            mergedDeps.push(bundle + '.deps.js');
         }
     });
 
-    // Мерджим все полученные депмы в один - common.deps.js
-    addTechsAttrs.push([ require('enb/techs/deps-merge'), { depsSources: pagesDeps } ]);
+    // Мерджим все полученные депсы в один - common.deps.js
+    addTechs.push([ require('enb/techs/deps-merge'), { depsSources: mergedDeps } ]);
 
-    // прокидываем атрибуты
-    nodeConfig.addTechs(addTechsAttrs);
-    nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css"]);
+    // Добавляем технологии и цели в конфиг сборки
+    nodeConfig.addTechs(addTechs);
+    nodeConfig.addTargets(["_?.js", "_?.css"]);
 }
-//...
 ```
 
 Подробное описание актуальных технологий

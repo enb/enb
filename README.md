@@ -75,12 +75,12 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 
 Сборка конкретной страницы проекта:
 ```
-./node_modules/.bin/enb make pages/index
+./node_modules/.bin/enb make desktop.bundles/index
 ```
 
 Сборка конкретного файла:
 ```
-./node_modules/.bin/enb make pages/index/index.html
+./node_modules/.bin/enb make desktop.bundles/index/index.html
 ```
 
 Запуск в режиме сервера:
@@ -101,10 +101,10 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 Терминология
 ------------
 
-* Target (таргет) — это цель для сборки. Например, таргетом может быть `index.js` в рамках ноды `pages/index`..
-* Node (нода) — это папка, в которой находятся те или иные таргеты. Например, `pages/index`.
+* Target (таргет) — это цель для сборки. Например, таргетом может быть `index.js` в рамках ноды `desktop.bundles/index`..
+* Node (нода) — это папка, в которой находятся те или иные таргеты. Например, `desktop.bundles/index`.
 * Suffix (суффикс) — это расширение исходного или конечного файла. Например, `js`.
-* Masked Target (замаскированный таргет) — это имя таргета, которое может содержать `?`. Знак `?` заменяется на имя ноды в процессе настройки технологии, а с помощью подстроки `{lang}` можно создать несколько копий технологии для каждого из языков, где `{lang}` заменится на аббревиатуру языка в каждой из копий технологии. Например, таргет `?.js` заменяется на `search.js`, если нода — `pages/search`. Такой подход удобен, когда мы настраиваем несколько нод через `nodeMask`.
+* Masked Target (замаскированный таргет) — это имя таргета, которое может содержать `?`. Знак `?` заменяется на имя ноды в процессе настройки технологии, а с помощью подстроки `{lang}` можно создать несколько копий технологии для каждого из языков, где `{lang}` заменится на аббревиатуру языка в каждой из копий технологии. Например, таргет `?.js` заменяется на `search.js`, если нода — `desktop.bundles/search`. Такой подход удобен, когда мы настраиваем несколько нод через `nodeMask`.
 * Make-файл — файл, в котором конфигурируется ENB для сборки проекта. Находится в папке `<project_root>/.enb/make.js`.
 * Билдить — собирать, компилировать (используется в отношении таргетов).
 
@@ -133,11 +133,11 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   ```
 5. Проверить, что `ENB` работает. Команда `node_modules/.bin/enb make` должна выполниться без ошибок.
 6.
-  Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
+  Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `desktop.bundles/index`.
 
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
       });
   };
   ```
@@ -147,7 +147,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
         nodeConfig.addTargets(['_?.js', '_?.css']);
       });
   };
@@ -157,7 +157,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Зарегистрируем базовые технологии:
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
@@ -184,7 +184,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 
   Рассмотрим каждую технологию:
 
-  **enb/techs/levels** — собирает информацию об уровнях переопределения проекта. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`. Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`. Например, для ноды `pages/index` — `pages/index/blocks`.
+  **enb/techs/levels** — собирает информацию об уровнях переопределения проекта. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`. Для каждой ноды по умолчанию добавляется уровень `<путь_к_ноде>/blocks`. Например, для ноды `desktop.bundles/index` — `desktop.bundles/index/blocks`.
 
   **enb/techs/file-provider** — сообщает make-платформе, что таргет (переданный в опции `target`) уже готов. В нашем случае, исходным файлом для сборки является `index.bemdecl.js`. Он лежит в репозитории и отдельная сборка для него не требуется.
 
@@ -196,7 +196,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Регистрируем технологии, необходимые для сборки js и css.
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
@@ -225,7 +225,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Но мы регистрировали иные таргеты: `_?.js` (`_index.js`) и `_?.css` (`_index.css`). Для их сборки воспользуемся технологией `enb/techs/file-copy`.
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
@@ -252,14 +252,14 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
       ].map(function(levelPath) { return config.resolvePath(levelPath); });
   }
   ```
-  Теперь можно выполнить команду `node_modules/.bin/enb make` и в папке `pages/index` будут столь нужные нам `_index.js` и `_index.css`.
+  Теперь можно выполнить команду `node_modules/.bin/enb make` и в папке `desktop.bundles/index` будут столь нужные нам `_index.js` и `_index.css`.
   Окей, мы получили результат, с которым можно работать. Но как же production-режим?
 
 10.
   Разделяем сборку финальных файлов для разных режимов.
   ```javascript
   module.exports = function(config) {
-      config.node('pages/index', function(nodeConfig) {
+      config.node('desktop.bundles/index', function(nodeConfig) {
         nodeConfig.addTechs([
           [ require('enb/techs/levels'), { levels: getLevels(config) } ],
           [ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ],
@@ -313,10 +313,10 @@ module.exports = function(config) {
   config.setLanguages(['ru', 'en']);
 
   // Добавление набора нод в сборку.
-  config.nodes('pages/*');
+  config.nodes('*.bundles/*');
 
   // Добавление ноды в сборку + конфигурирование ноды.
-  config.node('pages/index', function(nodeConfig) {
+  config.node('desktop.bundles/index', function(nodeConfig) {
     // Переопределение языков для конкретной ноды.
     nodeConfig.setLanguages(['ru']);
 
@@ -349,7 +349,7 @@ module.exports = function(config) {
   // Настройки для режима development.
   config.mode('development', function() {
     // Настройка нод по маске (regex).
-    config.nodeMask(/pages\/.*/, function(nodeConfig) {
+    config.nodeMask('*.bundles/*', function(nodeConfig) {
       nodeConfig.addTechs([
         [ require('enb/techs/file-copy'), { sourceTarget: '?.css', destTarget: '_?.css'} ],
         [ require('enb/techs/file-copy'), { sourceTarget: '?.js', destTarget: '_?.js'} ]
@@ -360,7 +360,7 @@ module.exports = function(config) {
   // Настройки для режима production.
   config.mode('production', function() {
     // Настройка нод по маске (regex).
-    config.nodeMask(/pages\/.*/, function(nodeConfig) {
+    config.nodeMask('*.bundles/*', function(nodeConfig) {
       nodeConfig.addTechs([
         [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css'} ],
         [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js'} ]
@@ -441,7 +441,7 @@ var enbBuilder = require('enb/lib/server/server-middleware').createBuilder();
 var dropRequireCache = require('enb/lib/fs/drop-require-cache');
 app
     .get('/', function (req, res, next) {
-        var bemhtmlFilePath = 'pages/index/index.bemhtml.js';
+        var bemhtmlFilePath = 'desktop.bundles/index/index.bemhtml.js';
         enbBuilder(bemhtmlFilePath).then(function() {
             var bemhtmlAbsFilePath = process.process.cwd() + '/' + bemhtmlFilePath;
             dropRequireCache(require, bemhtmlAbsFilePath);
@@ -462,7 +462,7 @@ app
 
 Одним из решений может быть:
 
-1. Проход по всем нодам и копирование deps в общую (`common`) папку (см. `deps-provider`);
+1. Проход по всем нодам и копирование deps в общую (`desktop.bundles/merged`) папку (см. `deps-provider`);
 
 2. Мердж всех депсов в один (см. `deps-merge`).
 
@@ -470,30 +470,35 @@ app
 
 Предположим, есть 3 ноды:
 
-* `pages/index`
-* `pages/search`
-* `pages/order`
+* `desktop.bundles/index`
+* `desktop.bundles/search`
+* `desktop.bundles/order`
 
-У каждой страницы свои уникальными стили и скрипты. Нам нужно собрать общий `js` и `css` с этих страниц и положить их внутрь `pages/common/` как `common.js` и `common.css` соответственно.
+У каждой страницы свои уникальными стили и скрипты. Нам нужно собрать общий `js` и `css` с этих страниц и положить их внутрь `desktop.bundles/merged/` как `merged.js` и `merged.css` соответственно.
 
 
 ```javascript
-// Пробегаемся по всем директориям внутри "pages"
+// Пробегаемся по всем директориям внутри "desktop.bundles"
 // ...
-config.nodeMask(/pages\/.*/, function (nodeConfig) {
-    // Если текущая нода common
-    if (nodeConfig.getPath() === 'pages/common') {
+config.nodeMask('*.bundles/*', function (nodeConfig) {
+    // Если текущая нода `merged`
+    if (nodeConfig.getPath() === 'desktop.bundles/merged') {
         nodeConfig.addTechs([
             [ require("enb/techs/levels"), { levels: getLevels() } ],
             require("enb/techs/files"),
 
-            // Копируем депсы с каждоый страницы внутрь текущей ноды (pages/common)
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' } ],
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/search', depsTarget: 'search.deps.js' } ],
-            [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/order', depsTarget: 'order.deps.js' } ],
+            // Копируем депсы с каждоый страницы внутрь текущей ноды (desktop.bundles/merged)
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/index', depsTarget: 'index.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/search', depsTarget: 'search.deps.js' } ],
+            [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/order', depsTarget: 'order.deps.js' } ],
 
-            // Склеиваем наши депсы в один (common.deps.js)
-            [ require('enb/techs/deps-merge'), { depsSources: ['index.deps.js', 'search.deps.js', 'order.deps.js'] } ],
+            // Склеиваем наши депсы в один (merged.deps.js)
+            [ require('enb/techs/deps-merge'), 
+                { 
+                    depsSources: ['index.deps.js', 'search.deps.js', 'order.deps.js'],
+                    depsTarget: 'merged.deps.js'
+                } 
+            ],
 
             require("enb/techs/js"),
             require("enb/techs/css"),
@@ -533,50 +538,57 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
 // ...
 ```
 
-Обратите внимание, директория `pages/common` должна сущестовать. Её можно создавать динамически.
-```javascript
-// ...
-  // Создание директории common
-  if (!fs.existsSync('pages/common')) {
-      fs.mkdirSync('pages/common');
-  }
-// ...
-```
+Обратите внимание, что директория `desktop.bundles/merged` должна сущестовать, ее можно создавать динамически, см. пример ниже.
 
 Конечно, если у вас много страниц и постоянно добавляются новые, то лучше обрабатывать это динамически:
 
 Необходимо подключать модуль `fs`
 ```javascript
 var fs = require('fs');
-//...
-if (nodeConfig.getPath() === 'touch.bundles/common') {
-    var pagesDeps = [],
-        addTechsAttrs = [
+
+// Динамическое создание директории `merged`
+if (!fs.existsSync('desktop.bundles/merged')) {
+  fs.mkdirSync('desktop.bundles/merged');
+}
+
+// ...
+// Конфигурация `merged` бандла.
+if (nodeConfig.getPath() === 'desktop.bundles/merged') {
+    var mergedDeps = [],
+        addTechs = [
             [ require("enb/techs/levels"), { levels: getLevels() } ],
             require("enb/techs/files"),
-            require("enb/techs/js"),
-            require("enb/techs/css"),
-            require("enb/techs/css-ie9")
+            require("enb-diverse-js/techs/browser-js"),
+            require("enb-modules/techs/prepend-modules"), // YM
+            require("enb/techs/css")
         ];
 
     // Проходимся по существующим страницам
-    fs.readdirSync('touch.bundles').map(function (page) {
-        if (page !== 'common') {
-            // Копируем депсы с каджой страницы внутрь common
-            addTechsAttrs.push([ require('enb/techs/deps-provider'), { sourceNodePath: 'touch.bundles/' + page, depsTarget: page + '.deps.js' } ]);
+    fs.readdirSync('desktop.bundles').map(function (bundle) {
+        if ((/\./).test(bundle)) return; // Mac OS `.dirs`
+        
+        if (bundle !== 'merged') {
+            // Копируем депсы с каждой страницы внутрь desktop.bundles/merged
+            addTechs.push([
+                require('enb/techs/deps-provider'),
+                    {
+                        sourceNodePath: 'desktop.bundles/' + bundle, 
+                        depsTarget: bundle + '.deps.js' 
+                    } 
+                ]);
 
-            pagesDeps.push(page + '.deps.js');
+            mergedDeps.push(bundle + '.deps.js');
         }
     });
 
-    // Мерджим все полученные депмы в один - common.deps.js
-    addTechsAttrs.push([ require('enb/techs/deps-merge'), { depsSources: pagesDeps } ]);
+    // Мерджим все полученные депсы в один - common.deps.js
+    addTechs.push([ require('enb/techs/deps-merge'), { depsSources: mergedDeps } ]);
 
-    // прокидываем атрибуты
-    nodeConfig.addTechs(addTechsAttrs);
-    nodeConfig.addTargets(["_?.js", "_?.css", "_?.ie9.css"]);
+    // Добавляем технологии и цели в конфиг сборки
+    nodeConfig.addTechs(addTechs);
+    nodeConfig.addTargets(["_?.js", "_?.css"]);
 }
-//...
+// ...
 ```
 
 Подробное описание актуальных технологий
@@ -926,7 +938,7 @@ deps-subtract
 ```javascript
 nodeConfig.addTechs([
   [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
-  [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }],
+  [ require('enb/techs/deps-provider'), { sourceNodePath: 'desktop.bundles/index', depsTarget: 'index.deps.js' }],
   [ require('enb/techs/deps-subtract'), {
     subtractWhatTarget: 'index.deps.js',
     subtractFromTarget: 'router.tmp.deps.js',
@@ -1233,7 +1245,7 @@ levels
 
 * *String* **target** — Результирующий таргет. По умолчанию — `?.levels`.
 * *(String|Object)[]* **levels** — Уровни переопределения. Полные пути к папкам с уровнями переопределения. Вместо строки с уровнем может использоваться объект вида `{path: '/home/user/www/proj/lego/blocks-desktop', check: false}` для того, чтобы закэшировать содержимое тех уровней переопределения, которые не модифицируются в рамках проекта.
-* *(String)[]* **sublevelDirectories** — Список директорий ноды с уровнями переопределения. По умолчанию — для каждой ноды добавляется уровень `<путь_к_ноде>/blocks`, например, для ноды `pages/index` — `pages/index/blocks`. Каждый следующий указаный уровень может переопределять предыдущий.
+* *(String)[]* **sublevelDirectories** — Список директорий ноды с уровнями переопределения. По умолчанию — для каждой ноды добавляется уровень `<путь_к_ноде>/blocks`, например, для ноды `desktop.bundles/index` — `desktop.bundles/index/blocks`. Каждый следующий указаный уровень может переопределять предыдущий.
 
 **Пример**
 
@@ -1336,7 +1348,7 @@ xslt
 
 ### Теория
 
-Цель технологии — собирать таргет в ноде. Например, технология `css` может собрать `index.css` в ноде `pages/index`
+Цель технологии — собирать таргет в ноде. Например, технология `css` может собрать `index.css` в ноде `desktop.bundles/index`
 на основе `css`-файлов по уровням переопределения.
 
 Каждая технология умеет принимать настройки.
@@ -1569,9 +1581,9 @@ node.getTargetName
 ------------------
 
 ```javascript
-// Возвращает имя таргета ноды без суффикса. Например, для ноды 'pages/index' результат — index.
+// Возвращает имя таргета ноды без суффикса. Например, для ноды 'desktop.bundles/index' результат — index.
 String Node::getTargetName()
-// Возвращает имя таргета ноды с суффиксом. Например, для ноды 'pages/index' с суффиксом 'js' результат — 'index.js'.
+// Возвращает имя таргета ноды с суффиксом. Например, для ноды 'desktop.bundles/index' с суффиксом 'js' результат — 'index.js'.
 String Node::getTargetName(String suffix)
 ```
 
@@ -1579,7 +1591,7 @@ node.unmaskTargetName
 ---------------------
 
 ```javascript
-// Демаскирует имя таргета ноды. Например, для ноды 'pages/index' и maskedTargetName='?.css', результат — 'index.css'.
+// Демаскирует имя таргета ноды. Например, для ноды 'desktop.bundles/index' и maskedTargetName='?.css', результат — 'index.css'.
 String Node::unmaskTargetName(String maskedTargetName)
 ```
 

@@ -6,3 +6,5 @@ test/fixtures/sample-project/page/*
 !test/fixtures/sample-project/page/blocks/page/*
 test/fixtures/sample-project/.bem/tmp
 coverage.html
+npm-debug.log
+report.lcov

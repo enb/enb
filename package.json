@@ -18,44 +18,76 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "inherit": "~2.1.0",
-    "vow": "~0.3.9",
-    "vow-fs": "~0.2.2",
-    "stylus": "0.40.x",
-    "dom-js": "0.0.9",
-    "connect": "3.1.1",
-    "send": "0.8.3",
-    "mime": "1.2.11",
-    "serve-static": "1.5.3",
-    "commander": "1.1.1",
-    "sibling": ">=0.0.3",
     "borschik": "1.0.0",
-    "madify": ">=0.0.1",
-    "mad": ">=0.4.0",
+    "commander": "1.1.1",
+    "connect": "3.1.1",
+    "dom-js": "0.0.9",
+    "inherit": "~2.1.0",
     "js-yaml": "2.1.0",
-    "puml-link": "0.0.1"
+    "mad": ">=0.4.0",
+    "madify": ">=0.0.1",
+    "mime": "1.2.11",
+    "puml-link": "0.0.1",
+    "send": "0.8.3",
+    "serve-static": "1.5.3",
+    "sibling": ">=0.0.3",
+    "stylus": "0.40.x",
+    "vow": "~0.3.9",
+    "vow-fs": "~0.2.2"
   },
   "devDependencies": {
-    "jshint": "2.1.3",
-    "mocha": "1.11.0",
-    "sinon": "1.7.3",
+    "bh": "0.1.14",
     "chai": "1.7.2",
+    "coveralls": "~2.11.2",
+    "enb-validate-code": "0.0.1",
     "istanbul": "0.2.10",
     "jscs": "~1.2.3",
-    "bh": "0.1.14",
-    "enb-validate-code": "0.0.1"
+    "jshint": "2.1.3",
+    "mocha": "2.0.1",
+    "sinon": "1.7.3",
+    "unit-coverage": "~3.2.0"
   },
   "bin": {
     "enb": "./bin/enb"
   },
+  "unit-coverage": {
+    "common": [
+      "-s",
+      "lib/**/*.js",
+      "-e",
+      "node_modules/**",
+      "-t",
+      "test/**",
+      "-a",
+      "lib",
+      "-a",
+      "techs",
+      "-S",
+      "relative",
+      "-O",
+      "tests=test",
+      "--",
+      "-u",
+      "bdd",
+      "-R",
+      "spec",
+      "--recursive",
+      "techs",
+      "lib",
+      "test/lib",
+      "test/techs"
+    ]
+  },
   "scripts": {
-    "test": "npm run-script jshint && npm run-script check-style && npm run-script unit-test-coverage && npm run-script func-test",
+    "test": "npm run-script jshint && npm run-script check-style && npm run-script func-test",
     "jshint": "jshint .",
     "unit-test": "mocha -u bdd -R spec --recursive test/lib test/techs",
-    "unit-test-coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- -u bdd -R spec --recursive test/lib test/techs",
     "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
     "build-sample-proj": "./bin/enb make -n --graph --dir test/fixtures/sample-project",
-    "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test"
+    "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test",
+    "coverage": "unit-coverage run -p common",
+    "coverage-html": "unit-coverage run -p common -r html -o coverage.html",
+    "travis": "npm run test && unit-coverage run -q -p common -r lcov | coveralls"
   }
 }

@@ -8,7 +8,7 @@
  * **Опции**
  *
  * * *String* **source** — Исходный таргет. Обязательная опция.
- * * *String* **node** — Путь ноды с исходным таргетом.
+ * * *String* **sourceNode** — Путь ноды с исходным таргетом.
  * * *String* **target** — Результирующий таргет. Обязательная опция.
  *
  * **Пример**
@@ -34,7 +34,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             this._source = this.getRequiredOption('source');
         }
 
-        this._fromNode = this.getOption('node');
+        this._sourceNode = this.getOption('node');
 
         this._target = this.getOption('destTarget');
         if (!this._target) {
@@ -47,25 +47,24 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
+        var _this = this;
         var node = this.node;
-        var fromNode = this._fromNode;
+        var cache = node.getNodeCache(target);
         var target = node.unmaskTargetName(this._target);
         var targetPath = node.resolvePath(target);
-        var source = fromNode ?
-                node.unmaskNodeTargetName(fromNode, this._source) :
-                node.unmaskTargetName(this._source);
-        var sourcePath = fromNode ?
-                node.resolveNodePath(fromNode, source) :
-                node.resolvePath(source);
+        var sourceNode = this._sourceNode;
 
-        var _this = this;
-        var cache = this.node.getNodeCache(target);
-        var requirements = {};
-        requirements[fromNode] = [source];
-
-        var requireSources = fromNode ?
-                node.requireNodeSources(requirements) :
-                node.requireSources([source]);
+        if (sourceNode) {
+            var source = node.unmaskNodeTargetName(sourceNode, this._source);
+            var sourcePath = node.resolveNodePath(sourceNode, source);
+            var requirements = {};
+            requirements[sourceNode] = [source];
+            var requireSources = node.requireNodeSources(requirements);
+        } else {
+            var source = node.unmaskTargetName(this._source);
+            var sourcePath = node.resolvePath(source);
+            var requireSources = node.requireSources([source]);
+        }
 
         return requireSources.then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||

@@ -53,17 +53,20 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var target = node.unmaskTargetName(this._target);
         var targetPath = node.resolvePath(target);
         var sourceNode = this._sourceNode;
+        var source;
+        var sourcePath;
+        var requirements = {};
+        var requireSources;
 
         if (sourceNode) {
-            var source = node.unmaskNodeTargetName(sourceNode, this._source);
-            var sourcePath = node.resolveNodePath(sourceNode, source);
-            var requirements = {};
+            source = node.unmaskNodeTargetName(sourceNode, this._source);
+            sourcePath = node.resolveNodePath(sourceNode, source);
             requirements[sourceNode] = [source];
-            var requireSources = node.requireNodeSources(requirements);
+            requireSources = node.requireNodeSources(requirements);
         } else {
-            var source = node.unmaskTargetName(this._source);
-            var sourcePath = node.resolvePath(source);
-            var requireSources = node.requireSources([source]);
+            source = node.unmaskTargetName(this._source);
+            sourcePath = node.resolvePath(source);
+            requireSources = node.requireSources([source]);
         }
 
         return requireSources.then(function () {

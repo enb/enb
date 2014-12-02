@@ -8,6 +8,7 @@
  * **Опции**
  *
  * * *String* **source** — Исходный таргет. Обязательная опция.
+ * * *String* **node** — Путь ноды с исходным таргетом.
  * * *String* **target** — Результирующий таргет. Обязательная опция.
  *
  * **Пример**
@@ -32,6 +33,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         if (!this._source) {
             this._source = this.getRequiredOption('source');
         }
+
+        this._fromNode = this.getOption('node');
+
         this._target = this.getOption('destTarget');
         if (!this._target) {
             this._target = this.getRequiredOption('target');
@@ -43,13 +47,27 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var target = this.node.unmaskTargetName(this._target);
-        var targetPath = this.node.resolvePath(target);
-        var source = this.node.unmaskTargetName(this._source);
-        var sourcePath = this.node.resolvePath(source);
+        var node = this.node;
+        var fromNode = this._fromNode;
+        var target = node.unmaskTargetName(this._target);
+        var targetPath = node.resolvePath(target);
+        var source = fromNode ?
+                node.unmaskNodeTargetName(fromNode, this._source) :
+                node.unmaskTargetName(this._source);
+        var sourcePath = fromNode ?
+                node.resolveNodePath(fromNode, source) :
+                node.resolvePath(source);
+
         var _this = this;
         var cache = this.node.getNodeCache(target);
-        return this.node.requireSources([source]).then(function () {
+        var requirements = {};
+        requirements[fromNode] = [source];
+
+        var requireSources = fromNode ?
+                node.requireNodeSources(requirements) :
+                node.requireSources([source]);
+
+        return requireSources.then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {

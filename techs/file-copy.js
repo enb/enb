@@ -8,6 +8,7 @@
  * **Опции**
  *
  * * *String* **source** — Исходный таргет. Обязательная опция.
+ * * *String* **sourceNode** — Путь ноды с исходным таргетом.
  * * *String* **target** — Результирующий таргет. Обязательная опция.
  *
  * **Пример**
@@ -32,6 +33,9 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         if (!this._source) {
             this._source = this.getRequiredOption('source');
         }
+
+        this._sourceNode = this.getOption('node');
+
         this._target = this.getOption('destTarget');
         if (!this._target) {
             this._target = this.getRequiredOption('target');
@@ -43,13 +47,29 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var target = this.node.unmaskTargetName(this._target);
-        var targetPath = this.node.resolvePath(target);
-        var source = this.node.unmaskTargetName(this._source);
-        var sourcePath = this.node.resolvePath(source);
         var _this = this;
-        var cache = this.node.getNodeCache(target);
-        return this.node.requireSources([source]).then(function () {
+        var node = this.node;
+        var cache = node.getNodeCache(target);
+        var target = node.unmaskTargetName(this._target);
+        var targetPath = node.resolvePath(target);
+        var sourceNode = this._sourceNode;
+        var source;
+        var sourcePath;
+        var requirements = {};
+        var requireSources;
+
+        if (sourceNode) {
+            source = node.unmaskNodeTargetName(sourceNode, this._source);
+            sourcePath = node.resolveNodePath(sourceNode, source);
+            requirements[sourceNode] = [source];
+            requireSources = node.requireNodeSources(requirements);
+        } else {
+            source = node.unmaskTargetName(this._source);
+            sourcePath = node.resolvePath(source);
+            requireSources = node.requireSources([source]);
+        }
+
+        return requireSources.then(function () {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {

@@ -34,7 +34,7 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             this._source = this.getRequiredOption('source');
         }
 
-        this._sourceNode = this.getOption('node');
+        this._sourceNode = this.getOption('sourceNode');
 
         this._target = this.getOption('destTarget');
         if (!this._target) {

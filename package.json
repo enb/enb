@@ -2,7 +2,7 @@
   "author": "Marat Dulin <mdevils@yandex.ru>",
   "description": "Faster BEM/BEViS assembler",
   "name": "enb",
-  "version": "0.13.12",
+  "version": "0.13.13",
   "repository": "https://github.com/enb-make/enb",
   "contributors": [
     {

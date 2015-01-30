@@ -29,6 +29,7 @@ var I18NLangJs = require('./i18n-lang-js');
 
 module.exports = require('../lib/tech/chunks').buildFlow()
     .name('i18n-lang-js-chunks')
+    .deprecated('enb', 'enb-bembundle')
     .defineRequiredOption('lang')
     .target('target', '?.js-chunks.lang.{lang}.js')
     .unuseFileList()

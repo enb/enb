@@ -1,29 +1,25 @@
 require('chai').should();
-var FileSystem = require('../../lib/test/mocks/test-file-system');
+var mock = require('mock-fs');
 var TestNode = require('../../lib/test/mocks/test-node');
 var CssTech = require('../../techs/css');
 var FileList = require('../../lib/file-list');
 
 describe('techs', function () {
     describe('css', function () {
-        var fileSystem;
         var node;
         var fileList;
 
         beforeEach(function () {
-            fileSystem = new FileSystem([{
-                directory: 'blocks',
-                items: [
-                    {file: 'A.ie.css', content: 'A { color: red; }'},
-                    {file: 'B.css', content: 'B { background: url(B.png); }'},
-                    {file: 'C.css', content: '@import "D.inc.css";'},
-                    {file: 'D.inc.css', content: 'D { color: blue; }'}
-                ]
-            }, {
-                directory: 'build',
-                items: []
-            }]);
-            fileSystem.setup();
+            mock({
+                'blocks': {
+                    'A.ie.css': 'A { color: red; }',
+                    'B.css': 'B { background: url(B.png); }',
+                    'C.css': '@import "D.inc.css";',
+                    'D.inc.css': 'D { color: blue; }'
+                },
+                build: {}
+            });
+
             node = new TestNode('build');
             fileList = new FileList();
             fileList.loadFromDirSync('blocks');
@@ -31,14 +27,14 @@ describe('techs', function () {
         });
 
         afterEach(function () {
-            fileSystem.teardown();
+            mock.restore();
         });
 
         it('should build single CSS file using suffix list', function (done) {
             node.runTechAndGetContent(
                 CssTech, {sourceSuffixes: ['ie.css', 'css', 'inc.css']}
             ).spread(function (cssFile) {
-                cssFile.should.equal([
+                cssFile.toString('utf-8').should.equal([
                     '/* ../blocks/A.ie.css: begin */ /**/',
                     '    A { color: red; }',
                     '/* ../blocks/A.ie.css: end */ /**/',
@@ -63,7 +59,7 @@ describe('techs', function () {
         });
         it('should build single CSS file using default suffix', function (done) {
             node.runTechAndGetContent(CssTech).spread(function (cssFile) {
-                cssFile.should.equal([
+                cssFile.toString('utf-8').should.equal([
                     '/* ../blocks/B.css: begin */ /**/',
                     '    B { background: url(../blocks/B.png); }',
                     '/* ../blocks/B.css: end */ /**/',

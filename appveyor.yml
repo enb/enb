@@ -1,0 +1,16 @@
+environment:
+  matrix:
+    - nodejs_version: "0.10"
+
+install:
+ - "npm install"
+
+test_script:
+ - "node --version"
+ - "npm --version"
+ - "npm run func-test"
+ - "npm run unit-test"
+
+build: "off"
+
+version: "{build}"

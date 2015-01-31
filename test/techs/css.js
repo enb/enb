@@ -3,6 +3,7 @@ var mock = require('mock-fs');
 var TestNode = require('../../lib/test/mocks/test-node');
 var CssTech = require('../../techs/css');
 var FileList = require('../../lib/file-list');
+var sep = require('path').sep;
 
 describe('techs', function () {
     describe('css', function () {
@@ -33,43 +34,43 @@ describe('techs', function () {
         it('should build single CSS file using suffix list', function (done) {
             node.runTechAndGetContent(
                 CssTech, {sourceSuffixes: ['ie.css', 'css', 'inc.css']}
-            ).spread(function (cssFile) {
-                cssFile.toString('utf-8').should.equal([
-                    '/* ../blocks/A.ie.css: begin */ /**/',
+            ).spread(function (source) {
+                source.toString('utf-8').should.equal([
+                    '/* ..' + sep + 'blocks' + sep + 'A.ie.css: begin */ /**/',
                     '    A { color: red; }',
-                    '/* ../blocks/A.ie.css: end */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'A.ie.css: end */ /**/',
                     '',
-                    '/* ../blocks/B.css: begin */ /**/',
-                    '    B { background: url(../blocks/B.png); }',
-                    '/* ../blocks/B.css: end */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'B.css: begin */ /**/',
+                    '    B { background: url(..' + sep + 'blocks' + sep + 'B.png); }',
+                    '/* ..' + sep + 'blocks' + sep + 'B.css: end */ /**/',
                     '',
-                    '/* ../blocks/C.css: begin */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'C.css: begin */ /**/',
                     '    /* D.inc.css: begin */ /**/',
                     '        D { color: blue; }',
                     '    /* D.inc.css: end */ /**/',
                     '    ',
-                    '/* ../blocks/C.css: end */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'C.css: end */ /**/',
                     '',
-                    '/* ../blocks/D.inc.css: begin */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'D.inc.css: begin */ /**/',
                     '    D { color: blue; }',
-                    '/* ../blocks/D.inc.css: end */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'D.inc.css: end */ /**/',
                     ''
                 ].join('\n'));
             }).then(done, done);
         });
         it('should build single CSS file using default suffix', function (done) {
-            node.runTechAndGetContent(CssTech).spread(function (cssFile) {
-                cssFile.toString('utf-8').should.equal([
-                    '/* ../blocks/B.css: begin */ /**/',
-                    '    B { background: url(../blocks/B.png); }',
-                    '/* ../blocks/B.css: end */ /**/',
+            node.runTechAndGetContent(CssTech).then(function (source) {
+                source.toString('utf-8').should.equal([
+                    '/* ..' + sep + 'blocks' + sep + 'B.css: begin */ /**/',
+                    '    B { background: url(..' + sep + 'blocks' + sep + 'B.png); }',
+                    '/* ..' + sep + 'blocks' + sep + 'B.css: end */ /**/',
                     '',
-                    '/* ../blocks/C.css: begin */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'C.css: begin */ /**/',
                     '    /* D.inc.css: begin */ /**/',
                     '        D { color: blue; }',
                     '    /* D.inc.css: end */ /**/',
                     '    ',
-                    '/* ../blocks/C.css: end */ /**/',
+                    '/* ..' + sep + 'blocks' + sep + 'C.css: end */ /**/',
                     ''
                 ].join('\n'));
             }).then(done, done);

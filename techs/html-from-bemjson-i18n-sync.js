@@ -112,6 +112,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
 
     build: function () {
         var _this = this;
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', '', '', ' Use technology supplied with your template engine.');
+
         return this.node.requireSources(
             [this._bemhtmlSource, this._bemjsonSource, this._allLangSource, this._langSource]
         ).then(function () {

@@ -2,21 +2,7 @@
  * deps-merge
  * ==========
  *
- * Формирует *deps* с помощью объединения других deps-файлов.
- *
- * **Опции**
- *
- * * *String[]* **depsSources** — Исходные deps-таргеты. Обязательная опция.
- * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/deps-merge'), {
- *   depsSources: ['search.deps.js', 'router.deps.js'],
- *   depsTarget: 'all.deps.js'
- * } ]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -47,6 +33,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var depsTargetPath = this.node.resolvePath(depsTarget);
         var cache = this.node.getNodeCache(depsTarget);
         var sources = this._sources;
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'merge-deps', 'enb-bem-techs');
+
         return this.node.requireSources(sources).then(function (depResults) {
             var rebuildNeeded = cache.needRebuildFile('deps-file', depsTargetPath);
                 if (!rebuildNeeded) {

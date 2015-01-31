@@ -2,29 +2,7 @@
  * deps-old
  * ========
  *
- * Собирает *deps.js*-файл на основе *levels* и *bemdecl*, раскрывая зависимости.
- * Сохраняет в виде `?.deps.js`. Использует алгоритм, заимствованный из bem-tools.
- *
- * **Опции**
- *
- * * *String* **bemdeclTarget** — Исходный bemdecl. По умолчанию — `?.bemdecl.js`.
- * * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
- * * *String* **depsTarget** — Результирующий deps. По умолчанию — `?.deps.js`.
- *
- * **Пример**
- *
- * Обычное использование:
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/deps-old'));
- * ```
- *
- * Сборка специфического deps:
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/deps-old'), {
- * bemdeclTarget: 'search.bemdecl.js',
- * depsTarget: 'search.deps.js'
- * } ]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -58,6 +36,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var cache = this.node.getNodeCache(depsTarget);
         var bemdeclSource = this._bemdeclTarget;
         var bemdeclSourcePath = this.node.resolvePath(bemdeclSource);
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'deps-old', 'enb-bem-techs');
+
         return this.node.requireSources([this._levelsTarget, bemdeclSource]).spread(function (levels) {
             var depFiles = levels.getFilesBySuffix('deps.js');
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||

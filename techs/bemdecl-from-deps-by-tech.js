@@ -2,25 +2,7 @@
  * bemdecl-from-deps-by-tech
  * =========================
  *
- * Формирует *bemdecl* на основе depsByTech-информации из `?.deps.js`.
- *
- * **Опции**
- *
- * * *String* **sourceTech** — Имя исходной технологии. Обязательная опция.
- * * *String* **destTech** — Имя конечной технологии. Обязательная опция.
- * * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов
- *   (его предоставляет технология `files`). По умолчанию — `?.files`.
- * * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — 'deps.js'.
- * * *String* **target** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/bemdecl-from-deps-by-tech'), {
- *     sourceTech: 'js',
- *     destTech: 'bemhtml'
- * });
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var Vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
@@ -32,6 +14,7 @@ var deps = require('../lib/deps/deps');
  */
 module.exports = require('../lib/build-flow').create()
     .name('bemdecl-from-deps-by-tech')
+    .deprecated('enb', 'enb-bem-techs', 'deps-by-tech-to-bemdecl')
     .target('target', '?.bemdecl.js')
     .defineRequiredOption('sourceTech')
     .defineRequiredOption('destTech')

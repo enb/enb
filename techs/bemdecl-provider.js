@@ -2,26 +2,7 @@
  * bemdecl-provider
  * ================
  *
- * Копирует *bemdecl* в текущую ноду под нужным именем из другой ноды. Может понадобиться, например,
- * для объединения bemdecl'ов.
- *
- * **Опции**
- *
- * * *String* **sourceNodePath** — Путь исходной ноды с нужным bemdecl'ом. Обязательная опция.
- * * *String* **sourceTarget** — Исходный bemdecl, который будет копироваться.
- *   По умолчанию — `?.bemdecl.js` (демаскируется в рамках исходной ноды).
- * * *String* **bemdeclTarget** — Результирующий bemdecl-таргет.
- *   По умолчанию — `?.bemdecl.js` (демаскируется в рамках текущей ноды).
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/bemdecl-provider'), {
- *   sourceNodePath: 'bundles/router',
- *   sourceTarget: 'router.bemdecl.js',
- *   bemdeclTarget: 'router.bemdecl.js'
- * }]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -51,6 +32,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var requirements = {};
         var sourceTargetName = this.node.unmaskNodeTargetName(fromNode, this._sourceTarget);
         var sourceTargetPath = this.node.resolveNodePath(fromNode, sourceTargetName);
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'provide-bemdecl', 'enb-bem-techs');
+
         requirements[fromNode] = [sourceTargetName];
         return this.node.requireNodeSources(requirements).then(function (results) {
             var deps = results[fromNode][0];

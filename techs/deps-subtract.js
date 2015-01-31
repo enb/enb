@@ -2,28 +2,7 @@
  * deps-subtract
  * =============
  *
- * Формирует *deps* с помощью вычитания одного deps-файла из другого.
- * Может применяться в паре с `deps-provider` для получения deps для bembundle.
- *
- * **Опции**
- *
- * * *String* **subtractFromTarget** — Таргет, из которого вычитать. Обязательная опция.
- * * *String* **subtractWhatTarget** — Таргет, который вычитать. Обязательная опция.
- * * *String* **depsTarget** — Результирующий deps-таргет. По умолчанию — `?.deps.js`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('enb/techs/deps'), { depsTarget: 'router.tmp.deps.js' } ],
- *   [ require('enb/techs/deps-provider'), { sourceNodePath: 'pages/index', depsTarget: 'index.deps.js' }],
- *   [ require('enb/techs/deps-subtract'), {
- *     subtractWhatTarget: 'index.deps.js',
- *     subtractFromTarget: 'router.tmp.deps.js',
- *     depsTarget: 'router.deps.js'
- *   } ]
- * ]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -53,6 +32,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var substractFromTargetPath = this.node.resolvePath(this._subtractFromTarget);
         var subtractWhatTargetPath = this.node.resolvePath(this._subtractWhatTarget);
         var sourceTargets = [this._subtractFromTarget, this._subtractWhatTarget];
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'subtract-deps', 'enb-bem-techs');
+
         return this.node.requireSources(sourceTargets).spread(function (subtractFrom, subtractWhat) {
             if (cache.needRebuildFile('deps-file', depsTargetPath) ||
                 cache.needRebuildFile('deps-from-file', substractFromTargetPath) ||

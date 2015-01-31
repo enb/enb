@@ -2,21 +2,7 @@
  * bemdecl-merge
  * =============
  *
- * Формирует *bemdecl* с помощью объединения других bemdecl-файлов.
- *
- ***Опции**
- *
- ** *String[]* **bemdeclSources** — Исходные bemdecl-таргеты. Обязательная опция.
- ** *String* **bemdeclTarget** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
- *
- ***Пример**
- *
- *```javascript
- *nodeConfig.addTech([ require('enb/techs/bemdecl-merge'), {
- *  bemdeclSources: ['search.bemdecl.js', 'router.bemdecl.js'],
- *  bemdeclTarget: 'all.bemdecl.js'
- *} ]);
- *```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -46,6 +32,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var bemdeclTargetPath = this.node.resolvePath(bemdeclTarget);
         var cache = this.node.getNodeCache(bemdeclTarget);
         var sources = this._sources;
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'merge-bemdecl', 'enb-bem-techs');
+
         return this.node.requireSources(sources).then(function () {
             var rebuildNeeded = cache.needRebuildFile('bemdecl-file', bemdeclTargetPath);
                 if (!rebuildNeeded) {

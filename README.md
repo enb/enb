@@ -1023,44 +1023,12 @@ html-from-bemjson-i18n
 i18n-keysets-xml
 ----------------
 
-Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
-
-Используется для локализации xml-страниц, работающих в XScript (насколько я понимаю).
-
-Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
-```
+Технология переехала в пакет `enb-bem-i18n`.
 
 i18n-lang-js
 ------------
 
-Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
-
-Используется для локализации в JS с помощью BEM.I18N.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-* *String* **keysetsTarget** — Исходный таргет. По умолчанию — `?.keysets.{lang}.js`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  [ require('i18n-lang-js'), { lang: 'all'} ],
-  [ require('i18n-lang-js'), { lang: '{lang}'} ],
-]);
-```
+Технология переехала в пакет `enb-bem-i18n`.
 
 i18n-lang-js-chunks
 -------------------
@@ -1088,23 +1056,7 @@ nodeConfig.addTechs([
 i18n-merge-keysets
 ------------------
 
-Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
-
-Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  [ require('i18n-merge-keysets'), { lang: 'all' } ],
-  [ require('i18n-merge-keysets'), { lang: '{lang}' } ]
-]);
-```
+Технология переехала в пакет `enb-bem-i18n`.
 
 js
 --

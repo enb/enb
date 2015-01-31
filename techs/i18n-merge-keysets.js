@@ -2,29 +2,14 @@
  * i18n-merge-keysets
  * ==================
  *
- * Собирает `?.keysets.<язык>.js`-файлы на основе `*.i18n`-папок для указанных языков.
- *
- * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('i18n-merge-keysets'), { lang: 'all' } ],
- *   [ require('i18n-merge-keysets'), { lang: '{lang}' } ]
- * ]);
- * ```
+ * Технология переехала в пакет `enb-bem-i18n`.
  */
 var Vow = require('vow');
 var asyncRequire = require('../lib/fs/async-require');
 
 module.exports = require('../lib/build-flow.js').create()
     .name('i18n-merge-keysets')
+    .deprecated('enb', 'enb-bem-i18n')
     .defineRequiredOption('lang')
     .useDirList('i18n')
     .target('target', '?.keysets.{lang}.js')

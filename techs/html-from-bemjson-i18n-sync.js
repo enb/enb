@@ -2,22 +2,7 @@
  * html-from-bemjson-i18n-sync
  * ===========================
  *
- * Собирает *html*-файл с помощью *bemjson*, *bemhtml*, *lang.all* и *lang.{lang}*.
- *
- * **Опции**
- *
- * * *String* **bemhtmlTarget** — Исходный BEMHTML-файл. По умолчанию — `?.bemhtml.js`.
- * * *String* **bemjsonTarget** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
- * * *String* **langAllTarget** — Исходный langAll-файл. По умолчанию — `?.lang.all.js`.
- * * *String* **langTarget** — Исходный lang-файл. По умолчанию — `?.lang.{lang}.js`.
- *   Если параметр lang не указан, берется первый из объявленных в проекте языков
- * * *String* **destTarget** — Результирующий HTML-файл. По умолчанию — `?.{lang}.html`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/html-from-bemjson-i18n'));
- * ```
+ * Технология устарела. Используйте технологию из пакета вашего шаблонизатора: `enb-xjst`, `enb-bemxjst`, `enb-bh`.
  */
 var Vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');

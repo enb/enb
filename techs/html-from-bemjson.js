@@ -2,19 +2,7 @@
  * html-from-bemjson
  * =================
  *
- * Собирает *html*-файл с помощью *bemjson* и *bemhtml*.
- *
- * **Опции**
- *
- * * *String* **bemhtmlTarget** — Исходный BEMHTML-файл. По умолчанию — `?.bemhtml.js`.
- * * *String* **bemjsonTarget** — Исходный BEMJSON-файл. По умолчанию — `?.bemjson.js`.
- * * *String* **destTarget** — Результирующий HTML-файл. По умолчанию — `?.html`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/html-from-bemjson'));
- * ```
+ * Re
  */
 var requireOrEval = require('../lib/fs/require-or-eval');
 var asyncRequire = require('../lib/fs/async-require');

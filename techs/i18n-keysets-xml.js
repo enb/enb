@@ -2,28 +2,14 @@
  * i18n-keysets-xml
  * ================
  *
- * Собирает `?.keysets.<язык>.xml`-файлы на основе `?.keysets.<язык>.js`-файлов.
- *
- * Используется для локализации xml-страниц.
- *
- * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.keysets.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('i18n-keysets-xml'), { lang: '{lang}' } ]);
- * ```
+ * Технология переехала в пакет `enb-bem-i18n`.
  */
 var domjs = require('dom-js');
 var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('i18n-keysets-xml')
+    .deprecated('enb', 'enb-bem-i18n')
     .target('target', '?.keysets.{lang}.xml')
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')

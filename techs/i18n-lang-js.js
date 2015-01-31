@@ -2,31 +2,14 @@
  * i18n-lang-js
  * ============
  *
- * Собирает `?.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
- *
- * Используется для локализации в JS с помощью BEM.I18N.
- *
- * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.lang.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('i18n-lang-js'), { lang: 'all'} ],
- *   [ require('i18n-lang-js'), { lang: '{lang}'} ],
- * ]);
- * ```
+ * Технология переехала в пакет `enb-bem-i18n`.
  */
 var tanker = require('../exlib/tanker');
 var dropRequireCache = require('../lib/fs/drop-require-cache');
 
 module.exports = require('../lib/build-flow').create()
     .name('i18n-lang-js')
+    .deprecated('enb', 'enb-bem-i18n')
     .target('target', '?.lang.{lang}.js')
     .defineRequiredOption('lang')
     .useSourceFilename('keysetsTarget', '?.keysets.{lang}.js')

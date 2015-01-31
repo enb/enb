@@ -2,7 +2,7 @@
  * html-from-bemjson
  * =================
  *
- * Re
+ * Технология устарела. Используйте технологию из пакета вашего шаблонизатора: `enb-xjst`, `enb-bemxjst`, `enb-bh`.
  */
 var requireOrEval = require('../lib/fs/require-or-eval');
 var asyncRequire = require('../lib/fs/async-require');

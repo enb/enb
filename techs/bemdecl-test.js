@@ -1,3 +1,9 @@
+/**
+ * bemdecl-test
+ * ============
+ *
+ * Технология устарела.
+ */
 var inherit = require('inherit');
 var vowFs = require('../lib/fs/async-fs');
 var fs = require('fs');
@@ -29,6 +35,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var bemdeclTargetPath = this.node.resolvePath(bemdeclTarget);
         var _this = this;
         var cache = this.node.getNodeCache(bemdeclTarget);
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(), 'enb');
+
         return this.node.requireSources([this._levelsTarget]).spread(function (files) {
             var sourceFiles = files.getFilesBySuffix('test.js');
             var depsFiles = files.getFilesBySuffix('test.deps.js');

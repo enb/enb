@@ -2,30 +2,7 @@
  * levels
  * ======
  *
- * Собирает информацию об уровнях переопределения проекта, предоставляет `?.levels`. Результат выполнения этой
- * технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`.
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.levels`.
- * * *(String|Object)[]* **levels** — Уровни переопределения. Полные пути к папкам с уровнями переопределения.
- *   Вместо строки с путем к уровню может использоваться объект вида
- *   `{path: '/home/user/www/proj/lego/blocks-desktop', check: false}` для того,
- *   чтобы закэшировать содержимое тех уровней переопределения, которые не модифицируются в рамках проекта.
- * * *(String)[]* **sublevelDirectories** — Список директорий ноды с уровнями переопределения.
- *   По умолчанию — для каждой ноды добавляется уровень `<путь_к_ноде>/blocks`, например, для ноды
- *   `pages/index` — `pages/index/blocks`. Каждый следующий указаный уровень может переопределять предыдущий.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/levels'), {
- *   levels: [
- *     {path: 'lego/blocks-desktop', check: false},
- *     'desktop.blocks'
- *   ].map(function (level) { return config.resolvePath(level); })
- * } ]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var Level = require('../lib/levels/level');
 var Levels = require('../lib/levels/levels');
@@ -57,6 +34,10 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var levelsToCache = [];
         var levelsIndex = {};
         var cache = this.node.getNodeCache(target);
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'levels', 'enb-bem-techs');
 
         for (var i = 0, l = this._levelConfig.length; i < l; i++) {
             var levelInfo = this._levelConfig[i];

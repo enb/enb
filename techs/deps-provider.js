@@ -2,26 +2,7 @@
  * deps-provider
  * =============
  *
- * Копирует *deps* в текущую ноду под нужным именем из другой ноды.
- * Может понадобиться, например, для объединения deps'ов.
- *
- * **Опции**
- *
- * * *String* **sourceNodePath** — Путь исходной ноды с нужным deps'ом. Обязательная опция.
- * * *String* **sourceTarget** — Исходный deps, который будет копироваться.
- *   По умолчанию — `?.deps.js` (демаскируется в рамках исходной ноды).
- * * *String* **depsTarget** — Результирующий deps-таргет.
- *   По умолчанию — `?.deps.js` (демаскируется в рамках текущей ноды).
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech([ require('enb/techs/deps-provider'), {
- *   sourceNodePath: 'bundles/router',
- *   sourceTarget: 'router.deps.js',
- *   depsTarget: 'router.deps.js'
- * } ]);
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var vowFs = require('../lib/fs/async-fs');
 var inherit = require('inherit');
@@ -51,6 +32,11 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var sourceTargetPath = this.node.resolveNodePath(fromNode, sourceTargetName);
         var cache = this.node.getNodeCache(depsTarget);
         var requirements = {};
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'provide-deps', 'enb-bem-techs');
+
         requirements[fromNode] = [sourceTargetName];
         return this.node.requireNodeSources(requirements).then(function (results) {
             var deps = results[fromNode][0];

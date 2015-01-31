@@ -2,21 +2,7 @@
  * files
  * =====
  *
- * Собирает список исходных файлов для сборки на основе *deps* и *levels*, предоставляет `?.files` и `?.dirs`.
- * Используется многими технологиями, которые объединяют множество файлов из различных уровней переопределения в один.
- *
- * **Опции**
- *
- * * *String* **depsTarget** — Исходный deps-таргет. По умолчанию — `?.deps.js`.
- * * *String* **levelsTarget** — Исходный levels. По умолчанию — `?.levels`.
- * * *String* **filesTarget** — Результирующий files-таргет. По умолчанию — `?.files`.
- * * *String* **dirsTarget** — Результирующий dirs-таргет. По умолчанию — `?.dirs`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/files'));
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  */
 var FileList = require('../lib/file-list');
 var inherit = require('inherit');
@@ -41,6 +27,11 @@ module.exports = inherit(require('../lib/tech/base-tech.js'), {
         var _this = this;
         var filesTarget = this._filesTarget;
         var dirsTarget = this._dirsTarget;
+        var logger = this.node.getLogger();
+
+        logger.logTechIsDeprecated(this._target, this.getName(),
+            'enb', 'files', 'enb-bem-techs');
+
         return this.node.requireSources([this._depsTarget, this._levelsTarget])
             .spread(function (deps, levels) {
                 var files = new FileList();

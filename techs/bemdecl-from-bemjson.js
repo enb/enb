@@ -2,18 +2,7 @@
  * bemdecl-from-bemjson
  * ====================
  *
- * Формирует *bemdecl* на основе `?.bemjson.js`.
- *
- * **Опции**
- *
- * * *String* **sourceTarget** — Исходный bemjson-таргет. По умолчанию — `?.bemjson.js`.
- * * *String* **destTarget** — Результирующий bemdecl-таргет. По умолчанию — `?.bemdecl.js`.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTech(require('enb/techs/bemdecl-from-bemjson'));
- * ```
+ * Технология переехала в пакет `enb-bem-techs`.
  *
  */
 var asyncOrEval = require('../lib/fs/require-or-eval');
@@ -23,6 +12,7 @@ var asyncOrEval = require('../lib/fs/require-or-eval');
  */
 module.exports = require('../lib/build-flow').create()
     .name('bemdecl-from-bemjson')
+    .deprecated('enb', 'enb-bem-techs', 'bemjson-to-bemdecl')
     .target('destTarget', '?.bemdecl.js')
     .useSourceFilename('sourceTarget', '?.bemjson.js')
     .builder(function (bemjsonFilename) {

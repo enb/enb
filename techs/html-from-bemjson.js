@@ -23,6 +23,7 @@ var dropRequireCache = require('../lib/fs/drop-require-cache');
 module.exports = require('../lib/build-flow').create()
     .name('html-from-bemjson')
     .target('destTarget', '?.html')
+    .deprecated('enb', '', '', ' Use technology supplied with your template engine.')
     .useSourceFilename('bemhtmlTarget', '?.bemhtml.js')
     .useSourceFilename('bemjsonTarget', '?.bemjson.js')
     .builder(function (bemhtmlFilename, bemjsonFilename) {

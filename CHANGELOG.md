@@ -1,6 +1,39 @@
 История изменений
 =================
 
+0.14.0
+------
+
+### Устаревшие технологии
+
+* Базовые БЭМ технологии переехали в пакет `enb-bem-techs`. Описание миграции смотрите в [руководстве](https://github.com/enb-bem/enb-bem-techs/blob/master/MIGRATION.md).
+  * `bemdecl-from-bemjson`
+  * `bemdecl-from-deps-by-tech`
+  * `bemdecl-merge`
+  * `bemdecl-provider`
+  * `deps-merge`
+  * `deps-old`
+  * `deps-provider`
+  * `deps-subtract`
+  * `deps`
+  * `files`
+  * `levels`
+* Технологии для сборки `i18n` переехали в пакет `enb-bem-i18n`:
+  * `i18n-keysets-xml`
+  * `i18n-lang-js`
+  * `i18n-merge-keysets`
+* Технологии для получения `html` устарели. Вместо них следует использовать технологии, поставляемые в пакетах (`enb-xjst`, `enb-bemxjst` и `enb-bh`) вместе с технологиями сборки шаблонизаторов.
+  * `html-from-bemjson`
+  * `html-from-bemjson-i18n`
+  * `html-from-bemjson-i18n-sync`
+* Технология `i18n-lang-js-chunks` переехала в пакет `enb-bembundle`.
+* Технология `bemdecl-test` устарела.
+
+### Остальные изменения
+
+* В `CacheStorage` добавлен метод `saveAsync`.
+* Снижено потребление памяти при сохранении кэша.
+
 0.13.0
 ------
 

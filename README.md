@@ -1,5 +1,7 @@
-ENB [![Build Status](https://travis-ci.org/enb-make/enb.svg?branch=master)](https://travis-ci.org/enb-make/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?branch=master)](https://coveralls.io/r/enb-make/enb)
+ENB
 ===
+
+[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb-make/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb-make/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?style=flat)](https://coveralls.io/r/enb-make/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb-make/enb.svg?style=flat)](https://david-dm.org/enb-make/enb)
 
 Сборщик проектов. С помощью ENB можно собрать любой проект, который строится на модели node / target.
 

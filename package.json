@@ -68,7 +68,7 @@
     "istanbul": "0.2.10",
     "jscs": "~1.2.3",
     "jshint": "2.1.3",
-    "mocha": "2.0.1",
+    "mocha": "2.1.0",
     "mock-fs": "2.3.2",
     "sinon": "1.7.3",
     "unit-coverage": "~3.2.0"
@@ -105,12 +105,11 @@
     ]
   },
   "scripts": {
-    "test": "npm run-script jshint && npm run-script check-style && npm run-script func-test",
+    "test": "npm run jshint && npm run check-style && npm run func-test && npm run unit-test",
     "jshint": "jshint .",
     "unit-test": "mocha -u bdd -R spec --recursive test/lib test/techs",
-    "func-test": "npm run-script bh-sym && npm run-script build-sample-proj && mocha -u bdd -R spec --recursive test/func",
-    "bh-sym": "mkdir -p node_modules/bh/node_modules && rm -f node_modules/bh/node_modules/enb && ln -s ../../.. node_modules/bh/node_modules/enb",
-    "build-sample-proj": "./bin/enb make -n --graph --dir test/fixtures/sample-project",
+    "func-test": "npm run build-sample-proj && mocha -u bdd -R spec --recursive test/func",
+    "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test",
     "coverage": "unit-coverage run -p common",
     "coverage-html": "unit-coverage run -p common -r html -o coverage.html",

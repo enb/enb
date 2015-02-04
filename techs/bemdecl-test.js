@@ -2,7 +2,7 @@
  * bemdecl-test
  * ============
  *
- * Технология устарела.
+ * Технология устарела и будет удалена.
  */
 var inherit = require('inherit');
 var vowFs = require('../lib/fs/async-fs');

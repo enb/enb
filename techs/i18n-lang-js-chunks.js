@@ -2,25 +2,7 @@
  * i18n-lang-js-chunks
  * ===================
  *
- * Собирает `?.js-chunks.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
- *
- * Используется для локализации в JS с помощью BEM.I18N при сборке bembundle.
- *
- * Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
- *
- * **Опции**
- *
- * * *String* **target** — Результирующий таргет. По умолчанию — `?.js-chunks.lang.{lang}.js`.
- * * *String* **lang** — Язык, для которого небходимо собрать файл.
- *
- * **Пример**
- *
- * ```javascript
- * nodeConfig.addTechs([
- *   [ require('i18n-lang-js-chunks'), { lang: 'all' } ],
- *   [ require('i18n-lang-js-chunks'), { lang: '{lang}' } ],
- * ]);
- * ```
+ * Технология переехала в пакет `enb-bembundle`.
  */
 var Vow = require('vow');
 var dropRequireCache = require('../lib/fs/drop-require-cache');

@@ -657,7 +657,6 @@ css-borschik-chunks
 
 Технология переехала в пакет `enb-borschik`.
 
-
 css-chunks
 ----------
 
@@ -718,39 +717,12 @@ css-less
 css-stylus
 ----------
 
-Собирает *css*-файлы вместе со *styl*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию `?.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список
-  исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'styl']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-stylus'));
-```
+Технология переехала в пакет `enb-stylus`.
 
 css-stylus-with-nib
 -------------------
 
-Собирает *css*-файлы вместе со *styl*-файлами по deps'ам, обрабатывает инклуды и ссылки, сохраняет в виде `?.css`.
-При сборке *styl*-файлов использует [`nib`](https://github.com/visionmedia/nib).
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию `?.css`.
-* *String* **filesTarget** — files-таргет, на основе которого получается список
-  исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
-* *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `['css', 'styl']`.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech(require('enb/techs/css-stylus-with-nib'));
-```
+Технология переехала в пакет `enb-stylus`.
 
 deps
 ----
@@ -861,25 +833,7 @@ i18n-lang-js
 i18n-lang-js-chunks
 -------------------
 
-Собирает `?.js-chunks.lang.<язык>.js`-файлы на основе `?.keysets.<язык>.js`-файлов.
-
-Используется для локализации в JS с помощью BEM.I18N при сборке bembundle.
-
-Исходные и конечные таргеты в данный момент не настраиваются (нет запроса).
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.js-chunks.lang.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
-
-**Пример**
-
-```javascript
-nodeConfig.addTechs([
-  [ require('i18n-lang-js-chunks'), { lang: 'all' } ],
-  [ require('i18n-lang-js-chunks'), { lang: '{lang}' } ],
-]);
-```
+Технология переехала в пакет `enb-bembundle`.
 
 i18n-merge-keysets
 ------------------
@@ -981,24 +935,7 @@ nodeConfig.addTech(require('enb/techs/js-includes'));
 levels
 ------
 
-Собирает информацию об уровнях переопределения проекта, предоставляет `?.levels`. Результат выполнения этой технологии необходим технологиям `enb/techs/deps`, `enb/techs/deps-old` и `enb/techs/files`.
-
-**Опции**
-
-* *String* **target** — Результирующий таргет. По умолчанию — `?.levels`.
-* *(String|Object)[]* **levels** — Уровни переопределения. Полные пути к папкам с уровнями переопределения. Вместо строки с уровнем может использоваться объект вида `{path: '/home/user/www/proj/lego/blocks-desktop', check: false}` для того, чтобы закэшировать содержимое тех уровней переопределения, которые не модифицируются в рамках проекта.
-* *(String)[]* **sublevelDirectories** — Список директорий ноды с уровнями переопределения. По умолчанию — для каждой ноды добавляется уровень `<путь_к_ноде>/blocks`, например, для ноды `pages/index` — `pages/index/blocks`. Каждый следующий указаный уровень может переопределять предыдущий.
-
-**Пример**
-
-```javascript
-nodeConfig.addTech([ require('enb/techs/levels'), {
-  levels: [
-    {path: 'lego/blocks-desktop', check: false},
-    'desktop.blocks'
-  ].map(function(level) { return config.resolvePath(level); })
-} ]);
-```
+Технология переехала в пакет `enb-bem-techs`.
 
 node-js
 -------

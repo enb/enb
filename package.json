@@ -76,6 +76,7 @@
   "bin": {
     "enb": "./bin/enb"
   },
+  "main": "lib/api/index",
   "unit-coverage": {
     "common": [
       "-s",

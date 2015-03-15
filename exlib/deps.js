@@ -324,19 +324,78 @@ module.exports.OldDeps = (function () {
         forEach: function (fn, uniq, itemsByOrder, ctx) {
             uniq || (uniq = {});
             var _this = this;
-
             (itemsByOrder || this.items[''].shouldDeps).forEach(function (i) {
-                if (i = _this.items[i]) {
-                    var key = i.buildKey();
-                    if (!uniq.hasOwnProperty(key)) {
-                        uniq[key] = true;
-                        var newCtx = ctx || i;
-                        _this.forEach(fn, uniq, i.mustDeps, newCtx);
-                        fn.call(_this, i, newCtx);
-                        _this.forEach(fn, uniq, i.shouldDeps, newCtx);
-                    }
+                var item = _this.items[i];
+                _this._iterateItem(fn, uniq, item, ctx || item, null);
+            });
+        },
+
+        /**
+         * Iterates through item dependencies
+         *
+         * @param {Function} fn Function accepts `item` argument
+         * @param {Object.<string,boolean|String[]>} progress Hash with progress status for items. Possible values:
+         *  - undefined: item is not iterated
+         *  - true: item is iterated
+         *  - String[]: iterating mustDeps for item. Array contains keys for items which depends
+         *  on current item and should be re-iterated after it
+         * @param {Object} item Current item
+         * @param {Object} ctx
+         * @param {Object} [mustDepsRoot] First item in series of mustDeps calls, undefined if item is in shouldDeps
+         * @returns boolean Do we need to rollback current mustDeps chain
+         */
+        _iterateItem: function (fn, progress, item, ctx, mustDepsRoot) {
+            var _this = this;
+            var key = item.buildKey();
+
+            if (progress[key] === true) { return false; } // skip already iterated item
+            if (typeof progress[key] === 'object') { // this item mustDeps iteration in progress
+                if (!mustDepsRoot) { return false; } // skip if this item in shouldDeps
+                if (progress[key].indexOf(mustDepsRoot) < 0) {
+                    progress[key].push(mustDepsRoot); // remember to re-iterate current mustDeps chain later, rollback
                 }
-            })
+                return true;
+            }
+
+            progress[key] = [];
+            var rollback = item.mustDeps.reduce(function (rollback, i) { // iterate mustDeps
+                var item = _this.items[i];
+                if (item.buildKey() === key) { return rollback; } // skip if item depends on itself
+                return _this._iterateItem(fn, progress, item, ctx, mustDepsRoot || key) || rollback;
+            }, false);
+
+            // circular mustDeps found, find loop and throw Error
+            if (progress[key].indexOf(mustDepsRoot || key) >= 0) { this._throwCircularError(key); }
+
+            if (!rollback) {
+                fn.call(this, item, ctx); // iterate item
+                var delayedDeps = progress[key];
+                progress[key] = true;
+                delayedDeps.forEach(function (i) { // iterate items which depends on current item
+                    _this._iterateItem(fn, progress, _this.items[i], ctx);
+                });
+            }
+
+            item.shouldDeps.forEach(function (i) { // iterate shouldDeps
+                _this._iterateItem(fn, progress, _this.items[i], ctx);
+            });
+
+            if (rollback) { delete progress[key]; }
+            return rollback;
+        },
+
+        _throwCircularError: function (loopKey) {
+            var _this = this;
+            function visit(key, stack) {
+                var item = _this.items[key];
+                if (!item) { return; }
+                item.mustDeps.forEach(function (i) {
+                    if (i === key) { return; }
+                    if (i === loopKey) { throw Error('Circular mustDeps: ' + stack.concat(i).join(' <- ')); }
+                    visit(i, stack.concat(i));
+                });
+            }
+            visit(loopKey, [loopKey]);
         },
 
         /**

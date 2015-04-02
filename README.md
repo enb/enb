@@ -1,7 +1,7 @@
 ENB
 ===
 
-[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb-make/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb-make/enb) [![Build status](http://img.shields.io/appveyor/ci/andrewblond/enb.svg?style=flat&label=windows)](https://ci.appveyor.com/project/andrewblond/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?style=flat)](https://coveralls.io/r/enb-make/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb-make/enb.svg?style=flat)](https://david-dm.org/enb-make/enb)
+[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb-make/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb-make/enb) [![Build status](http://img.shields.io/appveyor/ci/blond/enb.svg?style=flat&label=windows)](https://ci.appveyor.com/project/blond/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?style=flat)](https://coveralls.io/r/enb-make/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb-make/enb.svg?style=flat)](https://david-dm.org/enb-make/enb)
 
 Сборщик проектов. С помощью ENB можно собрать любой проект, который строится на модели node / target.
 
@@ -53,7 +53,7 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 * Сергею Бережному (@veged). За `borschik`, советы и правильные вопросы.
 * Команде разработчиков bem-tools. За часть заимствованного кода.
 * Егору Блинову (@escaton). За пулл-реквесты, идеи.
-* Андрею Абрамову (@andrewblond). За пулл-реквесты.
+* Андрею Абрамову (@blond). За пулл-реквесты.
 
 Использование из командной строки
 ---------------------------------

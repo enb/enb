@@ -1,13 +1,13 @@
-var fs = require('fs'),
-    path = require('path'),
-    CacheStorage = require('../../../lib/cache/cache-storage');
+var fs = require('fs');
+var path = require('path');
+var CacheStorage = require('../../../lib/cache/cache-storage');
 
 require('chai').should();
 
 describe('cache/cache-storage', function () {
-    var CACHE_FILE = path.join(process.cwd(), './test/fixtures/cache.json'),
-        INVALID_FILE = path.join(process.cwd(), './test/fixtures/cache.txt'),
-        TEST_DATA = {
+    var CACHE_FILE = path.join(process.cwd(), './test/fixtures/cache.json');
+    var INVALID_FILE = path.join(process.cwd(), './test/fixtures/cache.txt');
+    var TEST_DATA = {
             prefix1: {
                 key1: 'value1',
                 key2: 'value2'
@@ -136,13 +136,13 @@ describe('cache/cache-storage', function () {
             Object.keys(cacheStorage._data).should.have.length(0);
             cacheStorage.set('prefix1', 'key1', 'value1');
             Object.keys(cacheStorage._data).should.have.length(1);
-            Object.keys(cacheStorage._data['prefix1']).should.have.length(1);
+            Object.keys(cacheStorage._data.prefix1).should.have.length(1);
 
         });
 
         it('prefix exists', function () {
             cacheStorage.set('prefix1', 'key2', 'value2');
-            Object.keys(cacheStorage._data['prefix1']).should.have.length(2);
+            Object.keys(cacheStorage._data.prefix1).should.have.length(2);
         });
     });
 
@@ -155,9 +155,9 @@ describe('cache/cache-storage', function () {
         });
 
         it('success', function () {
-            Object.keys(cacheStorage._data['prefix1']).should.have.length(2);
+            Object.keys(cacheStorage._data.prefix1).should.have.length(2);
             cacheStorage.invalidate('prefix1', 'key1');
-            Object.keys(cacheStorage._data['prefix1']).should.have.length(1);
+            Object.keys(cacheStorage._data.prefix1).should.have.length(1);
         });
     });
 

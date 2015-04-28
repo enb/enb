@@ -1,15 +1,15 @@
-var fs = require('fs'),
-    path = require('path'),
-    Cache = require('../../../lib/cache/cache');
-    CacheStorage = require('../../../lib/cache/cache-storage'),
-    should = require('chai').should();
+var fs = require('fs');
+var path = require('path');
+var Cache = require('../../../lib/cache/cache');
+var CacheStorage = require('../../../lib/cache/cache-storage');
+var should = require('chai').should();
 
 describe('cache/cache', function () {
-    var CACHE_FILE = path.join(process.cwd(), './test/fixtures/cache.json'),
-        TEST_FILE = path.join(process.cwd(), './test/fixtures/test.txt'),
-        PREFIX = 'test-prefix',
-        cacheStorage = new CacheStorage(CACHE_FILE),
-        cache;
+    var CACHE_FILE = path.join(process.cwd(), './test/fixtures/cache.json');
+    var TEST_FILE = path.join(process.cwd(), './test/fixtures/test.txt');
+    var PREFIX = 'test-prefix';
+    var cacheStorage = new CacheStorage(CACHE_FILE);
+    var cache;
 
     beforeEach(function () {
         cache = new Cache(cacheStorage, PREFIX);
@@ -36,7 +36,7 @@ describe('cache/cache', function () {
         it('success', function () {
             cache.set('key', 'value');
             Object.keys(cache._storage._data[PREFIX]).should.have.length(1);
-            cache._storage._data[PREFIX]['key'].should.equal('value');
+            cache._storage._data[PREFIX].key.should.equal('value');
         });
     });
 
@@ -161,9 +161,9 @@ describe('cache/cache', function () {
 
         describe('number of files was changed', function () {
             before(function () {
-                var basePath = './test/fixtures/',
-                    file1 = path.resolve(basePath, 'test1.txt'),
-                    file2 = path.resolve(basePath, 'test2.txt');
+                var basePath = './test/fixtures/';
+                var file1 = path.resolve(basePath, 'test1.txt');
+                var file2 = path.resolve(basePath, 'test2.txt');
 
                 cache.set('test', [file1, file2]);
             });
@@ -175,26 +175,26 @@ describe('cache/cache', function () {
 
         describe('any file in list was changed', function () {
             before(function () {
-                var basePath = './test/fixtures/',
-                    file1 = { fullname: path.resolve(basePath, 'test1.txt') },
-                    file2 = { fullname: path.resolve(basePath, 'test2.txt') };
+                var basePath = './test/fixtures/';
+                var file1 = { fullname: path.resolve(basePath, 'test1.txt') };
+                var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
 
                 cache.set('test', [file1, file2]);
             });
 
             it('success', function () {
-                var basePath = './test/fixtures/',
-                    file1 = { fullname: path.resolve(basePath, 'test11.txt') },
-                    file2 = { fullname: path.resolve(basePath, 'test2.txt') };
+                var basePath = './test/fixtures/';
+                var file1 = { fullname: path.resolve(basePath, 'test11.txt') };
+                var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
 
                 cache.needRebuildFileList('test', [file1, file2]).should.equal(true);
             });
         });
 
         describe('list was not changed', function () {
-            var basePath = './test/fixtures/',
-                file1 = { fullname: path.resolve(basePath, 'test1.txt') },
-                file2 = { fullname: path.resolve(basePath, 'test2.txt') };
+            var basePath = './test/fixtures/';
+            var file1 = { fullname: path.resolve(basePath, 'test1.txt') };
+            var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
 
             before(function () {
                 cache.set('test', [file1, file2]);

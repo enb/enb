@@ -4,7 +4,8 @@ script: "npm run travis"
 node_js:
   - "0.10"
   - "0.12"
-  - iojs
+  - iojs-v1
+  - iojs-v2
 
 before_install:
   - npm install -g npm@latest

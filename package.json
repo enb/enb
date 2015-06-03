@@ -69,7 +69,6 @@
     "jscs": "~1.2.3",
     "jshint": "2.1.3",
     "mocha": "2.1.0",
-    "mock-fs": "2.5.0",
     "sinon": "1.7.3",
     "unit-coverage": "~3.2.0"
   },
@@ -101,14 +100,13 @@
       "--recursive",
       "techs",
       "lib",
-      "test/lib",
-      "test/techs"
+      "test/lib"
     ]
   },
   "scripts": {
     "test": "npm run jshint && npm run check-style && npm run func-test && npm run unit-test",
     "jshint": "jshint .",
-    "unit-test": "mocha -u bdd -R spec --recursive test/lib test/techs",
+    "unit-test": "mocha -u bdd -R spec --recursive test/lib",
     "func-test": "npm run build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test",

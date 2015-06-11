@@ -1,18 +1,28 @@
 var fs = require('fs');
 var path = require('path');
+var mockFs = require('mock-fs');
+var should = require('chai').should();
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
-var should = require('chai').should();
 
 describe('cache/cache', function () {
-    var CACHE_FILE = path.join(process.cwd(), './test/fixtures/cache.json');
-    var TEST_FILE = path.join(process.cwd(), './test/fixtures/test.txt');
+    var CACHE_FILE = path.resolve('cache.json');
+    var TEST_FILE = path.resolve('test.txt');
     var PREFIX = 'test-prefix';
-    var cacheStorage = new CacheStorage(CACHE_FILE);
+    var cacheStorage;
     var cache;
+
+    before(function () {
+        mockFs({});
+        cacheStorage = new CacheStorage(CACHE_FILE);
+    });
 
     beforeEach(function () {
         cache = new Cache(cacheStorage, PREFIX);
+    });
+
+    after(function () {
+        mockFs.restore();
     });
 
     describe('constructor', function () {

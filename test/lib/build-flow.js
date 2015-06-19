@@ -7,6 +7,7 @@ var fs = require('fs');
 var mockFs = require('mock-fs');
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
+var FileList = require('../../lib/file-list');
 var NodeMock = require('../../lib/test/mocks/test-node');
 
 describe('build-flow', function () {
@@ -306,6 +307,161 @@ describe('build-flow', function () {
                 tech._opt.should.be.equal('value');
             });
         });
+    });
+
+    describe('FileList', function () {
+        var file1;
+        var file2;
+        var files;
+
+        before(function () {
+            file1 = {
+                fullname: path.resolve('file1.ext1'),
+                name: 'file1.ext1',
+                suffix: 'ext1'
+            };
+            file2 = {
+                fullname: path.resolve('file2.ext2'),
+                name: 'file2.ext2',
+                suffix: 'ext2'
+            };
+            files = [file1, file2];
+        });
+
+        describe('files', function () {
+            it('should expect FileList from `?.files` target', function () {
+                var list = new FileList();
+                var bundle = new NodeMock('bundle');
+
+                list.addFiles(files);
+                bundle.provideTechData('?.files', list);
+
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useFileList(['ext1', 'ext2'])
+                    .createTech();
+
+                return build(bundle, Tech)
+                    .should.become(files);
+            });
+
+            it('should add `filesTarget` option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useFileList(['ext'])
+                    .createTech();
+
+                var tech = init(Tech, { filesTarget: 'target.ext' });
+
+                tech._filesTarget.should.be.equal('target.ext');
+            });
+
+            it('should filter files by suffixes', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useFileList(['ext2'])
+                    .createTech();
+
+                return build(Tech)
+                    .should.become([file2]);
+            });
+
+            it('should add `sourceSuffixes` option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useFileList(['ext2'])
+                    .createTech();
+
+                return build(Tech, { sourceSuffixes: ['ext1'] })
+                    .should.become([file1]);
+            });
+        });
+
+        describe('dirs', function () {
+            it('should expect FileList from `?.dirs` target', function () {
+                var list = new FileList();
+                var bundle = new NodeMock('bundle');
+
+                list.addFiles(files);
+
+                bundle.provideTechData('?.dirs', list);
+
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useDirList(['ext1', 'ext2'])
+                    .createTech();
+
+                return build(bundle, Tech)
+                    .should.become(files);
+            });
+
+            it('should add `dirsTarget` option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useDirList(['ext'])
+                    .createTech();
+
+                var tech = init(Tech, { dirsTarget: 'target' });
+
+                tech._dirsTarget.should.be.equal('target');
+            });
+
+            it('should filter files by suffixes', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useDirList(['ext2'])
+                    .createTech();
+
+                return build(Tech)
+                    .should.become([file2]);
+            });
+
+            it('should add `sourceDirSuffixes` option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useDirList(['ext2'])
+                    .createTech();
+
+                return build(Tech, { sourceDirSuffixes: ['ext1'] })
+                    .should.become([file1]);
+            });
+        });
+
+        function build(node, Tech, opts) {
+            if (!(node instanceof NodeMock)) {
+                var list = new FileList();
+
+                opts = Tech;
+                Tech = node;
+                node = new NodeMock('node');
+
+                list.addFiles(files);
+
+                node.provideTechData('?.files', list);
+                node.provideTechData('?.dirs', list);
+            }
+
+            var actual;
+            var SafeTech = Tech.buildFlow()
+                .saver(function () {})
+                .builder(function (files) {
+                    actual = files;
+                })
+                .createTech();
+
+            return node.runTech(SafeTech, opts)
+                .then(function () {
+                    return actual;
+                });
+        }
     });
 });
 

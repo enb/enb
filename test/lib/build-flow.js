@@ -214,6 +214,99 @@ describe('build-flow', function () {
             return tech.build();
         });
     });
+
+    describe('options', function () {
+        describe('required', function () {
+            it('should throw error if value is not specified', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineRequiredOption('opt')
+                    .createTech();
+
+                (function () {
+                    init(Tech);
+                }).should.throw('Option "opt" is required for technology "name".');
+            });
+
+            it('should provide specified value', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineRequiredOption('opt')
+                    .createTech();
+
+                var tech = init(Tech, { opt: 'value' });
+
+                tech._opt.should.be.equal('value');
+            });
+
+            it('should provide value to specified field', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineRequiredOption('opt', 'field')
+                    .createTech();
+
+                var tech = init(Tech, { opt: 'value' });
+
+                tech.field.should.be.equal('value');
+            });
+        });
+
+        describe('not required', function () {
+            it('should provide default value', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineOption('opt', 'value')
+                    .createTech();
+
+                var tech = init(Tech);
+
+                tech._opt.should.be.equal('value');
+            });
+
+            it('should provide specified value', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineOption('opt', 'value')
+                    .createTech();
+
+                var tech = init(Tech, { opt: 'value2' });
+
+                tech._opt.should.be.equal('value2');
+            });
+
+            it('should provide value to specified field', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineOption('opt', 'value', 'field')
+                    .createTech();
+
+                var tech = init(Tech);
+
+                tech.field.should.be.equal('value');
+            });
+        });
+
+        describe('aliases', function () {
+            it('should provide value from option with alias name', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineOption('opt')
+                    .optionAlias('opt', 'alias')
+                    .createTech();
+
+                var tech = init(Tech, { alias: 'value' });
+
+                tech._opt.should.be.equal('value');
+            });
+        });
+    });
 });
 
 function init(node, Tech, opts) {

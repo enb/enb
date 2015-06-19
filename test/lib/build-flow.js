@@ -1,8 +1,6 @@
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-
-chai.use(chaiAsPromised);
-chai.should();
+require('chai')
+    .use(require('chai-as-promised'))
+    .should();
 
 var path = require('path');
 var fs = require('fs');

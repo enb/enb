@@ -1,4 +1,8 @@
-require('chai').should();
+var chai = require('chai');
+var chaiAsPromised = require('chai-as-promised');
+
+chai.use(chaiAsPromised);
+chai.should();
 
 var path = require('path');
 var fs = require('fs');
@@ -94,6 +98,17 @@ describe('build-flow', function () {
             mockFs.restore();
         });
 
+        it('should throw error if builder method not defined', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', target)
+                .createTech();
+
+            return init(bundle, Tech)
+                .build()
+                .should.be.rejectedWith('You should declare build function using "build" method of BuildFlow.');
+        });
+
         it('should write result to file', function () {
             var Tech = flow
                 .name('name')
@@ -157,6 +172,33 @@ describe('build-flow', function () {
                     var contents = fs.readFileSync(filename, 'utf-8');
 
                     contents.should.be.equal('Hello World!');
+                });
+        });
+
+        it('should prepare build', function () {
+            var data = 'Hello world';
+            var dataFilename = path.resolve('data.txt');
+            var Tech = flow
+                .name('name')
+                .target('target', target)
+                .prepare(function () {
+                    this._someData = fs.readFileSync(dataFilename, 'utf-8');
+                })
+                .builder(function () {
+                    return this._someData;
+                })
+                .createTech();
+
+            var tech = init(bundle, Tech);
+
+            fs.writeFileSync(dataFilename, data);
+
+            return tech.build()
+                .then(function () {
+                    var filename = path.resolve(dir, target);
+                    var contents = fs.readFileSync(filename, 'utf-8');
+
+                    contents.should.be.equal(data);
                 });
         });
 

@@ -62,7 +62,8 @@
   },
   "devDependencies": {
     "bh": "0.1.14",
-    "chai": "1.7.2",
+    "chai": "3.0.0",
+    "chai-as-promised": "5.1.0",
     "coveralls": "~2.11.2",
     "enb-validate-code": "0.0.1",
     "istanbul": "0.2.10",

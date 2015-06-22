@@ -10,6 +10,7 @@ var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
 var MockNode = require('mock-enb/lib/mock-node');
+var EOL = require('os').EOL;
 
 describe('build-flow', function () {
     var flow;
@@ -754,7 +755,7 @@ describe('build-flow', function () {
                 .should.become([
                     contents1,
                     contents2
-                ].join('\n'));
+                ].join(EOL));
         });
 
         it('should join files with comments', function () {
@@ -775,7 +776,7 @@ describe('build-flow', function () {
                     '/* begin: ' + path2 + ' */',
                     contents2,
                     '/* end: ' + path2 + ' */'
-                ].join('\n'));
+                ].join(EOL));
         });
 
         it('should join files with specified wrapper', function () {
@@ -792,7 +793,7 @@ describe('build-flow', function () {
                 .should.become([
                     filename1 + ': ' + contents1,
                     filename2 + ': ' + contents2
-                ].join('\n'));
+                ].join(EOL));
         });
 
         it('should join sources', function () {
@@ -808,7 +809,7 @@ describe('build-flow', function () {
                 .should.become([
                     contents1,
                     contents2
-                ].join('\n'));
+                ].join(EOL));
         });
 
         function build(Tech) {

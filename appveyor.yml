@@ -1,25 +1,19 @@
+version: "{build}"
+
 environment:
-  matrix:
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.12"
-    - nodejs_version: "1.0"
+  nodejs_version: "0.12"
 
 matrix:
-  allow_failures:
-    - nodejs_version: "0.12"
+  fast_finish: true
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm -g install npm@2
-  - set PATH=%APPDATA%\npm;%PATH%
-
-test_script:
   - node --version
   - npm --version
   - npm install
+
+test_script:
   - npm run func-test
   - npm run unit-test
 
-build: "off"
-
-version: "{build}"
+build: off

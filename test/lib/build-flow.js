@@ -4,11 +4,12 @@ require('chai')
 
 var path = require('path');
 var fs = require('fs');
+var inherit = require('inherit');
 var mockFs = require('mock-fs');
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
-var NodeMock = require('../../lib/test/mocks/test-node');
+var MockNode = require('mock-enb/lib/mock-node');
 
 describe('build-flow', function () {
     var flow;
@@ -64,7 +65,7 @@ describe('build-flow', function () {
 
             var tech = init(Tech);
 
-            tech.getTargets().should.be.eql(['file.ext']);
+            tech.getTargets().should.be.deep.equal(['file.ext']);
         });
 
         it('should support target mask', function () {
@@ -73,10 +74,10 @@ describe('build-flow', function () {
                 .target('target', '?.ext')
                 .createTech();
 
-            var bundle = new NodeMock('bundle');
+            var bundle = new MockNode('bundle');
             var tech = init(bundle, Tech);
 
-            tech.getTargets().should.be.eql(['bundle.ext']);
+            tech.getTargets().should.be.deep.equal(['bundle.ext']);
         });
     });
 
@@ -86,7 +87,7 @@ describe('build-flow', function () {
         var bundle;
 
         beforeEach(function () {
-            bundle = new NodeMock(dir);
+            bundle = new MockNode(dir);
 
             mockFs({
                 bundle: {}
@@ -202,17 +203,21 @@ describe('build-flow', function () {
         });
 
         it('should have node in builder', function () {
+            var actual = null;
             var Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .builder(function () {
-                    this.node.should.be.equal(bundle);
+                    actual = this.node;
                 })
                 .createTech();
 
             var tech = init(bundle, Tech);
 
-            return tech.build();
+            return tech.build()
+                .then(function () {
+                    actual.should.be.equal(bundle);
+                });
         });
     });
 
@@ -331,7 +336,7 @@ describe('build-flow', function () {
         describe('files', function () {
             it('should expect FileList from `?.files` target', function () {
                 var list = new FileList();
-                var bundle = new NodeMock('bundle');
+                var bundle = new MockNode('bundle');
 
                 list.addFiles(files);
                 bundle.provideTechData('?.files', list);
@@ -384,7 +389,7 @@ describe('build-flow', function () {
         describe('dirs', function () {
             it('should expect FileList from `?.dirs` target', function () {
                 var list = new FileList();
-                var bundle = new NodeMock('bundle');
+                var bundle = new MockNode('bundle');
 
                 list.addFiles(files);
 
@@ -436,12 +441,12 @@ describe('build-flow', function () {
         });
 
         function build(node, Tech, opts) {
-            if (!(node instanceof NodeMock)) {
+            if (!(node instanceof MockNode)) {
                 var list = new FileList();
 
                 opts = Tech;
                 Tech = node;
-                node = new NodeMock('node');
+                node = new MockNode('node');
 
                 list.addFiles(files);
 
@@ -463,13 +468,158 @@ describe('build-flow', function () {
                 });
         }
     });
+
+    describe('dependencies', function () {
+        var dir;
+        var basename;
+
+        before(function () {
+            dir = 'bundle';
+            basename = '.dependants';
+        });
+
+        beforeEach(function () {
+            mockFs({
+                bundle: {}
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
+
+        it('should require source from its node', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .dependOn('dependence', basename)
+                .builder(function () {})
+                .createTech();
+
+            return build(Tech)
+                .then(function (requires) {
+                    requires.should.be.contain(basename);
+                });
+        });
+
+        it('should require source from its node and provide filename', function () {
+            var actual = '';
+
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceFilename('dependence', basename)
+                .builder(function (filename) {
+                    actual = filename;
+                })
+                .createTech();
+
+            return build(Tech)
+                .then(function (requires) {
+                    var expected = path.resolve(dir, basename);
+
+                    requires.should.be.contain('.dependants');
+                    actual.should.be.equal(expected);
+                });
+        });
+
+        it('should require sources from its node and provide filenames', function () {
+            var actual = [];
+
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceListFilenames('dependencies', ['.dep1', '.dep2'])
+                .builder(function (filenames) {
+                    actual = filenames;
+                })
+                .createTech();
+
+            return build(Tech)
+                .then(function (requires) {
+                    requires.should.be.contain('.dep1');
+                    requires.should.be.contain('.dep2');
+
+                    actual.should.be.deep.equal([
+                        path.resolve(dir, '.dep1'),
+                        path.resolve(dir, '.dep2')
+                    ]);
+                });
+        });
+
+        it('should require source from its node and provide contents', function () {
+            var actual = '';
+            var dirname = path.resolve(dir);
+            var filename = path.join(dirname, basename);
+
+            fs.writeFileSync(filename, 'Hello World!');
+
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceText('dependencies', '.dependants')
+                .builder(function (contents) {
+                    actual = contents;
+                })
+                .createTech();
+
+            return build(Tech)
+                .then(function (requires) {
+                    requires.should.be.contain('.dependants');
+
+                    actual.should.be.equal('Hello World!');
+                });
+        });
+
+        it('should require source from its node and provide data', function () {
+            var actual = {};
+            var expected = { data: true };
+
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceResult('dependencies', basename)
+                .builder(function (data) {
+                    actual = data;
+                })
+                .createTech();
+
+            return build(Tech, { '.dependants': expected })
+                .then(function () {
+                    actual.should.be.deep.equal(expected);
+                });
+        });
+
+        function build(Tech, data) {
+            var requires = [];
+            var MyMockNode = inherit(MockNode, {
+                requireSources: function (sources) {
+                    requires = [].concat(requires, sources);
+
+                    return this.__base(sources);
+                }
+            });
+            var bundle = new MyMockNode(dir);
+
+            if (data) {
+                Object.keys(data).forEach(function (key) {
+                    bundle.provideTechData(key, data[key]);
+                });
+            }
+
+            return bundle.runTech(Tech)
+                .then(function () {
+                    return requires;
+                });
+        }
+    });
 });
 
 function init(node, Tech, opts) {
-    if (!(node instanceof NodeMock)) {
+    if (!(node instanceof MockNode)) {
         opts = Tech;
         Tech = node;
-        node = new NodeMock('node');
+        node = new MockNode('node');
     }
 
     var tech = new Tech(opts);

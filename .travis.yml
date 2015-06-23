@@ -1,10 +1,10 @@
+sudo: false
+
 language: node_js
+
 script: "npm run travis"
 
 node_js:
   - "0.10"
   - "0.12"
   - iojs-v1
-
-before_install:
-  - npm install -g npm@latest

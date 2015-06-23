@@ -1,10 +1,13 @@
+sudo: false
+
 language: node_js
-script: "npm run travis"
 
-node_js:
-  - "0.10"
-  - "0.12"
-  - iojs-v1
+matrix:
+  include:
+    - node_js: iojs-v1
+    - node_js: "0.10"
+    - node_js: "0.12"
+      env: COVERALLS=1
 
-before_install:
-  - npm install -g npm@latest
+after_success:
+  - if [ "x$COVERALLS" = "x1" ]; then npm run coveralls; fi

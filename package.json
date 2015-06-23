@@ -114,6 +114,6 @@
     "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test",
     "coverage": "unit-coverage run -p common",
     "coverage-html": "unit-coverage run -p common -r html -o coverage.html",
-    "travis": "npm run test && unit-coverage run -p common -r lcov -o report.lcov && cat report.lcov | coveralls"
+    "coveralls": "unit-coverage run -p common -r lcov -o report.lcov && cat report.lcov | coveralls"
   }
 }

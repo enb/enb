@@ -613,6 +613,217 @@ describe('build-flow', function () {
                 });
         }
     });
+
+    describe('deprecated', function () {
+        beforeEach(function () {
+            mockFs({
+                bundle: {}
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
+
+        it('should warn about deprecated tech in current package', function () {
+            var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .deprecated('old-package')
+                .builder(function () {})
+                .createTech();
+
+            return bundle.runTech(Tech)
+                .then(function () {
+                    var logger = bundle.getLogger();
+                    var messages = logger._messages;
+
+                    messages.should.be.contains({
+                        message: 'Tech old-package/techs/name is deprecated.',
+                        scope: path.join('bundle', 'bundle.ext'),
+                        action: '[deprecated]'
+                    });
+                });
+        });
+
+        it('should warn about deprecated tech and point to new package', function () {
+            var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .deprecated('old-package', 'new-package')
+                .builder(function () {})
+                .createTech();
+
+            return bundle.runTech(Tech)
+                .then(function () {
+                    var logger = bundle.getLogger();
+                    var messages = logger._messages;
+
+                    messages.should.be.contains({
+                        message: 'Tech old-package/techs/name is deprecated. ' +
+                            'Install package new-package and use tech new-package/techs/name instead.',
+                        scope: path.join('bundle', 'bundle.ext'),
+                        action: '[deprecated]'
+                    });
+                });
+        });
+
+        it('should warn about deprecated tech and point to new tech', function () {
+            var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .deprecated('old-package', 'new-package', 'new-tech')
+                .builder(function () {})
+                .createTech();
+
+            return bundle.runTech(Tech)
+                .then(function () {
+                    var logger = bundle.getLogger();
+                    var messages = logger._messages;
+
+                    messages.should.be.contains({
+                        message: 'Tech old-package/techs/name is deprecated. ' +
+                            'Install package new-package and use tech new-package/techs/new-tech instead.',
+                        scope: path.join('bundle', 'bundle.ext'),
+                        action: '[deprecated]'
+                    });
+                });
+        });
+
+        it('should warn about deprecated tech and write description', function () {
+            var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .deprecated('old-package', 'new-package', 'new-tech', ' The Description.')
+                .builder(function () {})
+                .createTech();
+
+            return bundle.runTech(Tech)
+                .then(function () {
+                    var logger = bundle.getLogger();
+                    var messages = logger._messages;
+
+                    messages.should.be.contains({
+                        message: 'Tech old-package/techs/name is deprecated. ' +
+                            'Install package new-package and use tech new-package/techs/new-tech instead. ' +
+                            'The Description.',
+                        scope: path.join('bundle', 'bundle.ext'),
+                        action: '[deprecated]'
+                    });
+                });
+        });
+    });
+
+    describe('helpers', function () {
+        var dir = 'files';
+        var filename1 = path.join(dir, 'file-1.ext');
+        var filename2 = path.join(dir, 'file-2.ext');
+        var contents1 = 'one';
+        var contents2 = 'two';
+
+        beforeEach(function () {
+            mockFs({
+                files: {
+                    'file-1.ext': contents1,
+                    'file-2.ext': contents2
+                },
+                bundle: {
+                    'target-1.ext': contents1,
+                    'target-2.ext': contents2
+                }
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
+
+        it('should join files', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useFileList(['ext'])
+                .justJoinFiles()
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    contents1,
+                    contents2
+                ].join('\n'));
+        });
+
+        it('should join files with comments', function () {
+            var path1 = path.join('..', filename1);
+            var path2 = path.join('..', filename2);
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useFileList(['ext'])
+                .justJoinFilesWithComments()
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    '/* begin: ' + path1 + ' */',
+                    contents1,
+                    '/* end: ' + path1 + ' */',
+                    '/* begin: ' + path2 + ' */',
+                    contents2,
+                    '/* end: ' + path2 + ' */'
+                ].join('\n'));
+        });
+
+        it('should join files with specified wrapper', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useFileList(['ext'])
+                .justJoinFiles(function (filename, contents) {
+                    return [filename, contents].join(': ');
+                })
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    filename1 + ': ' + contents1,
+                    filename2 + ': ' + contents2
+                ].join('\n'));
+        });
+
+        it('should join sources', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceText('source-one', 'target-1.ext')
+                .useSourceText('source-two', 'target-2.ext')
+                .justJoinSources()
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    contents1,
+                    contents2
+                ].join('\n'));
+        });
+
+        function build(Tech) {
+            var bundle = new MockNode('bundle');
+            var list = new FileList();
+
+            list.loadFromDirSync(dir);
+            bundle.provideTechData('?.files', list);
+
+            return bundle.runTechAndGetContent(Tech)
+                .spread(function (res) {
+                    return res;
+                });
+        }
+    });
 });
 
 function init(node, Tech, opts) {

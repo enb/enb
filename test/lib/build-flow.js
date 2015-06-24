@@ -825,6 +825,330 @@ describe('build-flow', function () {
                 });
         }
     });
+
+    describe('inheritance', function () {
+        beforeEach(function () {
+            mockFs({
+                bundle: {}
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
+
+        describe('base', function () {
+            it('should inherit tech', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .createTech();
+
+                var tech1 = new Tech();
+                var tech2 = new ChildTech();
+
+                tech1.getName().should.be.equal(tech2.getName());
+                tech1.getTargets().should.be.deep.equal(tech2.getTargets());
+                tech1.build().should.be.deep.equal(tech2.build());
+            });
+
+            it('should inherit name', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .createTech();
+
+                var tech = new ChildTech();
+
+                tech.getName().should.be.equal('name');
+            });
+
+            it('should inherit target', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .createTech();
+
+                var tech = init(ChildTech);
+
+                tech.getTargets().should.be.deep.equal(['file.ext']);
+            });
+
+            it('should redefine name', function () {
+                var Tech = flow
+                    .name('old-name')
+                    .target('target', 'file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .name('new-name')
+                    .createTech();
+
+                var tech = new ChildTech();
+
+                tech.getName().should.be.equal('new-name');
+            });
+
+            it('should redefine target', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'old-file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .target('target', 'new-file.ext')
+                    .createTech();
+
+                var tech = init(ChildTech);
+
+                tech.getTargets().should.be.deep.equal(['new-file.ext']);
+            });
+        });
+
+        describe('options', function () {
+            it('should inherit option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .defineOption('opt', 'value')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .createTech();
+
+                var tech = init(ChildTech);
+
+                tech._opt.should.be.equal('value');
+            });
+
+            it('should redefine option', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .defineOption('opt', 'old-value')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .defineOption('opt', 'new-value')
+                    .createTech();
+
+                var tech = init(ChildTech);
+
+                tech._opt.should.be.equal('new-value');
+            });
+        });
+
+        describe('methods', function () {
+            it('should inherit method', function () {
+                var actual = '';
+                var expected = 'Hello World!';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .methods({
+                        hello: function () {
+                            return expected;
+                        }
+                    })
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function () {
+                        actual = this.hello();
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.equal(expected);
+                    });
+            });
+
+            it('should inherit methods that use other method', function () {
+                var actual = '';
+                var expected = 'Hello World!';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .methods({
+                        hello: function () {
+                            return this.hi();
+                        },
+                        hi: function () {
+                            return expected;
+                        }
+                    })
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function () {
+                        actual = this.hello();
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.equal(expected);
+                    });
+            });
+
+            it('should redefine method', function () {
+                var actual = '';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .methods({
+                        hello: function () {
+                            return 'Hello World!';
+                        }
+                    })
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function () {
+                        actual = this.hello();
+                    })
+                    .methods({
+                        hello: function () {
+                            return 'Hi World!';
+                        }
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.equal('Hi World!');
+                    });
+            });
+
+            it('should inherit static method', function () {
+                var actual = '';
+                var expected = 'Hello World!';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .staticMethods({
+                        hello: function () {
+                            return expected;
+                        }
+                    })
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function () {
+                        actual = ChildTech.hello();
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.equal(expected);
+                    });
+            });
+
+            it('should redefine static method', function () {
+                var actual = '';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .staticMethods({
+                        hello: function () {
+                            return 'Hello World!';
+                        }
+                    })
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function () {
+                        actual = ChildTech.hello();
+                    })
+                    .staticMethods({
+                        hello: function () {
+                            return 'Hi World!';
+                        }
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.equal('Hi World!');
+                    });
+            });
+        });
+
+        describe('dependencies', function () {
+            it('should inherit dependence', function () {
+                var dir = 'bundle';
+                var basename = '.dependants';
+                var actual = '';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .useSourceFilename('dependence', basename)
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .builder(function (filename) {
+                        actual = filename;
+                    })
+                    .createTech();
+
+                var bundle = new MockNode(dir);
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        var expected = path.resolve(dir, basename);
+
+                        actual.should.be.equal(expected);
+                    });
+            });
+
+            it('should redefine dependence', function () {
+                var dir = 'bundle';
+                var actual = '';
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .useSourceFilename('dependence', '.old-file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .useSourceFilename('dependence', 'new-file.ext')
+                    .builder(function (filename) {
+                        actual = filename;
+                    })
+                    .createTech();
+
+                var bundle = new MockNode(dir);
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        var expected = path.resolve(dir, 'new-file.ext');
+
+                        actual.should.be.equal(expected);
+                    });
+            });
+        });
+    });
 });
 
 function init(node, Tech, opts) {

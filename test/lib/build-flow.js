@@ -1148,6 +1148,77 @@ describe('build-flow', function () {
                     });
             });
         });
+
+        describe('unuse', function () {
+            it('should unuse other target', function () {
+                var actual;
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .useSourceFilename('dependence', '.old-file.ext')
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .unuseTarget('dependence')
+                    .builder(function () {
+                        actual = arguments.length;
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.empty;
+                    });
+            });
+
+            it('should unuse other target with files', function () {
+                var actual;
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .useFileList(['ext'])
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .unuseFileList()
+                    .builder(function () {
+                        actual = arguments.length;
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.empty;
+                    });
+            });
+
+            it('should unuse other target with dirs', function () {
+                var actual;
+                var Tech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .useDirList(['ext'])
+                    .createTech();
+
+                var ChildTech = Tech.buildFlow()
+                    .unuseDirList()
+                    .builder(function () {
+                        actual = arguments.length;
+                    })
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+
+                return bundle.runTech(ChildTech)
+                    .then(function () {
+                        actual.should.be.empty;
+                    });
+            });
+        });
     });
 });
 

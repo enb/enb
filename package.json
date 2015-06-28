@@ -73,6 +73,7 @@
     "mock-enb": "0.0.2",
     "mock-fs": "2.7.1",
     "sinon": "1.7.3",
+    "sleep": "2.0.0",
     "unit-coverage": "~3.2.0"
   },
   "bin": {

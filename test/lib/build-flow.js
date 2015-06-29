@@ -1400,106 +1400,160 @@ describe('build-flow', function () {
                     });
             });
 
-            it('should not rebuild if dependence has not been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
-                    .name('name')
-                    .target('target', target)
-                    .dependOn('dependence', '.dependants')
-                    .saver(function (filename, result) {
-                        actual = result;
-                    })
-                    .builder(function () {
-                        return ++i;
-                    })
-                    .createTech();
+            describe('usages', function () {
+                it('should not rebuild if dependence has not been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence', '.dependants')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
 
-                return bundle.runTech(Tech)
-                    .then(function () {
-                        return bundle.runTech(Tech);
-                    })
-                    .then(function () {
-                        actual.should.be.equal('1');
-                    });
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should not rebuild if dependencies are not changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence-1', '.dependants-1')
+                        .dependOn('dependence-2', '.dependants-2')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should rebuild if dependence has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence', '.dependants')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants');
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+
+                it('should rebuild if one of the dependencies has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence-1', '.dependants-1')
+                        .dependOn('dependence-2', '.dependants-2')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants-1');
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
             });
 
-            it('should not rebuild if dependencies are not changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
-                    .name('name')
-                    .target('target', target)
-                    .dependOn('dependence-1', '.dependants-1')
-                    .dependOn('dependence-2', '.dependants-2')
-                    .saver(function (filename, result) {
-                        actual = result;
-                    })
-                    .builder(function () {
-                        return ++i;
-                    })
-                    .createTech();
+            describe('source list', function () {
+                it('should not rebuild if dependencies are not changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
 
-                return bundle.runTech(Tech)
-                    .then(function () {
-                        return bundle.runTech(Tech);
-                    })
-                    .then(function () {
-                        actual.should.be.equal('1');
-                    });
-            });
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
 
-            it('should rebuild if dependence has been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
-                    .name('name')
-                    .target('target', target)
-                    .dependOn('dependence', '.dependants')
-                    .saver(function (filename, result) {
-                        actual = result;
-                    })
-                    .builder(function () {
-                        return ++i;
-                    })
-                    .createTech();
+                it('should rebuild if one of the dependencies has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
 
-                return bundle.runTech(Tech)
-                    .then(function () {
-                        helper.change('.dependants');
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants-1');
 
-                        return bundle.runTech(Tech);
-                    })
-                    .then(function () {
-                        actual.should.be.equal('2');
-                    });
-            });
-
-            it('should rebuild if one of the dependencies has been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
-                    .name('name')
-                    .target('target', target)
-                    .dependOn('dependence-1', '.dependants-1')
-                    .dependOn('dependence-2', '.dependants-2')
-                    .saver(function (filename, result) {
-                        actual = result;
-                    })
-                    .builder(function () {
-                        return ++i;
-                    })
-                    .createTech();
-
-                return bundle.runTech(Tech)
-                    .then(function () {
-                        helper.change('.dependants-1');
-
-                        return bundle.runTech(Tech);
-                    })
-                    .then(function () {
-                        actual.should.be.equal('2');
-                    });
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
             });
         });
 

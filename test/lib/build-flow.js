@@ -1229,21 +1229,23 @@ describe('build-flow', function () {
         var targetFilename;
         var blocksDirname;
         var blockFilename;
+        var blockDirname;
         var fileList;
 
         before(function () {
             target = 'file.ext';
             blocksDirname = path.resolve('blocks');
-            blockFilename = path.join(blocksDirname, 'file.ext');
+            blockFilename = path.join(blocksDirname, 'block.ext');
+            blockDirname = path.join(blocksDirname, 'block.dir');
         });
 
         beforeEach(function () {
             mockFs({
                 'blocks': {
-                    'dir.ext': {
-                        'file.ext': 'value'
+                    'block.dir': {
+                        'block.ext': 'value'
                     },
-                    'file.ext': 'value'
+                    'block.ext': 'value'
                 },
                 'bundle': {
                     '.dependants': 'value',
@@ -1272,6 +1274,30 @@ describe('build-flow', function () {
                         name: basename,
                         fullname: filename,
                         mtime: mtime,
+                        suffix: target.split('.').slice(1).join('.')
+                    };
+                },
+                dirInfo: function (target) {
+                    var dirname = _getFilename(target);
+                    var basename = path.basename(target);
+                    var stat = fs.statSync(dirname);
+                    var isDirectory = stat.isDirectory();
+                    var files = [];
+
+                    if (isDirectory) {
+                        files = fs.readdirSync(dirname).map(function (basename) {
+                            var filename = path.join(dirname, basename);
+
+                            return FileList.getFileInfo(filename);
+                        });
+                    }
+
+                    return {
+                        name: basename,
+                        fullname: dirname,
+                        mtime: stat.mtime.getTime(),
+                        isDirectory: isDirectory,
+                        files: files,
                         suffix: target.split('.').slice(1).join('.')
                     };
                 }
@@ -1334,7 +1360,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .saver(function (filename, result) {
                         actual = result;
                     })
@@ -1345,7 +1371,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        helper.change('file.ext');
+                        helper.change(target);
 
                         return bundle.runTech(Tech);
                     })
@@ -1366,7 +1392,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var cache = bundle.getNodeCache('file.ext');
+                        var cache = bundle.getNodeCache(target);
                         var expected = helper.fileInfo('.dependants');
                         var actual = cache.get('target:.dependants');
 
@@ -1379,7 +1405,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .saver(function (filename, result) {
                         actual = result;
@@ -1403,7 +1429,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence-1', '.dependants-1')
                     .dependOn('dependence-2', '.dependants-2')
                     .saver(function (filename, result) {
@@ -1428,7 +1454,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .saver(function (filename, result) {
                         actual = result;
@@ -1454,7 +1480,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence-1', '.dependants-1')
                     .dependOn('dependence-2', '.dependants-2')
                     .saver(function (filename, result) {
@@ -1482,7 +1508,7 @@ describe('build-flow', function () {
                 it('should save FileList info', function () {
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
+                        .target('target', target)
                         .useFileList(['ext'])
                         .builder(function () {})
                         .createTech();
@@ -1492,7 +1518,7 @@ describe('build-flow', function () {
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            var cache = bundle.getNodeCache('file.ext');
+                            var cache = bundle.getNodeCache(target);
                             var expected = helper.fileInfo(blockFilename);
                             var actual = cache.get('target:bundle.files');
 
@@ -1505,7 +1531,7 @@ describe('build-flow', function () {
                     var i = 0;
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
+                        .target('target', target)
                         .useFileList(['ext'])
                         .saver(function (filename, result) {
                             actual = result;
@@ -1515,7 +1541,7 @@ describe('build-flow', function () {
                         })
                         .createTech();
 
-                    fileList.loadFromDirSync('blocks');
+                    fileList.loadFromDirSync(blocksDirname);
                     bundle.provideTechData('?.files', fileList);
 
                     return bundle.runTech(Tech)
@@ -1532,7 +1558,7 @@ describe('build-flow', function () {
                     var i = 0;
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
+                        .target('target', target)
                         .useFileList(['ext'])
                         .saver(function (filename, result) {
                             actual = result;
@@ -1547,10 +1573,10 @@ describe('build-flow', function () {
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            helper.change(path.join(blocksDirname, 'file.ext'));
+                            helper.change(blockFilename);
 
                             fileList = new FileList();
-                            fileList.loadFromDirSync('blocks');
+                            fileList.loadFromDirSync(blocksDirname);
                             bundle.provideTechData('?.files', fileList);
 
                             return bundle.runTech(Tech);
@@ -1565,22 +1591,21 @@ describe('build-flow', function () {
                 it('should save FileList info', function () {
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
-                        .useDirList(['ext'])
+                        .target('target', target)
+                        .useDirList(['dir'])
                         .builder(function () {})
                         .createTech();
 
-                    var fileInfo = FileList.getFileInfo(path.join(blocksDirname, 'dir.ext'));
-                    fileInfo.files = [FileList.getFileInfo(path.join(blocksDirname, 'dir.ext', 'file.ext'))];
-                    fileList.addFiles([fileInfo]);
+                    var dirInfo = helper.dirInfo(blockDirname);
+                    fileList.addFiles([dirInfo]);
                     bundle.provideTechData('?.dirs', fileList);
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            var cache = bundle.getNodeCache('file.ext');
+                            var cache = bundle.getNodeCache(target);
                             var info = cache.get('target:bundle.dirs');
 
-                            info.should.be.deep.equal(fileInfo.files);
+                            info.should.be.deep.equal(dirInfo.files);
                         });
                 });
 
@@ -1589,8 +1614,8 @@ describe('build-flow', function () {
                     var i = 0;
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
-                        .useDirList(['ext'])
+                        .target('target', target)
+                        .useDirList(['dir'])
                         .saver(function (filename, result) {
                             actual = result;
                         })
@@ -1599,9 +1624,7 @@ describe('build-flow', function () {
                         })
                         .createTech();
 
-                    var fileInfo = FileList.getFileInfo(path.join(blocksDirname, 'dir.ext'));
-                    fileInfo.files = [FileList.getFileInfo(path.join(blocksDirname, 'dir.ext', 'file.ext'))];
-                    fileList.addFiles([fileInfo]);
+                    fileList.addFiles([helper.dirInfo(blockDirname)]);
                     bundle.provideTechData('?.dirs', fileList);
 
                     return bundle.runTech(Tech)
@@ -1618,8 +1641,8 @@ describe('build-flow', function () {
                     var i = 0;
                     var Tech = flow
                         .name('name')
-                        .target('target', 'file.ext')
-                        .useDirList(['ext'])
+                        .target('target', target)
+                        .useDirList(['dir'])
                         .saver(function (filename, result) {
                             actual = result;
                         })
@@ -1628,19 +1651,17 @@ describe('build-flow', function () {
                         })
                         .createTech();
 
-                    var fileInfo = FileList.getFileInfo(path.join(blocksDirname, 'dir.ext'));
-                    fileInfo.files = [FileList.getFileInfo(path.join(blocksDirname, 'dir.ext', 'file.ext'))];
-                    fileList.addFiles([fileInfo]);
+                    fileList.addFiles([helper.dirInfo(blockDirname)]);
                     bundle.provideTechData('?.dirs', fileList);
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            helper.change(path.join(blocksDirname, 'dir.ext', 'file.ext'));
+                            var filename = path.join(blockDirname, 'block.ext');
+
+                            helper.change(filename);
 
                             fileList = new FileList();
-                            fileInfo = FileList.getFileInfo(path.join(blocksDirname, 'dir.ext'));
-                            fileInfo.files = [FileList.getFileInfo(path.join(blocksDirname, 'dir.ext', 'file.ext'))];
-                            fileList.addFiles([fileInfo]);
+                            fileList.addFiles([helper.dirInfo(blockDirname)]);
                             bundle.provideTechData('?.dirs', fileList);
 
                             return bundle.runTech(Tech);
@@ -1657,7 +1678,7 @@ describe('build-flow', function () {
                 var actual;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .needRebuild(function (cache) {
                         actual = cache;
@@ -1667,7 +1688,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var expected = bundle.getNodeCache('file.ext');
+                        var expected = bundle.getNodeCache(target);
 
                         actual.should.be.deep.equal(expected);
                     });
@@ -1678,7 +1699,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .needRebuild(function () {
                         return false;
                     })
@@ -1692,7 +1713,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        helper.change('file.ext');
+                        helper.change(target);
 
                         return bundle.runTech(Tech);
                     })
@@ -1706,7 +1727,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .needRebuild(function () {
                         return false;
@@ -1735,7 +1756,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .needRebuild(function () {
                         return true;
                     })
@@ -1761,7 +1782,7 @@ describe('build-flow', function () {
                 var i = 0;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .needRebuild(function () {
                         return true;
@@ -1789,7 +1810,7 @@ describe('build-flow', function () {
                 var actual;
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .saveCache(function (cache) {
                         actual = cache;
@@ -1799,7 +1820,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var expected = bundle.getNodeCache('file.ext');
+                        var expected = bundle.getNodeCache(target);
 
                         actual.should.be.deep.equal(expected);
                     });
@@ -1809,7 +1830,7 @@ describe('build-flow', function () {
                 var expected = { data: true };
                 var Tech = flow
                     .name('name')
-                    .target('target', 'file.ext')
+                    .target('target', target)
                     .dependOn('dependence', '.dependants')
                     .saveCache(function (cache) {
                         cache.set('data', expected);
@@ -1819,7 +1840,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var cache = bundle.getNodeCache('file.ext');
+                        var cache = bundle.getNodeCache(target);
 
                         cache.get('data').should.be.deep.equal(expected);
                     });

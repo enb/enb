@@ -59,13 +59,37 @@ describe('build-flow', function () {
             tech.getName().should.be.equal('name');
         });
 
-        it('should create tech with specified target', function () {
+        it('should throw error if target not specified', function () {
+            var Tech = flow
+                .name('name')
+                .target('target')
+                .createTech();
+
+            var bundle = new MockNode('bundle');
+
+            (function () {
+                init(bundle, Tech);
+            }).should.throw('Option "target" is required for technology "name".');
+        });
+
+        it('should create tech with default target value', function () {
             var Tech = flow
                 .name('name')
                 .target('target', 'file.ext')
                 .createTech();
 
             var tech = init(Tech);
+
+            tech.getTargets().should.be.deep.equal(['file.ext']);
+        });
+
+        it('should create tech with specified target', function () {
+            var Tech = flow
+                .name('name')
+                .target('target')
+                .createTech();
+
+            var tech = init(Tech, { target: 'file.ext' });
 
             tech.getTargets().should.be.deep.equal(['file.ext']);
         });
@@ -313,6 +337,62 @@ describe('build-flow', function () {
 
                 tech._opt.should.be.equal('value');
             });
+
+            it('should support several aliases', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .defineOption('opt1')
+                    .defineOption('opt2')
+                    .optionAlias('opt1', 'alias1')
+                    .optionAlias('opt2', 'alias2')
+                    .createTech();
+
+                var tech = init(Tech, { alias1: 'value1', alias2: 'value2' });
+
+                tech._opt1.should.be.equal('value1');
+                tech._opt2.should.be.equal('value2');
+            });
+        });
+
+        describe('target', function () {
+            it('should support option mask for target', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '{opt}.ext')
+                    .defineOption('opt', 'value')
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+                var tech = init(bundle, Tech);
+
+                tech.getTargets().should.be.deep.equal(['value.ext']);
+            });
+
+            it('should remove `{opt}` if option is not specified', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '{opt}.ext')
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+                var tech = init(bundle, Tech);
+
+                tech.getTargets().should.be.deep.equal(['.ext']);
+            });
+
+            it('should remove `{opt}` if option has no default value', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '{opt}.ext')
+                    .defineOption('opt')
+                    .createTech();
+
+                var bundle = new MockNode('bundle');
+                var tech = init(bundle, Tech);
+
+                tech.getTargets().should.be.deep.equal(['.ext']);
+            });
         });
     });
 
@@ -386,6 +466,23 @@ describe('build-flow', function () {
                 return build(Tech, { sourceSuffixes: ['ext1'] })
                     .should.become([file1]);
             });
+
+            it('should support suffix as string', function () {
+                var list = new FileList();
+                var bundle = new MockNode('bundle');
+
+                list.addFiles(files);
+                bundle.provideTechData('?.files', list);
+
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useFileList('ext1')
+                    .createTech();
+
+                return build(Tech)
+                    .should.become([file1]);
+            });
         });
 
         describe('dirs', function () {
@@ -438,6 +535,17 @@ describe('build-flow', function () {
                     .createTech();
 
                 return build(Tech, { sourceDirSuffixes: ['ext1'] })
+                    .should.become([file1]);
+            });
+
+            it('should support suffix as string', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', '?.ext')
+                    .useDirList('ext1')
+                    .createTech();
+
+                return build(Tech)
                     .should.become([file1]);
             });
         });
@@ -744,6 +852,32 @@ describe('build-flow', function () {
             mockFs.restore();
         });
 
+        it('should join empty string', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .justJoinFiles()
+                .createTech();
+
+            return build(Tech)
+                .should.become('');
+        });
+
+        it('should ingore source result', function () {
+            var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceResult('dependence', '.dependants')
+                .justJoinFiles()
+                .createTech();
+
+            bundle.provideTechData('.dependants', { data: true });
+
+            return build(bundle, Tech)
+                .should.become('');
+        });
+
         it('should join files', function () {
             var Tech = flow
                 .name('name')
@@ -797,6 +931,40 @@ describe('build-flow', function () {
                 ].join(EOL));
         });
 
+        it('should join source files', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceFilename('source-one', 'target-1.ext')
+                .useSourceFilename('source-two', 'target-2.ext')
+                .justJoinFiles()
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    contents1,
+                    contents2
+                ].join(EOL));
+        });
+
+        it('should join source files with specified wrapper', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceFilename('source-one', 'target-1.ext')
+                .useSourceFilename('source-two', 'target-2.ext')
+                .justJoinFiles(function (filename, contents) {
+                    return [filename, contents].join(': ');
+                })
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    path.resolve('bundle', 'target-1.ext') + ': ' + contents1,
+                    path.resolve('bundle', 'target-2.ext') + ': ' + contents2
+                ].join(EOL));
+        });
+
         it('should join sources', function () {
             var Tech = flow
                 .name('name')
@@ -813,14 +981,48 @@ describe('build-flow', function () {
                 ].join(EOL));
         });
 
-        function build(Tech) {
+        it('should join files if use `justJoinSources`', function () {
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useFileList(['ext'])
+                .justJoinSources()
+                .createTech();
+
+            return build(Tech)
+                .should.become([
+                    contents1,
+                    contents2
+                ].join(EOL));
+        });
+
+        it('should ignore source result if use `justJoinSources`', function () {
             var bundle = new MockNode('bundle');
+            var Tech = flow
+                .name('name')
+                .target('target', '?.ext')
+                .useSourceResult('dependence', '.dependants')
+                .justJoinSources()
+                .createTech();
+
+            bundle.provideTechData('.dependants', { data: true });
+
+            return build(Tech)
+                .should.become('');
+        });
+
+        function build(node, Tech) {
+            if (!(node instanceof MockNode)) {
+                Tech = node;
+                node = new MockNode('bundle');
+            }
+
             var list = new FileList();
 
             list.loadFromDirSync(dir);
-            bundle.provideTechData('?.files', list);
+            node.provideTechData('?.files', list);
 
-            return bundle.runTechAndGetContent(Tech)
+            return node.runTechAndGetContent(Tech)
                 .spread(function (res) {
                     return res;
                 });

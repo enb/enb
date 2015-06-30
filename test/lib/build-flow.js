@@ -6,6 +6,7 @@ var path = require('path');
 var fs = require('fs');
 var inherit = require('inherit');
 var mockFs = require('mock-fs');
+var sleep = require('sleep').usleep;
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
@@ -1216,6 +1217,686 @@ describe('build-flow', function () {
                 return bundle.runTech(ChildTech)
                     .then(function () {
                         actual.should.be.empty;
+                    });
+            });
+        });
+    });
+
+    describe('cache', function () {
+        var bundle;
+        var helper;
+        var target;
+        var targetFilename;
+        var blocksDirname;
+        var blockFilename;
+        var blockDirname;
+        var fileList;
+
+        before(function () {
+            target = 'file.ext';
+            blocksDirname = path.resolve('blocks');
+            blockFilename = path.join(blocksDirname, 'block.ext');
+            blockDirname = path.join(blocksDirname, 'block.dir');
+        });
+
+        beforeEach(function () {
+            mockFs({
+                'blocks': {
+                    'block.dir': {
+                        'block.ext': 'value'
+                    },
+                    'block.ext': 'value'
+                },
+                'bundle': {
+                    '.dependants': 'value',
+                    '.dependants-1': 'value-1',
+                    '.dependants-2': 'value-2'
+                }
+            });
+
+            bundle = new MockNode('bundle');
+            fileList = new FileList();
+            targetFilename = bundle.resolvePath(target);
+            helper = {
+                change: function (target) {
+                    var filename = _getFilename(target);
+
+                    sleep(1000);
+
+                    fs.writeFileSync(filename, 'new-value');
+                },
+                fileInfo: function (target) {
+                    var filename = _getFilename(target);
+                    var basename = path.basename(target);
+                    var mtime = fs.statSync(filename).mtime.getTime();
+
+                    return {
+                        name: basename,
+                        fullname: filename,
+                        mtime: mtime,
+                        suffix: target.split('.').slice(1).join('.')
+                    };
+                },
+                dirInfo: function (target) {
+                    var dirname = _getFilename(target);
+                    var basename = path.basename(target);
+                    var stat = fs.statSync(dirname);
+                    var isDirectory = stat.isDirectory();
+                    var files = [];
+
+                    if (isDirectory) {
+                        files = fs.readdirSync(dirname).map(function (basename) {
+                            var filename = path.join(dirname, basename);
+
+                            return FileList.getFileInfo(filename);
+                        });
+                    }
+
+                    return {
+                        name: basename,
+                        fullname: dirname,
+                        mtime: stat.mtime.getTime(),
+                        isDirectory: isDirectory,
+                        files: files,
+                        suffix: target.split('.').slice(1).join('.')
+                    };
+                }
+            };
+
+            function _getFilename(target) {
+                var parts = target.split(path.sep).length;
+
+                return parts > 1 ? path.resolve(target) : bundle.resolvePath(target);
+            }
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
+
+        describe('target', function () {
+            it('should save target info', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .builder(function () {})
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        var cache = bundle.getNodeCache(target);
+                        var expected = helper.fileInfo(target);
+                        var actual = cache.get('target');
+
+                        actual.should.be.deep.equal(expected);
+                    });
+            });
+
+            it('should not rebuild if target has not been changed', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('1');
+                    });
+            });
+
+            it('should rebuild if target has been changed', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        helper.change(target);
+
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('2');
+                    });
+            });
+        });
+
+        describe('dependencies', function () {
+            it('should save dependency info', function () {
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependency', '.dependants')
+                    .builder(function () {})
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        var cache = bundle.getNodeCache(target);
+                        var expected = helper.fileInfo('.dependants');
+                        var actual = cache.get('target:.dependants');
+
+                        actual.should.be.deep.equal(expected);
+                    });
+            });
+
+            describe('usages', function () {
+                it('should not rebuild if dependence has not been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence', '.dependants')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should not rebuild if dependencies are not changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence-1', '.dependants-1')
+                        .dependOn('dependence-2', '.dependants-2')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should rebuild if dependence has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence', '.dependants')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants');
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+
+                it('should rebuild if one of the dependencies has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .dependOn('dependence-1', '.dependants-1')
+                        .dependOn('dependence-2', '.dependants-2')
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants-1');
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+            });
+
+            describe('source list', function () {
+                it('should not rebuild if dependencies are not changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should rebuild if one of the dependencies has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change('.dependants-1');
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+            });
+        });
+
+        describe('FileList', function () {
+            describe('files', function () {
+                it('should save FileList info', function () {
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useFileList(['ext'])
+                        .builder(function () {})
+                        .createTech();
+
+                    fileList.loadFromDirSync(blocksDirname);
+                    bundle.provideTechData('?.files', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            var cache = bundle.getNodeCache(target);
+                            var expected = helper.fileInfo(blockFilename);
+                            var actual = cache.get('target:bundle.files');
+
+                            actual.should.be.deep.equal([expected]);
+                        });
+                });
+
+                it('should not rebuild if files has not been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useFileList(['ext'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    fileList.loadFromDirSync(blocksDirname);
+                    bundle.provideTechData('?.files', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should rebuild if files has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useFileList(['ext'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    fileList.loadFromDirSync(blocksDirname);
+                    bundle.provideTechData('?.files', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            helper.change(blockFilename);
+
+                            fileList = new FileList();
+                            fileList.loadFromDirSync(blocksDirname);
+                            bundle.provideTechData('?.files', fileList);
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+            });
+
+            describe('dirs', function () {
+                it('should save FileList info', function () {
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useDirList(['dir'])
+                        .builder(function () {})
+                        .createTech();
+
+                    var dirInfo = helper.dirInfo(blockDirname);
+                    fileList.addFiles([dirInfo]);
+                    bundle.provideTechData('?.dirs', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            var cache = bundle.getNodeCache(target);
+                            var info = cache.get('target:bundle.dirs');
+
+                            info.should.be.deep.equal(dirInfo.files);
+                        });
+                });
+
+                it('should not rebuild if files has not been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useDirList(['dir'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    fileList.addFiles([helper.dirInfo(blockDirname)]);
+                    bundle.provideTechData('?.dirs', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('1');
+                        });
+                });
+
+                it('should rebuild if files has been changed', function () {
+                    var actual = 0;
+                    var i = 0;
+                    var Tech = flow
+                        .name('name')
+                        .target('target', target)
+                        .useDirList(['dir'])
+                        .saver(function (filename, result) {
+                            actual = result;
+                        })
+                        .builder(function () {
+                            return ++i;
+                        })
+                        .createTech();
+
+                    fileList.addFiles([helper.dirInfo(blockDirname)]);
+                    bundle.provideTechData('?.dirs', fileList);
+
+                    return bundle.runTech(Tech)
+                        .then(function () {
+                            var filename = path.join(blockDirname, 'block.ext');
+
+                            helper.change(filename);
+
+                            fileList = new FileList();
+                            fileList.addFiles([helper.dirInfo(blockDirname)]);
+                            bundle.provideTechData('?.dirs', fileList);
+
+                            return bundle.runTech(Tech);
+                        })
+                        .then(function () {
+                            actual.should.be.equal('2');
+                        });
+                });
+            });
+        });
+
+        describe('needRebuild', function () {
+            it('should provide instance of Cache to method', function () {
+                var actual;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependence', '.dependants')
+                    .needRebuild(function (cache) {
+                        actual = cache;
+                    })
+                    .builder(function () {})
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        var expected = bundle.getNodeCache(target);
+
+                        actual.should.be.deep.equal(expected);
+                    });
+            });
+
+            it('should rebuild if method return `false` but target has been changed', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .needRebuild(function () {
+                        return false;
+                    })
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        helper.change(target);
+
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('2');
+                    });
+            });
+
+            it('should rebuild if method return `false` but dependence has been changed', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependence', '.dependants')
+                    .needRebuild(function () {
+                        return false;
+                    })
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        helper.change('.dependants');
+
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('2');
+                    });
+            });
+
+            it('should rebuild if method return `true` but target has not been changes', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .needRebuild(function () {
+                        return true;
+                    })
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('2');
+                    });
+            });
+
+            it('should rebuild if method return `true` but dependence has not been changes', function () {
+                var actual = 0;
+                var i = 0;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependence', '.dependants')
+                    .needRebuild(function () {
+                        return true;
+                    })
+                    .saver(function (filename, result) {
+                        actual = result;
+                    })
+                    .builder(function () {
+                        return ++i;
+                    })
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        return bundle.runTech(Tech);
+                    })
+                    .then(function () {
+                        actual.should.be.equal('2');
+                    });
+            });
+        });
+
+        describe('saveCache', function () {
+            it('should provide instance of Cache to method', function () {
+                var actual;
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependence', '.dependants')
+                    .saveCache(function (cache) {
+                        actual = cache;
+                    })
+                    .builder(function () {})
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        var expected = bundle.getNodeCache(target);
+
+                        actual.should.be.deep.equal(expected);
+                    });
+            });
+
+            it('should cache custom data', function () {
+                var expected = { data: true };
+                var Tech = flow
+                    .name('name')
+                    .target('target', target)
+                    .dependOn('dependence', '.dependants')
+                    .saveCache(function (cache) {
+                        cache.set('data', expected);
+                    })
+                    .builder(function () {})
+                    .createTech();
+
+                return bundle.runTech(Tech)
+                    .then(function () {
+                        var cache = bundle.getNodeCache(target);
+
+                        cache.get('data').should.be.deep.equal(expected);
                     });
             });
         });

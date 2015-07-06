@@ -126,16 +126,14 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 1. Прописать в `package.json` проекта зависимость от пакета `enb` (желательно в виде ">=последняя_версия").
 2. Выполнить `npm install`.
 3. Проверить, что `ENB` установлен. Команда `node_modules/.bin/enb` должна выполниться без ошибок.
-4.
-  Создать make-файл `.bem/enb-make.js` вида:
+4. Создать make-файл `.bem/enb-make.js` вида:
 
   ```javascript
   module.exports = function(config) {
   };
   ```
 5. Проверить, что `ENB` работает. Команда `node_modules/.bin/enb make` должна выполниться без ошибок.
-6.
-  Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
+6. Теперь нужно настроить ноды. Для примера, я приведу вариант настройки ноды `pages/index`.
 
   ```javascript
   module.exports = function(config) {
@@ -144,8 +142,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   };
   ```
   Так объявляется нода в рамках make-платформы. В данный момент она не настроена, а лишь объявлена.
-7.
-  Объявим таргеты, которые надо собрать для ноды:
+7. Объявим таргеты, которые надо собрать для ноды:
 
   ```javascript
   module.exports = function(config) {
@@ -155,8 +152,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   };
   ```
   Таргеты объявлены, но при попытке выполнить `node_modules/.bin/enb make` будет ошибка, т.к. не зарегистрированы технологии, которые могут предоставить таргеты.
-8.
-  Зарегистрируем базовые технологии:
+8. Зарегистрируем базовые технологии:
   ```javascript
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
@@ -194,8 +190,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 
   **enb/techs/files** — собирает полный список файлов со всех уровней переопределения в том порядке, в котором они идут в финальном `index.deps.js`. Результат этой технологии может использоваться, например, в технологии `enb/techs/js`.
 
-9.
-  Регистрируем технологии, необходимые для сборки js и css.
+9. Регистрируем технологии, необходимые для сборки js и css.
   ```javascript
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
@@ -257,8 +252,7 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
   Теперь можно выполнить команду `node_modules/.bin/enb make` и в папке `pages/index` будут столь нужные нам `_index.js` и `_index.css`.
   Окей, мы получили результат, с которым можно работать. Но как же production-режим?
 
-10.
-  Разделяем сборку финальных файлов для разных режимов.
+10. Разделяем сборку финальных файлов для разных режимов.
   ```javascript
   module.exports = function(config) {
       config.node('pages/index', function(nodeConfig) {
@@ -535,7 +529,7 @@ config.nodeMask(/pages\/.*/, function (nodeConfig) {
 // ...
 ```
 
-Обратите внимание, директория `pages/common` должна сущестовать. Её можно создавать динамически.
+Обратите внимание, директория `pages/common` должна существовать. Её можно создавать динамически.
 ```javascript
 // ...
   // Создание директории common
@@ -908,7 +902,7 @@ js-i18n
 * *String* **filesTarget** — files-таргет, на основе которого получается список исходных файлов (его предоставляет технология `files`). По умолчанию — `?.files`.
 * *String* **sourceSuffixes** — суффиксы файлов, по которым строится `files`-таргет. По умолчанию — `'js'`.
 * *String* **target** — Результирующий таргет. По умолчанию — `?.{lang}.js`.
-* *String* **lang** — Язык, для которого небходимо собрать файл.
+* *String* **lang** — Язык, для которого необходимо собрать файл.
 
 **Пример**
 

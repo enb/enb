@@ -1426,3 +1426,28 @@ Cache Node::getNodeCache(String targetName)
 
 * Валидация кэша: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L33)
 * Кэширование результатов сборки: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L73)
+
+node.getSharedResources
+-----------------------
+
+[SharedResources](lib/shared-resources/index.js)
+
+Набор ресурсов, которые могут быть использованы в технологиях:
+- [JobQueue](lib/shared-resources/job-queue/index.js) - пул дочерних процессов для выполнения "тяжелых" задач
+
+**Пример**
+
+Контент файла `some-processor.js`:
+```js
+module.exports = function(arg1, arg2) {
+    var res = null;
+    // Здесь какая-то нагруженная работа, возможно с использованием промисов
+    return res;
+}
+```
+В технологии:
+```js
+var jobQueue = this.node.getSharedResources().jobQueue;
+// Выполнить таску в отдельном процессе, возвращается промис с результатом
+return jobQueue.push(require.resolve('./path/to/processor'), arg1, arg2);
+```

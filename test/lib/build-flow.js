@@ -6,7 +6,7 @@ var path = require('path');
 var fs = require('fs');
 var inherit = require('inherit');
 var mockFs = require('mock-fs');
-var sleep = require('sleep').usleep;
+var deasync = require('deasync');
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
@@ -1463,7 +1463,7 @@ describe('build-flow', function () {
                 change: function (target) {
                     var filename = _getFilename(target);
 
-                    sleep(1000);
+                    deasync.sleep(10);
 
                     fs.writeFileSync(filename, 'new-value');
                 },

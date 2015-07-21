@@ -66,6 +66,7 @@
     "chai": "3.0.0",
     "chai-as-promised": "5.1.0",
     "coveralls": "~2.11.2",
+    "deasync": "0.1.0",
     "enb-validate-code": "0.0.1",
     "istanbul": "0.2.10",
     "jscs": "~1.2.3",
@@ -74,7 +75,6 @@
     "mock-enb": "0.0.2",
     "mock-fs": "2.7.1",
     "sinon": "1.7.3",
-    "sleep": "2.0.0",
     "unit-coverage": "~3.2.0"
   },
   "bin": {

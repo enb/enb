@@ -87,6 +87,8 @@
       "lib/**/*.js",
       "-e",
       "node_modules/**",
+      "-e",
+      "lib/fs/async-fs.js",
       "-t",
       "test/**",
       "-a",

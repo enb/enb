@@ -21,6 +21,7 @@
  */
 var Vow = require('vow');
 var vowFs = require('../lib/fs/async-fs');
+var File = require('enb-source-map/lib/file');
 
 module.exports = require('../lib/build-flow').create()
     .name('file-merge')
@@ -28,13 +29,34 @@ module.exports = require('../lib/build-flow').create()
     .defineOption('divider', '\n')
     .defineRequiredOption('target')
     .defineRequiredOption('sources')
+    .defineOption('sourcemap', false)
     .useSourceListFilenames('sources')
     .builder(function (sources) {
         var divider = this._divider;
+        var sourcemap = this._sourcemap;
+        var target = this._target;
+
         return Vow.all(sources.map(function (sourceFilename) {
             return vowFs.read(sourceFilename, 'utf8');
         })).then(function (results) {
-            return results.join(divider);
+            if (!sourcemap) {
+                return results.join(divider);
+            }
+
+            return joinWithSourceMaps(sources, results, divider, target);
         });
     })
     .createTech();
+
+///
+function joinWithSourceMaps(fileNames, contents, divider, target) {
+    var withSourceMaps = true;
+    var targetFile = new File(target, withSourceMaps);
+
+    fileNames.forEach(function (file, i) {
+        targetFile.writeFileContent(file, contents[i]);
+        targetFile.write(divider);
+    });
+
+    return targetFile.render();
+}

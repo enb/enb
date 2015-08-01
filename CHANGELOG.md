@@ -1,6 +1,19 @@
 История изменений
 =================
 
+0.17.0
+------
+
+### Крупные изменения
+
+* Добавлена поддержка карт кода (source maps) для технологии `file-merge` ([#296]).
+* Добавлена возможность явно включать цветной вывод в логах (например, в CLI) с помощью переменной окружения `COLOR` ([#271]).
+
+### Остальное
+
+* Методы `loadFromDirSync`, `loadFromDir` и `parseFilename` модуля `FileList` объявлены устаревшими ([#268]).
+* Модуль `dir-glob` объявлен устаревшим ([#270]). Вместо него рекомендуется использовать модуль [glob](https://github.com/isaacs/node-glob).
+
 0.16.0
 ------
 
@@ -330,5 +343,10 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#296]: https://github.com/enb-make/enb/issues/296
+[#293]: https://github.com/enb-make/enb/pull/293
+[#271]: https://github.com/enb-make/enb/pull/271
+[#270]: https://github.com/enb-make/enb/issues/270
+[#268]: https://github.com/enb-make/enb/issues/268
 [#257]: https://github.com/enb-make/enb/pull/257
 [#242]: https://github.com/enb-make/enb/issues/242

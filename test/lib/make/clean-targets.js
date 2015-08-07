@@ -1,0 +1,134 @@
+var fs = require('fs');
+var path = require('path');
+var vow = require('vow');
+var vowFs = require('vow-fs');
+var _ = require('lodash');
+var Node = require('../../../lib/node');
+var MakePlatform = require('../../../lib/make');
+var ProjectConfig = require('../../../lib/config/project-config');
+var NodeMaskConfig = require('../../../lib/config/node-mask-config');
+var NodeConfig = require('../../../lib/config/node-config');
+var Cache = require('../../../lib/cache/cache');
+var CacheStorage = require('../../../lib/cache/cache-storage');
+
+describe('make/cleanTarget', function () {
+    var makePlatform;
+    var sandbox = sinon.sandbox.create();
+    var projectPath = '/path/to/project';
+
+    beforeEach(function (done) {
+        sandbox.stub(fs);
+        sandbox.stub(vowFs);
+        sandbox.stub(ProjectConfig.prototype);
+        sandbox.stub(Node.prototype);
+        sandbox.stub(Cache.prototype);
+
+        fs.existsSync.returns(true);
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
+
+        makePlatform = new MakePlatform();
+        makePlatform.init(projectPath, 'mode', function () {}).then(done);
+    });
+
+    afterEach(function () {
+        sandbox.restore();
+    });
+
+    it('should return promise', function () {
+        var result = makePlatform.cleanTargets();
+
+        expect(result).to.be.instanceOf(vow.Promise);
+    });
+
+    it('should create cache', function () {
+        var cacheStorage = sinon.createStubInstance(CacheStorage);
+        var projectName = path.basename(projectPath);
+
+        makePlatform.setCacheStorage(cacheStorage);
+        makePlatform.cleanTargets();
+
+        expect(Cache.prototype.__constructor).to.be.calledWith(cacheStorage, projectName);
+    });
+
+    it('should return rejected promise if required target does not match any available node', function () {
+        setup({ nodePath: 'path/to/node'});
+
+        return expect(makePlatform.cleanTargets(['path/to/another/node']))
+            .to.be.rejectedWith('Target not found: path/to/another/node');
+    });
+
+    it('should init nodes', function () {
+        var initNode = sinon.spy(makePlatform, 'initNode');
+
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
+            expect(initNode).to.be.calledOnce
+                .and.to.be.calledWith('path/to/node');
+        });
+    });
+
+    it('should build all targets', function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
+            expect(Node.prototype.clean).to.be.calledOnce;
+        });
+    });
+
+    it('should build all possible node targets if passed targets are empty', function () {
+        setup();
+
+        return makePlatform.cleanTargets([]).then(function () {
+            expect(Node.prototype.clean).to.be.calledWith(['*']);
+        });
+    });
+
+    it('should build all node targets if passed target is equal with node path', function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
+            expect(Node.prototype.clean).to.be.calledWith(['*']);
+        });
+    });
+
+    it('should build specific target if passed target is equal with node path and this target name', function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node/?.js']).then(function () {
+            expect(Node.prototype.clean).to.be.calledWith(['?.js']);
+        });
+    });
+
+    it('should force single node build multiple targets if multiple targets for single node passed', function () {
+        var targets = [
+            'path/to/node/?.css',
+            'path/to/node/?.js'
+        ];
+
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(targets).then(function () {
+            expect(Node.prototype.clean).to.be.calledWith(['?.css', '?.js']);
+        });
+    });
+});
+
+function setup (settings) {
+    var nodeConfigs = {};
+
+    settings = settings || {};
+
+    _.defaults(settings, {
+        nodePath: 'default/path'
+    });
+
+    nodeConfigs[settings.nodePath] = sinon.createStubInstance(NodeConfig);
+
+    ProjectConfig.prototype.getNodeConfig
+        .withArgs(settings.nodePath).returns(sinon.createStubInstance(NodeConfig));
+    ProjectConfig.prototype.getNodeConfigs
+        .returns(nodeConfigs);
+    ProjectConfig.prototype.getNodeMaskConfigs
+        .withArgs(settings.nodePath).returns([sinon.createStubInstance(NodeMaskConfig)]);
+}

@@ -50,8 +50,7 @@ module.exports = require('../lib/build-flow').create()
 
 ///
 function joinWithSourceMaps(fileNames, contents, divider, target) {
-    var withSourceMaps = true;
-    var targetFile = new File(target, withSourceMaps);
+    var targetFile = new File(target, {sourceMap: true, comment: 'block'});
 
     fileNames.forEach(function (file, i) {
         targetFile.writeFileContent(file, contents[i]);

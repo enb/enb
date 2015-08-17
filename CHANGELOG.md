@@ -1,6 +1,18 @@
 История изменений
 =================
 
+0.17.1
+------
+
+### Исправления ошибок
+
+* Технология `files` исправлена для объединения CSS-файлов с учётом source maps ([#314]).
+* Методы `Node.getNodePath` и `Node.resolvePath` теперь возвращают корректный путь в Windows ([#306]).
+
+### Зависимости
+
+* Модуль `enb-source-map@1.5.0` обновлен до версии `1.7.1`.
+
 0.17.0
 ------
 
@@ -343,6 +355,8 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#314]: https://github.com/enb-make/enb/issues/314
+[#306]: https://github.com/enb-make/enb/issues/306
 [#296]: https://github.com/enb-make/enb/issues/296
 [#293]: https://github.com/enb-make/enb/pull/293
 [#271]: https://github.com/enb-make/enb/pull/271

@@ -101,7 +101,7 @@
       "-a",
       "techs",
       "-S",
-      "relative",
+      "simple",
       "-O",
       "tests=test",
       "--",

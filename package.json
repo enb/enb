@@ -100,7 +100,7 @@
       "-a",
       "techs",
       "-S",
-      "recursive",
+      "relative",
       "-O",
       "tests=test",
       "--",

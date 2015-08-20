@@ -1,24 +1,28 @@
+var path = require('path');
 var util = require('util');
 var stackTrace = require('stack-trace');
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
 var expect = chai.expect;
-var deprecate = require('../../../lib/utils/deprecate');
 var colorize = require('../../../lib/ui/colorize');
 var Logger = require('../../../lib/logger');
+var dropRequireCache = require('../../../lib/fs/drop-require-cache');
 
 chai.use(sinonChai);
 
 describe('deprecate', function () {
     var logStub;
+    var deprecate;
+    var deprecatePath = path.normalize(path.join(__dirname, '../../../lib/utils/deprecate.js'));
 
     before(function () {
         logStub = new sinon.stub(Logger.prototype, 'logWarningAction');
     });
 
     beforeEach (function () {
-        deprecate.reset();
+        dropRequireCache(require, deprecatePath);
+        deprecate = require(deprecatePath);
         logStub.reset();
     });
 
@@ -27,56 +31,39 @@ describe('deprecate', function () {
     });
 
     describe('initialize', function () {
-        var showWarningsStub;
+        var messageInfo = { module: 'deprecated_module', since: 'v1.0.0' };
         var hideWarningsStub;
 
         before(function () {
-            showWarningsStub = new sinon.stub(Logger.prototype, 'showWarnings');
             hideWarningsStub = new sinon.stub(Logger.prototype, 'hideWarnings');
         });
 
         beforeEach(function () {
-            showWarningsStub.reset();
             hideWarningsStub.reset();
         });
 
         after(function () {
-            showWarningsStub.restore();
             hideWarningsStub.restore();
         });
 
         it('should put deprecate to initialized state if opts are not passed', function () {
             deprecate.initialize();
+            deprecate.deprecate(messageInfo);
 
-            expect(deprecate.isInitialized()).to.be.true;
+            expect(logStub).to.be.called;
         });
 
         it('should put deprecate to initialized state if opts are passed', function () {
-            var opts = { showWarnings: true };
+            var opts = { hideWarnings: true };
 
             deprecate.initialize(opts);
+            deprecate.deprecate(messageInfo);
 
-            expect(deprecate.isInitialized()).to.be.true;
-        });
-
-        it('should enable warnings displaying if opts.showWarnings passed as true', function () {
-            var opts = { showWarnings: true };
-
-            deprecate.initialize(opts);
-
-            expect(showWarningsStub).to.be.called;
+            expect(logStub).to.be.called;
         });
 
         it('should disable warnings displaying if opts.showWarnings passed as false', function () {
-            var opts = { showWarnings: false };
-
-            deprecate.initialize(opts);
-
-            expect(hideWarningsStub).to.be.called;
-        });
-
-        it('should disable warnings displaying if no opts passed', function () {
-            var opts = { showWarnings: false };
+            var opts = { hideWarnings: true };
 
             deprecate.initialize(opts);
 
@@ -84,8 +71,6 @@ describe('deprecate', function () {
         });
 
         it('should print delayed messages after initialization', function () {
-            var messageInfo = { module: 'deprecated_module', since: 'v1.0.0' };
-
             deprecate.deprecate(messageInfo);
             expect(logStub).to.be.not.called;
 
@@ -94,43 +79,17 @@ describe('deprecate', function () {
         });
     });
 
-    describe('reset', function () {
-        it('should reset deprecate to uninitialized state', function () {
-            deprecate.initialize();
-            deprecate.reset();
-
-            expect(deprecate.isInitialized()).to.be.false;
-        });
-
-        it('should remove delayed messages from queue', function () {
-            var messageInfo = { module: 'deprecated_module', since: 'v1.0.0' };
-
-            deprecate.deprecate(messageInfo);
-            deprecate.reset();
-            deprecate.initialize();
-
-            expect(logStub).to.be.not.called;
-        });
-    });
-
     describe('deprecate', function () {
         it('should throw error if no deprecated module provided', function () {
-            var messageInfo = {
+            var brokenMessageInfo = {
                 method: 'testMethod',
                 since: 'v1.0.0'
             };
             var func = function () {
-                deprecate.deprecate(messageInfo);
+                deprecate.deprecate(brokenMessageInfo);
             };
 
-            expect(func).to.throw('Missing required field "module"');
-        });
-
-        it('should throw error if version since deprecated entry will be removed provided', function () {
-            var messageInfo = { module: 'deprecated_module' };
-            var func = function () { deprecate.deprecate(messageInfo); };
-
-            expect(func).to.throw('Missing required field "since"');
+            expect(func).to.throw('Missing required field: module');
         });
 
         it('should delay message until initialization if deprecate is not initialized', function () {
@@ -157,8 +116,8 @@ describe('deprecate', function () {
             });
 
             it('should print log action as deprecate', function () {
-                var expectedAction = 'deprecate';
                 var messageInfo = { module: 'deprecated_module', since: 'v1.0.0' };
+                var expectedAction = 'deprecate';
 
                 deprecate.deprecate(messageInfo);
 

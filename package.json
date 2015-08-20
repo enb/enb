@@ -76,42 +76,12 @@
     "mock-enb": "0.0.2",
     "mock-fs": "2.7.1",
     "sinon": "1.7.3",
-    "sinon-chai": "2.8.0",
-    "unit-coverage": "~3.2.0"
+    "sinon-chai": "2.8.0"
   },
   "bin": {
     "enb": "./bin/enb"
   },
   "main": "lib/api/index",
-  "unit-coverage": {
-    "common": [
-      "-s",
-      "lib/**/*.js",
-      "-e",
-      "node_modules/**",
-      "-e",
-      "lib/fs/async-fs.js",
-      "-t",
-      "test/**",
-      "-a",
-      "lib",
-      "-a",
-      "techs",
-      "-S",
-      "relative",
-      "-O",
-      "tests=test",
-      "--",
-      "-u",
-      "bdd",
-      "-R",
-      "spec",
-      "--recursive",
-      "techs",
-      "lib",
-      "test/lib"
-    ]
-  },
   "scripts": {
     "test": "npm run jshint && npm run check-style && npm run func-test && npm run unit-test",
     "jshint": "jshint .",
@@ -119,8 +89,7 @@
     "func-test": "npm run build-sample-proj && mocha -u bdd -R spec --recursive test/func",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib exlib techs test",
-    "coverage": "unit-coverage run -p common",
-    "coverage-html": "unit-coverage run -p common -r html -o coverage.html",
-    "coveralls": "unit-coverage run -p common -r lcov -o report.lcov && cat report.lcov | coveralls"
+    "coverage": "istanbul cover _mocha",
+    "coveralls": "npm i coveralls && npm run coverage -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   }
 }

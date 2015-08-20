@@ -1,0 +1,4 @@
+test/lib/**/*.js
+--ui bdd
+--reporter dot
+--no-timeouts

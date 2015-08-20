@@ -17,7 +17,7 @@ describe('deprecate', function () {
         //dropping cache because need to have uninitialized deprecate before each test
         dropRequireCache(require, deprecatePath);
         deprecate = require(deprecatePath);
-        sinon.sandbox.stub(Logger.prototype);git
+        sinon.sandbox.stub(Logger.prototype);
     });
 
     afterEach(function () {

@@ -1,5 +1,4 @@
-//var colorize = require('../../../lib/ui/colorize');
-//var stackTrace = require('stack-trace');
+var vm = require('vm');
 var chai = require('chai');
 var sinon = require('sinon');
 var sinonChai = require('sinon-chai');
@@ -36,6 +35,18 @@ describe('deprecate', function () {
 
             deprecate.initialize();
             Logger.prototype.logWarningAction.should.be.calledOnce;
+        });
+
+        it('should print correct filename for delayed messages', function () {
+            var contents = 'var deprecate = require("' + deprecatePath + '"); ' +
+                'deprecate({ module: "test_module" });';
+            var context = vm.createContext({ 'require': require });
+
+            vm.runInContext(contents, context, { filename: '/test_module.js' });
+            deprecate.initialize();
+
+            Logger.prototype.logWarningAction
+                .should.be.calledWithMatch(sinon.match.any, __filename); //locates test file as smth called deprecate
         });
 
         describe('initialized deprecate', function () {

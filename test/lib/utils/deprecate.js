@@ -38,11 +38,10 @@ describe('deprecate', function () {
         });
 
         it('should print correct filename for delayed messages', function () {
-            var contents = 'var deprecate = require("' + deprecatePath + '"); ' +
-                'deprecate({ module: "test_module" });';
-            var context = vm.createContext({ 'require': require });
+            var contents = 'var deprecate = require(path); deprecate({ module: "test_module" });';
+            var context = vm.createContext({ require: require, path: deprecatePath });
 
-            vm.runInContext(contents, context, { filename: '/test_module.js' });
+            vm.runInContext(contents, context, '/test_module.js');
             deprecate.initialize();
 
             Logger.prototype.logWarningAction

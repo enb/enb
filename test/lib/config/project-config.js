@@ -1,16 +1,10 @@
 var path = require('path');
-var chai = require('chai');
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var expect = chai.expect;
 var ProjectConfig = require('../../../lib/config/project-config');
 var NodeConfig = require('../../../lib/config/node-config');
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 var TaskConfig = require('../../../lib/config/task-config');
 var ModeConfig = require('../../../lib/config/mode-config');
 var ModuleConfig = require('../../../lib/config/module-config');
-
-chai.use(sinonChai);
 
 describe('config/project-config', function () {
     var projectRoot = path.join(__dirname, '../../fixtures/sample-project');

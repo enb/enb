@@ -1,4 +1,3 @@
-var expect = require('chai').expect;
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 
 describe('config/node-mask-config', function () {

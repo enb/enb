@@ -1,12 +1,6 @@
 var vm = require('vm');
-var chai = require('chai');
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
 var Logger = require('../../../lib/logger');
 var dropRequireCache = require('../../../lib/fs/drop-require-cache');
-
-chai.should();
-chai.use(sinonChai);
 
 describe('deprecate', function () {
     var deprecate;

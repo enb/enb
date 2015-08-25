@@ -1,15 +1,9 @@
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var chai = require('chai');
-var expect = chai.expect;
 var path = require('path');
 var NodeConfig = require('../../../lib/config/node-config');
 var ModeConfig = require('../../../lib/config/mode-config');
 var BaseTech = require('../../../lib/tech/base-tech');
 var FileAssembleTech = require('../../../lib/tech/file-assemble-tech');
 var ChunksTech = require('../../../lib/tech/chunks');
-
-chai.use(sinonChai);
 
 describe('config/node-config', function () {
     describe('constructor', function () {

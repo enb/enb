@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var mockFs = require('mock-fs');
-var should = require('chai').should();
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
@@ -229,9 +228,9 @@ describe('cache/cache', function () {
 
     describe('destruct', function () {
         it('success', function () {
-            should.exist(cache._storage);
+            expect(cache._storage).to.exist;
             cache.destruct();
-            should.not.exist(cache._storage);
+            expect(cache._storage).to.not.exist;
         });
     });
 });

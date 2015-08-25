@@ -12,6 +12,9 @@
         "before"     : false,
         "beforeEach" : false,
         "after"      : false,
-        "afterEach"  : false
+        "afterEach"  : false,
+        "sinon"      : false,
+        "expect"     : false,
+        "chai"       : false
       }
 }

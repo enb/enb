@@ -1,5 +1,4 @@
 var dropRequireCache = require('../../../lib/fs/drop-require-cache');
-var expect = require('chai').expect;
 var path = require('path');
 
 describe('fs/drop-require-cache', function () {

@@ -1,4 +1,3 @@
-var expect = require('chai').expect;
 var ModeConfig = require('../../../lib/config/mode-config');
 
 describe('config/mode-config', function () {

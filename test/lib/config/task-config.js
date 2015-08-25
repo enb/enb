@@ -1,17 +1,9 @@
-var chai = require('chai');
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var chaiAsPromised = require('chai-as-promised');
-var expect = chai.expect;
 var path = require('path');
 var childProcess = require('child_process');
 var vow = require('vow');
 var TaskConfig = require('../../../lib/config/task-config');
 var MakePlatform = require('../../../lib/make');
 var EOL = require('os').EOL;
-
-chai.use(chaiAsPromised);
-chai.use(sinonChai);
 
 describe('config/task-config', function () {
     var taskConfig;

@@ -1,6 +1,4 @@
 var vowFs = require('vow-fs');
-var expect = require('chai').expect;
-var sinon = require('sinon');
 var path = require('path');
 var dropRequireCache = require('../../../lib/fs/drop-require-cache');
 

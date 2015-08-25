@@ -3,8 +3,6 @@ var path = require('path');
 var mockFs = require('mock-fs');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-require('chai').should();
-
 describe('cache/cache-storage', function () {
     var CACHE_FILE = path.resolve('cache.json');
     var INVALID_FILE = path.resolve('cache.txt');

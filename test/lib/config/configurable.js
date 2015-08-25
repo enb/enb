@@ -1,13 +1,5 @@
-var chai = require('chai');
-var sinon = require('sinon');
-var sinonChai = require('sinon-chai');
-var chaiAsPromised = require('chai-as-promised');
-var expect = chai.expect;
 var vow = require('vow');
 var Configurable = require('../../../lib/config/configurable');
-
-chai.use(chaiAsPromised);
-chai.use(sinonChai);
 
 describe('config/configurable', function () {
     var configurable;

@@ -1,11 +1,6 @@
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var expect = chai.expect;
 var path = require('path');
 var vow = require('vow');
 var requireOrEval = require('../../../lib/fs/require-or-eval');
-
-chai.use(chaiAsPromised);
 
 describe('fs/require-or-eval', function () {
     var oldPath;

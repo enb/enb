@@ -1,6 +1,5 @@
 var path = require('path');
 var dirGlob = require('../../../lib/fs/dir-glob');
-require('chai').should();
 
 describe('fs/dir-glob', function () {
     var globSync;

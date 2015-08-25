@@ -1,5 +1,4 @@
 var CSSPreprocessor = require('../../../lib/preprocess/css-preprocessor');
-require('chai').should();
 
 describe('lib', function () {
     describe('preprocess', function () {

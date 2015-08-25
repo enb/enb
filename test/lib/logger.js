@@ -1,13 +1,6 @@
-var Chai = require('chai');
-var Sinon = require('sinon');
-var SinonChai = require('sinon-chai');
-var Path = require('path');
+var path = require('path');
 var Logger = require('../../lib/logger');
-
-var expect = Chai.expect;
 var colors = require('../../lib/ui/colorize');
-
-Chai.use(SinonChai);
 
 var REGEX = {
     time: /\d{2}:\d{2}:\d{2}\.\d{3}/,
@@ -27,7 +20,7 @@ describe('logger', function () {
     var message;
 
     before(function () {
-        consoleLogStub = Sinon.spy(console, 'log'); //stubbing console.log because logger built on top of it
+        consoleLogStub = sinon.spy(console, 'log'); //stubbing console.log because logger built on top of it
         logger = new Logger();
         message = 'test_message';
     });
@@ -173,7 +166,7 @@ describe('logger', function () {
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
             var scope = 'test_scope';
             var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + Path.sep + target;
+            var expectedScope = scope + path.sep + target;
 
             loggerWithScope.logAction(action, target, additionalInfo);
 
@@ -237,7 +230,7 @@ describe('logger', function () {
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
             var scope = 'test_scope';
             var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + Path.sep + target;
+            var expectedScope = scope + path.sep + target;
 
             loggerWithScope.logWarningAction(action, target, message);
 
@@ -566,7 +559,7 @@ describe('logger', function () {
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
             var scope = 'test_scope';
             var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + Path.sep + target;
+            var expectedScope = scope + path.sep + target;
 
             loggerWithScope.logErrorAction(action, target, message);
 
@@ -654,7 +647,7 @@ describe('logger', function () {
             var loggerWithScope = new Logger(scope);
             var subLogger = loggerWithScope.subLogger(newScope);
 
-            expect(subLogger._scope).to.be.equal(scope + Path.sep + newScope);
+            expect(subLogger._scope).to.be.equal(scope + path.sep + newScope);
         });
 
         it('should pass own options to sublogger', function () {

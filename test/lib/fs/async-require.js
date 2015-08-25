@@ -1,11 +1,6 @@
 var vow = require('vow');
 var path = require('path');
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var expect = chai.expect;
 var asyncRequire = require('../../../lib/fs/async-require');
-
-chai.use(chaiAsPromised);
 
 describe('fs/async-require', function () {
     var fixturePath;

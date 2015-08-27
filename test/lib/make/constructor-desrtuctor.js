@@ -78,7 +78,7 @@ describe('make/constructor-destructor', function () {
 
         describe('tests require node init', function () {
             before(function () {
-                fs.existsSync = sinon.stub();
+                sinon.stub(fs, 'existsSync');
                 fs.existsSync.returns(true);
                 sinon.sandbox.stub(Node.prototype);
                 sinon.sandbox.stub(ProjectConfig.prototype);
@@ -91,6 +91,7 @@ describe('make/constructor-destructor', function () {
             });
 
             after(function () {
+                fs.existsSync.restore();
                 sinon.sandbox.restore();
             });
 

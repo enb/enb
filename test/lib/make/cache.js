@@ -1,21 +1,22 @@
+var path = require('path');
 var fs = require('fs');
 var mockFs = require('mock-fs');
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe('make/init', function () {
+describe('make/cache', function () {
     var makePlatform;
     var cacheStorage;
 
     beforeEach(function () {
         sinon.stub(fs, 'existsSync');
-        fs.existsSync.withArgs('/path/to/project/.enb').returns(true);
-        fs.existsSync.withArgs('/path/to/project/.enb/make.js').returns(true);
+        fs.existsSync.withArgs(path.normalize('/path/to/project/.enb')).returns(true);
+        fs.existsSync.withArgs(path.normalize('/path/to/project/.enb/make.js')).returns(true);
 
         cacheStorage = sinon.createStubInstance(CacheStorage);
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {});
+        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {});
         makePlatform.setCacheStorage(cacheStorage);
     });
 

@@ -66,16 +66,22 @@ describe('make/cache', function () {
 
         describe('drop on mtime change test', function () {
             beforeEach(function () {
-                mockFs({
-                    '/path/to/project/.enb/': {
+                var rootPath = path.normalize('/path/to/project');
+                var config = {};
+
+                config[rootPath] = {
+                    '.enb': {
                         'make.js': mockFs.file({
                             mtime: new Date(1),
                             content: 'module.exports = function () {};'
                         })
                     }
-                });
+                };
 
-                makePlatform.init('/path/to/project', 'mode'); //2nd init because need to read mocked config file
+                mockFs(config);
+                
+                //2nd init because need to read mocked config file
+                makePlatform.init(path.normalize('/path/to/project'), 'mode');
             });
 
             afterEach(function () {

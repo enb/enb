@@ -221,23 +221,28 @@ describe('make/init', function () {
         });
 
         it('throw error if project directory does not have either .enb/ or .bem/ dirs', function () {
-            mockFs({
-                '/path/to/project': {}
-            });
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {};
+            mockFs(config);
 
             expect(function () { makePlatform.init('/path/to/project'); })
                 .to.throw('Cannot find enb config directory. Should be either .enb/ or .bem/.');
         });
 
         it('should load config from .enb directory if it exists there', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                   'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.enb/loaded.config"));' +
+                               'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -245,14 +250,17 @@ describe('make/init', function () {
         });
 
         it('should load config from .bem directory if it exists there', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.bem': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.bem/loaded.config");' +
-                                   'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.bem': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.bem/loaded.config"));' +
+                               'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -260,49 +268,59 @@ describe('make/init', function () {
         });
 
         it('should load config from .enb directory if both .enb and .bem dirs exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.enb.config");' +
-                                   'module.exports = function () {};'
-                    },
-                    '.bem': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.bem/loaded.bem.config");' +
-                                   'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.enb/enb.config"));' +
+                               'module.exports = function () {};'
+                },
+                '.bem': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.bem/bem.config"));' +
+                               'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(fs.existsSync(path.normalize('/path/to/project/.enb/loaded.enb.config'))).to.be.true;
-            expect(fs.existsSync(path.normalize('/path/to/project/.bem/loaded.bem.config'))).to.be.false;
+            expect(fs.existsSync(path.normalize('/path/to/project/.enb/enb.config'))).to.be.true;
+            expect(fs.existsSync(path.normalize('/path/to/project/.bem/bem.config'))).to.be.false;
         });
 
         it('should load enb-make.js config file if it exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'enb-make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                        'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'enb-make.js': 'var normalize = require("path").normalize;' +
+                                   'require("fs").writeFileSync(normalize("/path/to/project/.enb/loaded.conf"));' +
+                                   'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(fs.existsSync(path.normalize('/path/to/project/.enb/loaded.config'))).to.be.true;
+            expect(fs.existsSync(path.normalize('/path/to/project/.enb/loaded.conf'))).to.be.true;
         });
 
         it('should load make.js config file if it exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                   'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.enb/loaded.config"));' +
+                               'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -310,91 +328,108 @@ describe('make/init', function () {
         });
 
         it('should load enb-make.js config if both exist in config dir', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.make.config");' +
-                                   'module.exports = function () {};',
-                        'enb-make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.enb-make.config");' +
-                                       'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'require("fs").writeFileSync(normalize("/path/to/project/.enb/make.config"));' +
+                               'module.exports = function () {};',
+                    'enb-make.js': 'var fs = require("fs");' +
+                                   'var normalize = require("path").normalize;' +
+                                   'fs.writeFileSync(normalize("/path/to/project/.enb/enb-make.config"));' +
+                                   'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(fs.existsSync(path.normalize('/path/to/project/.enb/loaded.enb-make.config'))).to.be.true;
-            expect(fs.existsSync(path.normalize('/path/to/project/.enb/loaded.make.config'))).to.be.false;
+            expect(fs.existsSync(path.normalize('/path/to/project/.enb/enb-make.config'))).to.be.true;
+            expect(fs.existsSync(path.normalize('/path/to/project/.enb/make.config'))).to.be.false;
         });
 
         it('should return rejected promise if there is no config file in .enb and .bem directories', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {},
-                    '.bem': {}
-                }
-            });
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {},
+                '.bem': {}
+            };
+            mockFs(config);
 
             return expect(makePlatform.init(path.normalize('/path/to/project')))
                 .to.be.rejectedWith('Cannot find make configuration file.');
         });
 
         it('should drop require cache for for config file', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};'
                 }
-            });
-            require.cache['/path/to/project/.enb/make.js'] = 'foo';
+            };
+            mockFs(config);
+
+            require.cache[path.normalize('/path/to/project/.enb/make.js')] = 'foo';
 
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(require.cache['/path/to/project/.enb/make.js']).to.be.not.equal('foo');
+            expect(require.cache[path.normalize('/path/to/project/.enb/make.js')]).to.be.not.equal('foo');
         });
 
         it('should execute loaded config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () { ' +
-                                       'require("fs").writeFileSync("/path/to/project/.enb/executed.config");' +
-                                   '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'var normalize = require("path").normalize;' +
+                               'module.exports = function () { ' +
+                                    'require("fs").writeFileSync(normalize("/path/to/project/.enb/exec.config"));' +
+                               '};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(fs.existsSync(path.normalize('/path/to/project/.enb/executed.config'))).to.be.true;
+            expect(fs.existsSync(path.normalize('/path/to/project/.enb/exec.config'))).to.be.true;
         });
 
         it('should return rejected promise if exception thrown while executing config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () { ' +
-                            'throw new Error("exc_in_config");' +
-                        '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () { ' +
+                        'throw new Error("exc_in_config");' +
+                    '};'
                 }
-            });
+            };
+            mockFs(config);
 
             return expect(makePlatform.init(path.normalize('/path/to/project')))
                 .to.be.rejectedWith('exc_in_config');
         });
 
         it('should pass project config instance to executed config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { ' +
-                            'projectConfig.setLanguages(["ru"]);' +
-                        '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function (projectConfig) { ' +
+                       'projectConfig.setLanguages(["ru"]);' +
+                    '};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -402,15 +437,18 @@ describe('make/init', function () {
         });
 
         it('should load personal config using same rules with regular config loading', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                            'module.exports = function () {};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                    'make.personal.js': 'var normalize = require("path").normalize;' +
+                                'require("fs").writeFileSync(normalize("/path/to/project/.enb/loaded.config"));' +
+                                'module.exports = function () {};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -418,32 +456,37 @@ describe('make/init', function () {
         });
 
         it('should drop require cache for personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () {};'
-                    }
-                }
-            });
-            require.cache['/path/to/project/.enb/.make.personal.js'] = 'foo';
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
 
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                    'make.personal.js': 'module.exports = function () {};'
+                }
+            };
+            mockFs(config);
+
+            require.cache[path.normalize('/path/to/project/.enb/.make.personal.js')] = 'foo';
             makePlatform.init(path.normalize('/path/to/project'));
 
-            expect(require.cache['/path/to/project/.enb/make.personal.js']).to.be.not.equal('foo');
+            expect(require.cache[path.normalize('/path/to/project/.enb/make.personal.js')]).to.be.not.equal('foo');
         });
 
         it('should execute personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () { ' +
-                            'require("fs").writeFileSync("/path/to/project/.enb/loaded.executed"); ' +
-                        '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                    'make.personal.js': 'var normalize = require("path").normalize;' +
+                    'module.exports = function () { ' +
+                        'require("fs").writeFileSync(normalize("/path/to/project/.enb/loaded.executed")); ' +
+                    '};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 
@@ -451,32 +494,36 @@ describe('make/init', function () {
         });
 
         it('should return rejected promise if exception thrown while executing personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () { ' +
-                            'throw new Error("exc_in_personal_config");' +
-                        '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                    'make.personal.js': 'module.exports = function () { ' +
+                       'throw new Error("exc_in_personal_config");' +
+                    '};'
                 }
-            });
+            };
+            mockFs(config);
 
             return expect(makePlatform.init(path.normalize('/path/to/project')))
                 .to.be.rejectedWith('exc_in_personal_config');
         });
 
         it('should pass project config instance to executed personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function (projectConfig) { ' +
-                            'projectConfig.setLanguages(["ru"]);' +
-                        '};'
-                    }
+            var rootPath = path.normalize('/path/to/project');
+            var config = {};
+
+            config[rootPath] = {
+                '.enb': {
+                    'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                    'make.personal.js': 'module.exports = function (projectConfig) { ' +
+                       'projectConfig.setLanguages(["ru"]);' +
+                    '};'
                 }
-            });
+            };
+            mockFs(config);
 
             makePlatform.init(path.normalize('/path/to/project'));
 

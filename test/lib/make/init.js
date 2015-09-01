@@ -14,24 +14,29 @@ var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/init', function () {
     var makePlatform;
+    var sandbox;
+
+    before(function () {
+        sandbox = sinon.sandbox.create();
+    });
 
     beforeEach(function () {
-        vowFs.makeDir = sinon.stub();
-        vowFs.makeDir.returns(vow.fulfill());
+        sandbox.stub(vowFs);
+        sandbox.stub(Node.prototype);
+        sandbox.stub(ProjectConfig.prototype);
 
-        sinon.sandbox.stub(Node.prototype);
-        sinon.sandbox.stub(ProjectConfig.prototype);
+        vowFs.makeDir.returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
     });
 
     afterEach(function () {
-        sinon.sandbox.restore();
+        sandbox.restore();
     });
 
     describe('mocked config directory tests', function () {
         beforeEach(function () {
-            sinon.sandbox.stub(fs);
+            sandbox.stub(fs);
             fs.existsSync.returns(true);
         });
 

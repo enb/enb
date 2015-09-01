@@ -1,6 +1,6 @@
 var path = require('path');
-var fs = require('fs');
 var mockFs = require('mock-fs');
+var clearRequire = require('clear-require');
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
@@ -9,30 +9,47 @@ describe('make/cache', function () {
     var cacheStorage;
 
     beforeEach(function () {
-        sinon.stub(fs, 'existsSync');
-        fs.existsSync.withArgs(path.normalize('/path/to/project/.enb')).returns(true);
-        fs.existsSync.withArgs(path.normalize('/path/to/project/.enb/make.js')).returns(true);
+        mockFs({
+            '/path/to/project': {
+                '.enb': {
+                    'make.js': mockFs.file({
+                        mtime: new Date(1),
+                        content: 'module.exports = function () {};'
+                    })
+                }
+            },
+            'package.json': '{ "version": "test_ver" }'
+        });
 
         cacheStorage = sinon.createStubInstance(CacheStorage);
 
         makePlatform = new MakePlatform();
-        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {});
+        makePlatform.init(path.normalize('/path/to/project'), 'mode');
         makePlatform.setCacheStorage(cacheStorage);
     });
 
     afterEach(function () {
-        sinon.sandbox.restore();
-        fs.existsSync.restore();
+        mockFs.restore();
     });
 
     describe('loadCache', function () {
         beforeEach(function () {
-            var version = require('../../../package.json').version;
+            clearRequire('../../../package.json');
+            /**
+             * By default makePlatform.loadCache() will call cacheStorage.drop() if one of following:
+             *  1. cached ENB version differs from actual
+             *  2. actual make platfom mode differs from cached
+             *  3. mtime of one of available makefiles differs from cached
+             * Setup below configures cacheStorage in a way that makePlatform will not call cacheStorage.drop().
+             * In each test checking cacheStorage.drop() is being called one of this conditions is being switched and
+             * make platform behavior checked.
+             */
+            var makeFiles = {};
+            makeFiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
 
-            //stubbing cacheStorage in order to drop not called by default
-            cacheStorage.get.withArgs(':make', 'version').returns(version);
+            cacheStorage.get.withArgs(':make', 'version').returns('test_ver');
             cacheStorage.get.withArgs(':make', 'mode').returns('mode');
-            cacheStorage.get.withArgs(':make', 'makefiles').returns({});
+            cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
         });
 
         it('should load data from cache storage', function () {
@@ -41,8 +58,7 @@ describe('make/cache', function () {
             expect(cacheStorage.load).to.be.called;
         });
 
-        it('should not drop cache if cached mode equal to current mode, cached enb version equal to current enb ' +
-            'version and cached config files mtimes are equal current config files mtimes', function () {
+        it('should not drop cache if cache attrs same with existing cache attrs', function () {
             makePlatform.loadCache();
 
             expect(cacheStorage.drop).to.be.not.called;
@@ -64,39 +80,15 @@ describe('make/cache', function () {
             expect(cacheStorage.drop).to.be.called;
         });
 
-        describe('drop on mtime change test', function () {
-            beforeEach(function () {
-                var rootPath = path.normalize('/path/to/project');
-                var config = {};
+        it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
+            var makeFiles = {};
+            makeFiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(2).valueOf();
 
-                config[rootPath] = {
-                    '.enb': {
-                        'make.js': mockFs.file({
-                            mtime: new Date(1),
-                            content: 'module.exports = function () {};'
-                        })
-                    }
-                };
+            cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
 
-                mockFs(config);
-                
-                //2nd init because need to read mocked config file
-                makePlatform.init(path.normalize('/path/to/project'), 'mode');
-            });
+            makePlatform.loadCache();
 
-            afterEach(function () {
-                mockFs.restore();
-            });
-
-            it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
-                cacheStorage.get.withArgs(':make', 'makefiles').returns({
-                    '/path/to/project/.enb/make.js': new Date(2).valueOf()
-                });
-
-                makePlatform.loadCache();
-
-                expect(cacheStorage.drop).to.be.called;
-            });
+            expect(cacheStorage.drop).to.be.called;
         });
     });
 
@@ -108,18 +100,16 @@ describe('make/cache', function () {
         });
 
         it('should save enb version', function () {
-            var version = require('../../../package.json').version;
-
             makePlatform.saveCache();
 
-            expect(cacheStorage.set).to.be.calledWith(':make', 'version', version);
+            expect(cacheStorage.set).to.be.calledWith(':make', 'version', 'test_ver');
         });
 
         it('should save makefile mtimes', function () {
             makePlatform.saveCache();
 
             //no mtimes because initialized with config function
-            expect(cacheStorage.set).to.be.calledWith(':make', 'makefiles', {});
+            expect(cacheStorage.set).to.be.calledWith(':make', 'makefiles');
         });
 
         it('should write cached data to disk', function () {
@@ -129,7 +119,7 @@ describe('make/cache', function () {
         });
     });
 
-    //skipped tests for cache attrs saving because they will be duplicated with saveCache
+    //skipped tests for cache attrs saving becausame with tests in saveCached with saveCache
     describe('saveCacheAsync', function () {
         it('should write cached data to disk', function () {
             makePlatform.saveCacheAsync();

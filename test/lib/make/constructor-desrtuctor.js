@@ -66,22 +66,21 @@ describe('make/constructor-destructor', function () {
             });
 
             it('should destroy cache', function () {
-                it('should destroy cache', function () {
-                    makePlatform.build(); //creates cache internally
+                makePlatform.buildTargets(); //creates cache internally
 
-                    makePlatform.destruct();
+                makePlatform.destruct();
 
-                    expect(Cache.prototype.destruct).to.be.called;
-                });
+                expect(Cache.prototype.destruct).to.be.called;
             });
         });
 
         describe('tests require node init', function () {
             before(function () {
-                sinon.stub(fs, 'existsSync');
-                fs.existsSync.returns(true);
+                sinon.sandbox.stub(fs);
                 sinon.sandbox.stub(Node.prototype);
                 sinon.sandbox.stub(ProjectConfig.prototype);
+
+                fs.existsSync.returns(true);
                 ProjectConfig.prototype.getLevelNamingSchemes.returns({ foo: { bar: 'baz' } });
             });
 
@@ -91,7 +90,6 @@ describe('make/constructor-destructor', function () {
             });
 
             after(function () {
-                fs.existsSync.restore();
                 sinon.sandbox.restore();
             });
 

@@ -13,7 +13,7 @@ var BuildGraph = require('../../../lib/ui/build-graph');
 var Cache = require('../../../lib/cache/cache');
 var BaseTech = require('../../../lib/tech/base-tech');
 
-describe.only('make/initNode', function () {
+describe('make/initNode', function () {
     var sandbox;
     var makePlatform;
     var nodeConfig;

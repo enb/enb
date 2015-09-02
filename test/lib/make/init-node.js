@@ -13,7 +13,7 @@ var BuildGraph = require('../../../lib/ui/build-graph');
 var Cache = require('../../../lib/cache/cache');
 var BaseTech = require('../../../lib/tech/base-tech');
 
-describe('make/initNode', function () {
+describe.only('make/initNode', function () {
     var sandbox;
     var makePlatform;
     var nodeConfig;
@@ -110,6 +110,10 @@ describe('make/initNode', function () {
             expect(nodeConfig.exec)
                 .to.be.called;
         });
+    });
+
+    it('should return rejected promise if project config does not have node config for requested node', function () {
+        return expect(makePlatform.initNode(path.normalize('path/to/another/node'))).to.be.rejected;
     });
 
     it('should execute all node mask configs', function () {

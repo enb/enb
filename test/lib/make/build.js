@@ -47,7 +47,7 @@ describe('make/build', function () {
     });
 
     it('should return promise', function () {
-        var result = makePlatform.build();
+        var result = makePlatform.build([]);
 
         expect(result).to.be.instanceOf(vow.Promise);
     });

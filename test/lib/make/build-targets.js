@@ -10,7 +10,7 @@ var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe.only('make/buildTargets', function () {
+describe('make/buildTargets', function () {
     var makePlatform;
     var sandbox;
 

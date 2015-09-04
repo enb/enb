@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
+var _ = require('lodash');
 var Node = require('../../../lib/node');
 var ProjectConfig = require('../../../lib/config/project-config');
 var NodeConfig = require('../../../lib/config/node-config');
@@ -14,21 +15,10 @@ var Cache = require('../../../lib/cache/cache');
 var BaseTech = require('../../../lib/tech/base-tech');
 
 describe('make/initNode', function () {
-    var sandbox;
+    var sandbox = sinon.sandbox.create();
     var makePlatform;
-    var nodeConfig;
-    var modeConfig;
-    var nodeMaskConfigs;
-
-    before(function () {
-        sandbox = sinon.sandbox.create();
-    });
 
     beforeEach(function () {
-        var logger = sinon.createStubInstance(Logger);
-        logger.subLogger.withArgs(path.normalize('path/to/node'))
-            .returns(sinon.createStubInstance(Logger));
-
         sandbox.stub(fs);
         sandbox.stub(vowFs);
         sandbox.stub(Node.prototype);
@@ -38,19 +28,8 @@ describe('make/initNode', function () {
         fs.existsSync.returns(true);
         vowFs.makeDir.returns(vow.fulfill());
 
-        modeConfig = sinon.createStubInstance(ModeConfig);
-        nodeConfig = sinon.createStubInstance(NodeConfig);
-        nodeConfig.getModeConfig.withArgs('mode').returns(modeConfig);
-        nodeMaskConfigs = [sinon.createStubInstance(NodeMaskConfig)];
-
-        ProjectConfig.prototype.getNodeConfig
-            .withArgs(path.normalize('path/to/node')).returns(nodeConfig);
-        ProjectConfig.prototype.getNodeMaskConfigs
-            .withArgs(path.normalize('path/to/node')).returns(nodeMaskConfigs);
-
         makePlatform = new MakePlatform();
         makePlatform.init('/path/to/project', 'mode', function () {});
-        makePlatform.setLogger(logger);
     });
 
     afterEach(function () {
@@ -58,96 +37,154 @@ describe('make/initNode', function () {
     });
 
     it('should return promise', function () {
-        expect(makePlatform.initNode(path.normalize('path/to/node')))
+        expect(makePlatform.initNode('path/to/node'))
             .to.be.instanceOf(vow.Promise);
     });
 
     it('should not start node initialization if it was already started', function () {
-        makePlatform.initNode(path.normalize('path/to/node'));
+        makePlatform.initNode('path/to/node');
         Node.prototype.__constructor.reset();
-        makePlatform.initNode(path.normalize('path/to/node'));
+        makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.__constructor).to.be.not.called;
     });
 
     it('should get node config from project config', function () {
-        makePlatform.initNode(path.normalize('path/to/node'));
+        makePlatform.initNode('path/to/node');
 
-        expect(ProjectConfig.prototype.getNodeConfig).to.be.calledWith(path.normalize('path/to/node'));
+        expect(ProjectConfig.prototype.getNodeConfig).to.be.calledWith('path/to/node');
     });
 
     it('should create node', function () {
         makePlatform.buildTargets(); //creates cache in makePlatform
 
-        makePlatform.initNode(path.normalize('path/to/node'));
+        makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.__constructor)
-            .to.be.calledWith(path.normalize('path/to/node'), makePlatform, sinon.match.instanceOf(Cache));
+            .to.be.calledWith('path/to/node', makePlatform, sinon.match.instanceOf(Cache));
     });
 
     it('should set node logger as sublogger of own logger', function () {
-        var expectedLogger = makePlatform.getLogger().subLogger(path.normalize('path/to/node'));
+        var logger = sinon.createStubInstance(Logger);
+        var expectedLogger = sinon.createStubInstance(Logger);
 
-        makePlatform.initNode(path.normalize('path/to/node'));
+        logger.subLogger.withArgs('path/to/node').returns(expectedLogger);
+        setup({ logger: logger }, makePlatform);
+        makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.setLogger).to.be.calledWith(expectedLogger);
     });
 
     it('should set node build graph as own build graph', function () {
-        makePlatform.initNode(path.normalize('path/to/node'));
+        makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.setBuildGraph).to.be.calledWith(makePlatform.getBuildGraph());
     });
 
     it('should create node dir', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        setup({ nodePath: 'path/to/node' }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(vowFs.makeDir).to.be.calledWith(path.normalize('/path/to/project/path/to/node'));
         });
     });
 
     it('should execute node config', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
+
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(nodeConfig.exec)
                 .to.be.called;
         });
     });
 
     it('should return rejected promise if project config does not have node config for requested node', function () {
-        return expect(makePlatform.initNode(path.normalize('path/to/another/node'))).to.be.rejected;
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: sinon.createStubInstance(NodeConfig)
+
+        }, makePlatform);
+
+        return expect(makePlatform.initNode('path/to/another/node')).to.be.rejected;
     });
 
-    it('should execute all node mask configs', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
-            nodeMaskConfigs.forEach(function (config) {
-                expect(config.exec).to.be.called;
-            });
+    it('should execute node mask config', function () {
+        var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
+
+        setup({
+            nodePath: 'path/to/node',
+            nodeMaskConfig: nodeMaskConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
+            expect(nodeMaskConfig.exec).to.be.called;
         });
     });
 
     it('should pass node config to node mask configs as context', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
-            nodeMaskConfigs.forEach(function (config) {
-                expect(config.exec).to.be.calledWith(sinon.match.any, nodeConfig);
-            });
+        var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
+
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig,
+            nodeMaskConfig: nodeMaskConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
+            expect(nodeMaskConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
         });
     });
 
     it('should execute mode config', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        var modeConfig = sinon.createStubInstance(ModeConfig);
+
+        setup({
+            nodePath: 'path/to/node',
+            modeConfig: modeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(modeConfig.exec).to.be.called;
         });
     });
 
     it('should pass node config to mode config as context', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        var modeConfig = sinon.createStubInstance(ModeConfig);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
+
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig,
+            modeConfig: modeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(modeConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
         });
     });
 
     it('should set node languages as node config languages if languages available from node config', function () {
-        nodeConfig.getLanguages.returns(['ru']);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
 
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        nodeConfig.getLanguages.returns(['ru']);
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
         });
     });
@@ -155,46 +192,92 @@ describe('make/initNode', function () {
     it('should set node languages as make platform languages if languages are not available from node ' +
         'config', function () {
         makePlatform.setLanguages(['ru']);
+        setup({ nodePath: 'path/to/node'}, makePlatform);
 
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
         });
     });
 
     it('should set node targets to build as targets to build from node config', function () {
-        nodeConfig.getTargets.returns(['?.js']);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
 
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        nodeConfig.getTargets.returns(['?.js']);
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTargetsToBuild).to.be.calledWith(['?.js']);
         });
     });
 
     it('should set node targets to clean as targets to clean from node config', function () {
-        nodeConfig.getCleanTargets.returns(['?.js']);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
 
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        nodeConfig.getCleanTargets.returns(['?.js']);
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTargetsToClean).to.be.calledWith(['?.js']);
         });
     });
 
     it('should set node techs as techs from node config', function () {
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
         var tech = sinon.createStubInstance(BaseTech);
-        nodeConfig.getTechs.returns([tech]);
 
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        nodeConfig.getTechs.returns([tech]);
+        setup({
+            nodePath: 'path/to/node',
+            nodeConfig: nodeConfig
+
+        }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTechs).to.be.calledWith([tech]);
         });
     });
 
     it('should set node build state', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        setup({ nodePath: 'path/to/node' }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setBuildState).to.be.calledWith({});
         });
     });
 
     it('should force node to load techs', function () {
-        return makePlatform.initNode(path.normalize('path/to/node')).then(function () {
+        setup({ nodePath: 'path/to/node' }, makePlatform);
+
+        return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.loadTechs).to.be.called;
         });
     });
 });
+
+function setup (params, makePlatform) {
+    _.defaults(params, {
+        nodePath: 'path/to/node',
+        nodeConfig: sinon.createStubInstance(NodeConfig),
+        modeConfig: sinon.createStubInstance(ModeConfig),
+        nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig),
+        logger: sinon.createStubInstance(Logger)
+    });
+
+    params.nodeConfig.getModeConfig
+        .withArgs('mode').returns(params.modeConfig);
+
+    ProjectConfig.prototype.getNodeConfig
+        .withArgs(params.nodePath).returns(params.nodeConfig);
+    ProjectConfig.prototype.getNodeMaskConfigs
+        .withArgs(params.nodePath).returns([params.nodeMaskConfig]);
+
+    makePlatform.setLogger(params.logger);
+}

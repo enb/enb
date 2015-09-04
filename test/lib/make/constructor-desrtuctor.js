@@ -75,22 +75,21 @@ describe('make/constructor-destructor', function () {
         });
 
         describe('tests require node init', function () {
-            before(function () {
-                sinon.sandbox.stub(fs);
-                sinon.sandbox.stub(Node.prototype);
-                sinon.sandbox.stub(ProjectConfig.prototype);
-
-                fs.existsSync.returns(true);
-                ProjectConfig.prototype.getLevelNamingSchemes.returns({ foo: { bar: 'baz' } });
-            });
+            var sandbox = sinon.sandbox.create();
 
             beforeEach(function () {
+                sandbox.stub(fs);
+                sandbox.stub(Node.prototype);
+                sandbox.stub(ProjectConfig.prototype);
+
+                fs.existsSync.returns(true);
+
                 makePlatform.init('path/to/project', null, function () {});
                 makePlatform.initNode('path/to/node');
             });
 
-            after(function () {
-                sinon.sandbox.restore();
+            afterEach(function () {
+                sandbox.restore();
             });
 
             it('must destroy all nodes', function () {
@@ -100,6 +99,8 @@ describe('make/constructor-destructor', function () {
             });
 
             it('should delete level naming schemes', function () {
+                ProjectConfig.prototype.getLevelNamingSchemes.returns({ foo: { bar: 'baz' } });
+
                 makePlatform.destruct();
 
                 expect(function () { makePlatform.getLevelNamingScheme('foo'); })

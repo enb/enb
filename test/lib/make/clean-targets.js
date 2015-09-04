@@ -12,19 +12,10 @@ var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/cleanTarget', function () {
     var makePlatform;
-    var sandbox;
-
-    before(function () {
-        sandbox = sinon.sandbox.create();
-    });
+    var sandbox = sinon.sandbox.create();
+    var projectPath = '/path/to/project';
 
     beforeEach(function (done) {
-        var fakeNodeConfigs = {};
-        var nodePath = path.normalize('path/to/node');
-        var fakeNodeConfig = sinon.createStubInstance(NodeConfig);
-
-        fakeNodeConfigs[nodePath] = fakeNodeConfig;
-
         sandbox.stub(fs);
         sandbox.stub(vowFs);
         sandbox.stub(ProjectConfig.prototype);
@@ -34,12 +25,8 @@ describe('make/cleanTarget', function () {
         fs.existsSync.returns(true);
         vowFs.makeDir.returns(vow.fulfill());
 
-        ProjectConfig.prototype.getNodeConfig.returns(fakeNodeConfig);
-        ProjectConfig.prototype.getNodeConfigs.returns(fakeNodeConfigs);
-        ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
-
         makePlatform = new MakePlatform();
-        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {}).then(function () {
+        makePlatform.init(projectPath, 'mode', function () {}).then(function () {
             done();
         });
     });
@@ -56,59 +43,89 @@ describe('make/cleanTarget', function () {
 
     it('should create cache', function () {
         var cacheStorage = sinon.createStubInstance(CacheStorage);
+        var projectName = path.basename(projectPath);
 
         makePlatform.setCacheStorage(cacheStorage);
         makePlatform.cleanTargets();
 
-        expect(Cache.prototype.__constructor).to.be.calledWith(cacheStorage, 'project');
+        expect(Cache.prototype.__constructor).to.be.calledWith(cacheStorage, projectName);
     });
 
     it('should return rejected promise if required target does not match any available node', function () {
-        return expect(makePlatform.cleanTargets([path.normalize('path/to/another/node')]))
-            .to.be.rejectedWith('Target not found: ' + path.normalize('path/to/another/node'));
+        setup({ nodePath: 'path/to/node'});
+
+        return expect(makePlatform.cleanTargets(['path/to/another/node']))
+            .to.be.rejectedWith('Target not found: ' + 'path/to/another/node');
     });
 
-    it('should init all nodes', function () {
+    it('should init nodes', function () {
         var initNode = sinon.spy(makePlatform, 'initNode');
 
-        return makePlatform.cleanTargets([path.normalize('path/to/node')]).then(function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
             expect(initNode).to.be.calledOnce
-                .and.to.be.calledWith(path.normalize('path/to/node'));
+                .and.to.be.calledWith('path/to/node');
         });
     });
 
     it('should build all targets', function () {
-        return makePlatform.cleanTargets([path.normalize('path/to/node')]).then(function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
             expect(Node.prototype.clean).to.be.calledOnce;
         });
     });
 
     it('should build all possible node targets if passed targets are empty', function () {
+        setup({ nodePath: 'path/to/node' });
+
         return makePlatform.cleanTargets([]).then(function () {
             expect(Node.prototype.clean).to.be.calledWith(['*']);
         });
     });
 
     it('should build all node targets if passed target is equal with node path', function () {
-        return makePlatform.cleanTargets([path.normalize('path/to/node')]).then(function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node']).then(function () {
             expect(Node.prototype.clean).to.be.calledWith(['*']);
         });
     });
 
     it('should build specific target if passed target is equal with node path and this target name', function () {
-        return makePlatform.cleanTargets([path.normalize('path/to/node/?.js')]).then(function () {
+        setup({ nodePath: 'path/to/node' });
+
+        return makePlatform.cleanTargets(['path/to/node/?.js']).then(function () {
             expect(Node.prototype.clean).to.be.calledWith(['?.js']);
         });
     });
 
     it('should force single node build multiple targets if multiple targets for single node passed', function () {
         var targets = [
-            path.normalize('path/to/node/?.css'),
-            path.normalize('path/to/node/?.js')
+            'path/to/node/?.css',
+            'path/to/node/?.js'
         ];
+
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.cleanTargets(targets).then(function () {
             expect(Node.prototype.clean).to.be.calledWith(['?.css', '?.js']);
         });
     });
 });
+
+function setup (settings) {
+    var nodeConfigs = {};
+
+    settings = settings || {};
+    settings.nodePath = settings.nodePath || 'path/to/node';
+    settings.nodeConfig = settings.nodeConfig || sinon.createStubInstance(NodeConfig);
+    settings.nodeMaskConfig = settings.nodeMaskConfig || sinon.createStubInstance(NodeMaskConfig);
+
+    nodeConfigs[settings.nodePath] = settings.nodeConfig;
+
+    ProjectConfig.prototype.getNodeConfig.returns(settings.nodeConfig);
+    ProjectConfig.prototype.getNodeConfigs.returns(nodeConfigs);
+    ProjectConfig.prototype.getNodeMaskConfigs.returns([settings.nodeMaskConfig]);
+}

@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
+var _ = require('lodash');
 var Node = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -118,14 +119,13 @@ describe('make/cleanTarget', function () {
 function setup (settings) {
     var nodeConfigs = {};
 
-    settings = settings || {};
-    settings.nodePath = settings.nodePath || 'path/to/node';
-    settings.nodeConfig = settings.nodeConfig || sinon.createStubInstance(NodeConfig);
-    settings.nodeMaskConfig = settings.nodeMaskConfig || sinon.createStubInstance(NodeMaskConfig);
+    _.defaults(settings, {
+        nodePath: 'path/to/node'
+    });
 
-    nodeConfigs[settings.nodePath] = settings.nodeConfig;
+    nodeConfigs[settings.nodePath] = sinon.createStubInstance(NodeConfig);
 
-    ProjectConfig.prototype.getNodeConfig.returns(settings.nodeConfig);
+    ProjectConfig.prototype.getNodeConfig.returns(sinon.createStubInstance(NodeConfig));
     ProjectConfig.prototype.getNodeConfigs.returns(nodeConfigs);
-    ProjectConfig.prototype.getNodeMaskConfigs.returns([settings.nodeMaskConfig]);
+    ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
 }

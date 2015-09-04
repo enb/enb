@@ -1,236 +1,321 @@
-var fs = require('fs');
-var path = require('path');
 var mockFs = require('mock-fs');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('cache/cache', function () {
-    var CACHE_FILE = path.resolve('cache.json');
-    var TEST_FILE = path.resolve('test.txt');
-    var PREFIX = 'test-prefix';
-    var cacheStorage;
-    var cache;
+    var sandbox = sinon.sandbox.create();
 
-    before(function () {
-        mockFs({});
-        cacheStorage = new CacheStorage(CACHE_FILE);
-    });
-
-    beforeEach(function () {
-        cache = new Cache(cacheStorage, PREFIX);
-    });
-
-    after(function () {
+    afterEach(function () {
+        sandbox.restore();
         mockFs.restore();
     });
 
     describe('constructor', function () {
-        it('success', function () {
-            cache._storage.should.be.instanceOf(CacheStorage);
-            cache._prefix.should.equal(PREFIX);
-        });
-    });
+        it('should set cache storage', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
 
-    describe('get', function () {
-        before(function () {
-            cache._storage._data[PREFIX] = { key: 'value' };
+            cache.get();
+
+            expect(cacheStorage.get).to.be.called;
         });
 
-        it('success', function () {
-            cache.get('key').should.equal('value');
-        });
-    });
-
-    describe('set', function () {
-        it('success', function () {
-            cache.set('key', 'value');
-            Object.keys(cache._storage._data[PREFIX]).should.have.length(1);
-            cache._storage._data[PREFIX].key.should.equal('value');
-        });
-    });
-
-    describe('invalidate', function () {
-        before(function () {
-            cache._storage._data[PREFIX] = { key: 'value' };
-        });
-
-        it('success', function () {
-            Object.keys(cache._storage._data[PREFIX]).should.have.length(1);
-            cache.invalidate('key');
-            Object.keys(cache._storage._data[PREFIX]).should.have.length(0);
-        });
-    });
-
-    describe('drop', function () {
-        before(function () {
-            cache._storage._data[PREFIX] = { key: 'value' };
-        });
-
-        it('success', function () {
-            Object.keys(cache._storage._data).should.have.length(1);
-            cache.drop();
-            Object.keys(cache._storage._data).should.have.length(0);
-        });
-    });
-
-    describe('subCache', function () {
-        it('success', function () {
-            var subCache = cache.subCache('subprefix');
-            subCache.should.be.instanceOf(Cache);
-            subCache._prefix.should.equal(PREFIX + '/' + 'subprefix');
-        });
-    });
-
-    describe('_getFileInfo', function () {
-        it('success', function () {
-            var fileInfo = cache._getFileInfo(path.resolve(CACHE_FILE));
-
-            fileInfo.should.be.instanceOf(Object);
-            fileInfo.name.should.equal('cache.json');
-            fileInfo.fullname.should.equal(path.resolve(CACHE_FILE));
-            fileInfo.suffix.should.equal('json');
-        });
-    });
-
-    describe('needRebuildFile', function () {
-        describe('file does not exists in cache', function () {
-            it('success', function () {
-                cache.needRebuildFile('non-exist', TEST_FILE).should.equal(true);
-            });
-        });
-
-        describe('file exists and actual', function () {
-            before(function () {
-                fs.writeFileSync(TEST_FILE, 'test data', { encoding: 'utf-8' });
-                cache.set('test', {
-                    fullname: TEST_FILE,
-                    mtime: fs.statSync(TEST_FILE).mtime.getTime()
-                });
+        it('should set prefix', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'test_prefix'
             });
 
-            it('success', function () {
-                cache.needRebuildFile('test', TEST_FILE).should.equal(false);
-            });
+            cache.get();
 
-            after(function () {
-                fs.unlinkSync(TEST_FILE);
-            });
-        });
-
-        describe('file exists and expired', function () {
-            before(function (done) {
-                fs.writeFileSync(TEST_FILE, 'test data', { encoding: 'utf-8' });
-                cache.set('test', {
-                    fullname: TEST_FILE,
-                    mtime: fs.statSync(TEST_FILE).mtime.getTime()
-                });
-                setTimeout(function () {
-                    fs.writeFileSync(TEST_FILE, 'test data1', { encoding: 'utf-8' });
-                    done();
-                }, 1000);
-            });
-
-            it('success', function () {
-                cache.needRebuildFile('test', TEST_FILE).should.equal(true);
-            });
-
-            after(function () {
-                fs.unlinkSync(TEST_FILE);
-            });
-        });
-    });
-
-    describe('cacheFileInfo', function () {
-        before(function () {
-            fs.writeFileSync(TEST_FILE, 'test data', { encoding: 'utf-8' });
-        });
-
-        it('success', function () {
-            cache.cacheFileInfo('test', TEST_FILE);
-
-            var v = cache.get('test');
-            v.should.be.instanceOf(Object);
-            v.name.should.equal('test.txt');
-            v.fullname.should.equal(TEST_FILE);
-            v.suffix.should.equal('txt');
-            v.mtime.should.equal(fs.statSync(TEST_FILE).mtime.getTime());
-        });
-
-        after(function () {
-            fs.unlinkSync(TEST_FILE);
-        });
-    });
-
-    describe('needRebuildFileList', function () {
-        describe('not cached yet', function () {
-            it('success', function () {
-                cache.needRebuildFileList('test', []).should.equal(true);
-            });
-        });
-
-        describe('number of files was changed', function () {
-            before(function () {
-                var basePath = './test/fixtures/';
-                var file1 = path.resolve(basePath, 'test1.txt');
-                var file2 = path.resolve(basePath, 'test2.txt');
-
-                cache.set('test', [file1, file2]);
-            });
-
-            it('success', function () {
-                cache.needRebuildFileList('test', []).should.equal(true);
-            });
-        });
-
-        describe('any file in list was changed', function () {
-            before(function () {
-                var basePath = './test/fixtures/';
-                var file1 = { fullname: path.resolve(basePath, 'test1.txt') };
-                var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
-
-                cache.set('test', [file1, file2]);
-            });
-
-            it('success', function () {
-                var basePath = './test/fixtures/';
-                var file1 = { fullname: path.resolve(basePath, 'test11.txt') };
-                var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
-
-                cache.needRebuildFileList('test', [file1, file2]).should.equal(true);
-            });
-        });
-
-        describe('list was not changed', function () {
-            var basePath = './test/fixtures/';
-            var file1 = { fullname: path.resolve(basePath, 'test1.txt') };
-            var file2 = { fullname: path.resolve(basePath, 'test2.txt') };
-
-            before(function () {
-                cache.set('test', [file1, file2]);
-            });
-
-            it('success', function () {
-                cache.needRebuildFileList('test', [file1, file2]).should.equal(false);
-            });
-        });
-    });
-
-    describe('cacheFileList', function () {
-        it('success', function () {
-            cache.cacheFileList('key', [
-                { key1: 'value1' },
-                { key2: 'value2' }
-            ]);
-            cache.get('key').should.be.instanceOf(Array);
-            cache.get('key').should.have.length(2);
+            expect(cacheStorage.get).to.be.calledWith('test_prefix');
         });
     });
 
     describe('destruct', function () {
-        it('success', function () {
-            expect(cache._storage).to.exist;
+        it('should delete reference to cache storage', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
+
             cache.destruct();
-            expect(cache._storage).to.not.exist;
+
+            expect(function () { cache.get(); }).to.throw();
         });
     });
+
+    describe('get', function () {
+        it('should query data by cache prefix and key',  function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'test_prefix'
+            });
+
+            cache.get('test_key');
+
+            expect(cacheStorage.get).to.be.calledWith('test_prefix', 'test_key');
+        });
+    });
+
+    describe('set', function () {
+        it('should set data to cache storage', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
+
+            cache.set();
+
+            expect(cacheStorage.set).to.be.called;
+        });
+
+        it('should set value by cache prefix and key', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'test_prefix'
+            });
+
+            cache.set('test_key', 'test_data');
+
+            expect(cacheStorage.set).to.be.calledWith('test_prefix', 'test_key', 'test_data');
+        });
+    });
+
+    describe('invalidate', function () {
+        it('should invalidate data in cache storage', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
+
+            cache.invalidate();
+
+            expect(cacheStorage.invalidate).to.be.called;
+        });
+
+        it('should invalidate data by cache prefix and key', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'test_prefix'
+            });
+
+            cache.invalidate('test_key');
+
+            expect(cacheStorage.invalidate).to.be.calledWith('test_prefix', 'test_key');
+        });
+    });
+
+    describe('drop', function () {
+        it('should drop data by prefix in cache storage', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
+
+            cache.drop();
+
+            expect(cacheStorage.dropPrefix).to.be.called;
+        });
+
+        it('should drop data by cache prefix and key', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'test_prefix'
+            });
+
+            cache.drop();
+
+            expect(cacheStorage.dropPrefix).to.be.calledWith('test_prefix');
+        });
+    });
+
+    describe('subCache', function () {
+        it('should return cache', function () {
+            var cache = createCache_();
+            var subCache = cache.subCache();
+
+            expect(subCache).to.be.instanceOf(Cache);
+        });
+
+        it('should pass cache storage to new cache', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({ storage: cacheStorage });
+            var subCache = cache.subCache();
+
+            subCache.get();
+
+            expect(cacheStorage.get).to.be.called;
+        });
+
+        it('should create new cache with additional prefix based on parent cache prefix', function () {
+            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'cache_prefix'
+            });
+            var subCache = cache.subCache('subcache_prefix');
+
+            subCache.get();
+
+            expect(cacheStorage.get).to.be.calledWith('cache_prefix/subcache_prefix');
+        });
+    });
+
+    describe('needRebuildFile', function () {
+        it('should return true if no info about file cached', function () {
+            var cache = createCache_();
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns(undefined);
+
+            expect(cache.needRebuildFile('cache_key')).to.be.true;
+        });
+
+        it('should return true if cached mtime is not equal current mtime for required file', function () {
+            mockFs({
+                '/path/to/test_file.js': mockFs.file({
+                    mtime: new Date(1)
+                })
+            });
+
+            var cache = createCache_();
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns({ mtime: new Date(2).valueOf() });
+
+            expect(cache.needRebuildFile('cache_key', '/path/to/test_file.js')).to.be.true;
+        });
+
+        it('should return false if cached mtime equal to current mtime for required file', function () {
+            mockFs({
+                '/path/to/test_file.js': mockFs.file({
+                    mtime: new Date(1)
+                })
+            });
+
+            var cache = createCache_();
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns({ mtime: new Date(1).valueOf() });
+
+            expect(cache.needRebuildFile('cache_key', '/path/to/test_file.js')).to.be.false;
+        });
+    });
+
+    describe('cacheFileInfo', function () {
+        it('should set info about file by cache key', function () {
+            var cache = createCache_();
+
+            sandbox.stub(cache, 'set');
+
+            cache.cacheFileInfo('cache_key');
+
+            expect(cache.set).to.be.calledWith('cache_key');
+        });
+
+        it('should cache info about file', function () {
+            mockFs({
+                '/path/to/test_file.js': mockFs.file({
+                    mtime: new Date(1)
+                })
+            });
+
+            var cache = createCache_();
+
+            sandbox.stub(cache, 'set');
+
+            cache.cacheFileInfo('cache_key', '/path/to/test_file.js');
+
+            expect(cache.set).to.be.calledWith('cache_key', {
+                name: 'test_file.js',
+                fullname: '/path/to/test_file.js',
+                suffix: 'js',
+                mtime: 1
+            });
+        });
+    });
+
+    describe('needRebuildFileList', function () {
+        it('should return true if no info about file list cached', function () {
+            var cache = createCache_();
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns(undefined);
+
+            expect(cache.needRebuildFileList('cache_key')).to.be.true;
+        });
+
+        it('should return true if not a file list cached for specific key', function () {
+            var cache = createCache_();
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns({ filename: 'file.js' });
+
+            expect(cache.needRebuildFileList('cache_key')).to.be.true;
+        });
+
+        it('should return true if cached files list length differs from passed files list', function () {
+            var cache = createCache_();
+            var fileList = [
+                { fullname: '/path/to/file.js' },
+                { fullname: '/path/to/another_file.js'}
+            ];
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns([{ fullname: '/path/to/file.js' }]);
+
+            expect(cache.needRebuildFileList('cache_key', fileList)).to.be.true;
+        });
+
+        it('should return true if file full name in cached file list differs from file full name in ' +
+            'passed file list', function () {
+            var cache = createCache_();
+            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            var cachedFileList = [{ fullname: '/path/to/another_file.js', mtime: 1 }];
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns(cachedFileList);
+
+            expect(cache.needRebuildFileList('cache_key', fileList)).to.be.true;
+        });
+
+        it('should return true if file mtime in cached file list differs from file mtime in passed file ' +
+            'list', function () {
+            var cache = createCache_();
+            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            var cachedFileList = [{ fullname: '/path/to/file.js', mtime: 2 }];
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns(cachedFileList);
+
+            expect(cache.needRebuildFileList('cache_key', fileList)).to.be.true;
+        });
+
+        it('should return false for same file lists', function () {
+            var cache = createCache_();
+            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            var cachedFileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+
+            sandbox.stub(cache, 'get');
+            cache.get.withArgs('cache_key').returns(cachedFileList);
+
+            expect(cache.needRebuildFileList('cache_key', fileList)).to.be.false;
+        });
+    });
+
+    describe('cacheFileList', function () {
+        it('should set file list for sepcific key', function () {
+            var cache = createCache_();
+
+            sinon.stub(cache, 'set');
+            cache.set('test_key', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
+
+            expect(cache.set).to.be.calledWith('test_key', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
+        });
+    });
+
+    function createCache_(params) {
+        params = params || {};
+
+        return new Cache(
+            params.storage || sinon.createStubInstance(CacheStorage),
+            params.prefix || 'default_prefix'
+        );
+    }
 });

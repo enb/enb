@@ -11,7 +11,7 @@ var NodeConfig = require('../../../lib/config/node-config');
 var TaskConfig = require('../../../lib/config/task-config');
 var Logger = require('../../../lib/logger');
 
-describe.only('make/build', function () {
+describe('make/build', function () {
     var makePlatform;
     var sandbox = sinon.sandbox.create();
 

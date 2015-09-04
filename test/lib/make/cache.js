@@ -13,8 +13,7 @@ describe('make/cache', function () {
             '/path/to/project': {
                 '.enb': {
                     'make.js': mockFs.file({
-                        mtime: new Date(1),
-                        content: 'module.exports = function () {};'
+                        mtime: new Date(1)
                     })
                 }
             },
@@ -24,7 +23,7 @@ describe('make/cache', function () {
         cacheStorage = sinon.createStubInstance(CacheStorage);
 
         makePlatform = new MakePlatform();
-        makePlatform.init(path.normalize('/path/to/project'), 'mode');
+        makePlatform.init('/path/to/project', 'mode');
         makePlatform.setCacheStorage(cacheStorage);
     });
 
@@ -35,21 +34,7 @@ describe('make/cache', function () {
     describe('loadCache', function () {
         beforeEach(function () {
             clearRequire('../../../package.json');
-            /**
-             * By default makePlatform.loadCache() will call cacheStorage.drop() if one of following:
-             *  1. cached ENB version differs from actual
-             *  2. actual make platfom mode differs from cached
-             *  3. mtime of one of available makefiles differs from cached
-             * Setup below configures cacheStorage in a way that makePlatform will not call cacheStorage.drop().
-             * In each test checking cacheStorage.drop() is being called one of this conditions is being switched and
-             * make platform behavior checked.
-             */
-            var makeFiles = {};
-            makeFiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
-
-            cacheStorage.get.withArgs(':make', 'version').returns('test_ver');
-            cacheStorage.get.withArgs(':make', 'mode').returns('mode');
-            cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
+            setupToNotDrop(cacheStorage);
         });
 
         it('should load data from cache storage', function () {
@@ -82,7 +67,7 @@ describe('make/cache', function () {
 
         it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
             var makeFiles = {};
-            makeFiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(2).valueOf();
+            makeFiles['/path/to/project/.enb/make.js'] = new Date(2).valueOf();
 
             cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
 
@@ -136,3 +121,21 @@ describe('make/cache', function () {
         });
     });
 });
+
+function setupToNotDrop(cacheStorage) {
+    /**
+     * By default makePlatform.loadCache() will call cacheStorage.drop() if one of following:
+     *  1. cached ENB version differs from actual
+     *  2. actual make platfom mode differs from cached
+     *  3. mtime of one of available makefiles differs from cached
+     * Setup below configures cacheStorage in a way that makePlatform will not call cacheStorage.drop().
+     * In each test checking cacheStorage.drop() is being called one of this conditions is being switched and
+     * make platform behavior checked.
+     */
+    var makeFiles = {};
+    makeFiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
+
+    cacheStorage.get.withArgs(':make', 'version').returns('test_ver');
+    cacheStorage.get.withArgs(':make', 'mode').returns('mode');
+    cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
+}

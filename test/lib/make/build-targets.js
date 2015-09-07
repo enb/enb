@@ -27,9 +27,7 @@ describe('make/buildTargets', function () {
         vowFs.makeDir.returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
-        makePlatform.init(projectPath, 'mode', function () {}).then(function () {
-            done();
-        });
+        makePlatform.init(projectPath, 'mode', function () {}).then(done);
     });
 
     afterEach(function () {
@@ -56,7 +54,7 @@ describe('make/buildTargets', function () {
         setup({ nodePath: 'path/to/node' });
 
         return expect(makePlatform.buildTargets(['path/to/another/node']))
-            .to.be.rejectedWith('Target not found: ' + 'path/to/another/node');
+            .to.be.rejectedWith('Target not found: path/to/another/node');
     });
 
     it('should init node', function () {
@@ -70,7 +68,7 @@ describe('make/buildTargets', function () {
         });
     });
 
-    it('should build all targets', function () {
+    it('should start building targets of required node', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.buildTargets(['path/to/node']).then(function () {

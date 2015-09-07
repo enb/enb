@@ -27,9 +27,7 @@ describe('make/cleanTarget', function () {
         vowFs.makeDir.returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
-        makePlatform.init(projectPath, 'mode', function () {}).then(function () {
-            done();
-        });
+        makePlatform.init(projectPath, 'mode', function () {}).then(done);
     });
 
     afterEach(function () {
@@ -56,7 +54,7 @@ describe('make/cleanTarget', function () {
         setup({ nodePath: 'path/to/node'});
 
         return expect(makePlatform.cleanTargets(['path/to/another/node']))
-            .to.be.rejectedWith('Target not found: ' + 'path/to/another/node');
+            .to.be.rejectedWith('Target not found: path/to/another/node');
     });
 
     it('should init nodes', function () {

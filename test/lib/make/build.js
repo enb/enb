@@ -25,9 +25,7 @@ describe('make/build', function () {
         vowFs.makeDir.returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}).then(function () {
-            done();
-        });
+        makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
         makePlatform.setLogger(sinon.createStubInstance(Logger));
     });
 
@@ -51,7 +49,6 @@ describe('make/build', function () {
         var buildTask = sinon.spy(makePlatform, 'buildTask');
 
         setup({
-            nodePath: 'path/to.node',
             taskConfig: sinon.createStubInstance(TaskConfig)
         });
         makePlatform.build(['path/to/node']);
@@ -86,7 +83,7 @@ describe('make/build', function () {
     it('should build targets if no info about targets to build passed', function () {
         var buildTargets = sinon.spy(makePlatform, 'buildTargets');
 
-        setup({ nodePath: 'path/to.node' });
+        setup({ nodePath: 'path/to/node' });
         makePlatform.build([]);
 
         expect(buildTargets).to.be.calledWith([]);
@@ -94,7 +91,7 @@ describe('make/build', function () {
 
     it('should return rejected promise if exception occured during build', function () {
         setup({
-            nodePath: 'path/to.node',
+            nodePath: 'path/to/node',
             nodeBuildExc: new Error('test_err')
         });
 
@@ -146,6 +143,6 @@ function setup (settings) {
     ProjectConfig.prototype.getTaskConfig.returns(settings.taskConfig);
 
     Node.prototype.build.returns(settings.nodeBuildResult);
-    settings.nodeBuildExc  && Node.prototype.build.throws(settings.nodeBuildExc);
+    settings.nodeBuildExc && Node.prototype.build.throws(settings.nodeBuildExc);
     Node.prototype.getLogger.returns(sinon.createStubInstance(Logger));
 }

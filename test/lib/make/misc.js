@@ -25,15 +25,13 @@ describe('make/misc', function () {
         sandbox.stub(Node.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill());
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
         ProjectConfig.prototype.getNodeConfig.returns(sinon.createStubInstance(NodeConfig));
         ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
 
         makePlatform = new MakePlatform();
-        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {}).then(function () {
-            done();
-        });
+        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {}).then(done);
         makePlatform.setLogger(sinon.createStubInstance(Logger));
     });
 

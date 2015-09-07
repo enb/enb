@@ -26,7 +26,7 @@ describe('make/initNode', function () {
         sandbox.stub(BuildGraph.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill());
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init('/path/to/project', 'mode', function () {});

@@ -21,7 +21,7 @@ describe('make/init', function () {
         sandbox.stub(Node.prototype);
         sandbox.stub(ProjectConfig.prototype);
 
-        vowFs.makeDir.returns(vow.fulfill());
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
     });
@@ -117,9 +117,9 @@ describe('make/init', function () {
             });
 
             it('should initialize build graph with project name', function () {
-                makePlatform.init('/path/to/project', 'test_mode', function () {});
+                makePlatform.init('/path/to/project-name', 'test_mode', function () {});
 
-                expect(makePlatform.getBuildGraph().__constructor).to.be.calledWith('project');
+                expect(makePlatform.getBuildGraph().__constructor).to.be.calledWith('project-name');
             });
         });
 
@@ -230,99 +230,98 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                   'module.exports = function () { return "---1" };'
+                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/loaded.config')).to.be.true;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
         });
 
         it('should load config from .bem directory if it exists there', function () {
             mockFs({
                 '/path/to/project': {
                     '.bem': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.bem/loaded.config");' +
-                                   'module.exports = function () {};'
+                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.bem/loaded.config')).to.be.true;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
         });
 
         it('should load config from .enb directory if both .enb and .bem dirs exists', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/enb.config");' +
-                                   'module.exports = function () {};'
+                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
                     },
                     '.bem': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.bem/bem.config");' +
-                                   'module.exports = function () {};'
+                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["en"]); };'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/enb.config')).to.be.true;
-            expect(fs.existsSync('/path/to/project/.bem/bem.config')).to.be.false;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
         });
 
         it('should load enb-make.js config file if it exists', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'enb-make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.conf");' +
-                                       'module.exports = function () {};'
+                        'enb-make.js': 'module.exports = function (projectConfig) { ' +
+                                            'projectConfig.setLanguages(["ru"]); ' +
+                                       '};'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/loaded.conf')).to.be.true;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
         });
 
         it('should load make.js config file if it exists', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                   'module.exports = function () {};'
+                        'make.js': 'module.exports = function (projectConfig) { ' +
+                                        'projectConfig.setLanguages(["ru"]); ' +
+                                   '};'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/loaded.config')).to.be.true;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
         });
 
         it('should load enb-make.js config if both exist in config dir', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'require("fs").writeFileSync("/path/to/project/.enb/make.config");' +
-                                   'module.exports = function () {};',
-                        'enb-make.js': 'var fs = require("fs");' +
-                                       'fs.writeFileSync("/path/to/project/.enb/enb-make.config");' +
-                                       'module.exports = function () {};'
+                        'make.js': 'module.exports = function (projectConfig) { ' +
+                                        'projectConfig.setLanguages(["en"]); ' +
+                                   '};',
+                        'enb-make.js': 'module.exports = function (projectConfig) { ' +
+                                            'projectConfig.setLanguages(["ru"]); ' +
+                                       '};'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/enb-make.config')).to.be.true;
-            expect(fs.existsSync('/path/to/project/.enb/make.config')).to.be.false;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
         });
 
         it('should return rejected promise if there is no config file in .enb and .bem directories', function () {
@@ -351,22 +350,6 @@ describe('make/init', function () {
             makePlatform.init('/path/to/project');
 
             expect(require.cache[modulePath]).to.be.not.equal('foo');
-        });
-
-        it('should execute loaded config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () { ' +
-                                       'require("fs").writeFileSync("/path/to/project/.enb/exec.config");' +
-                                   '};'
-                    }
-                }
-            });
-
-            makePlatform.init('/path/to/project');
-
-            expect(fs.existsSync('/path/to/project/.enb/exec.config')).to.be.true;
         });
 
         it('should return rejected promise if exception thrown while executing config', function () {
@@ -405,15 +388,16 @@ describe('make/init', function () {
                 '/path/to/project': {
                     '.enb': {
                         'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'require("fs").writeFileSync("/path/to/project/.enb/loaded.config");' +
-                                            'module.exports = function () {};'
+                        'make.personal.js': 'module.exports = function (projectConfig) { ' +
+                                                'projectConfig.setLanguages(["ru"]); ' +
+                                            '};'
                     }
                 }
             });
 
             makePlatform.init('/path/to/project');
 
-            expect(fs.existsSync('/path/to/project/.enb/loaded.config')).to.be.true;
+            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
         });
 
         it('should drop require cache for personal config', function () {
@@ -431,24 +415,6 @@ describe('make/init', function () {
             makePlatform.init('/path/to/project');
 
             expect(require.cache[modulePath]).to.be.not.equal('foo');
-        });
-
-        it('should execute personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () { ' +
-                                              'require("fs").writeFileSync("/path/to/project/.enb/loaded.executed");' +
-                                            '};'
-
-                    }
-                }
-            });
-
-            makePlatform.init('/path/to/project');
-
-            expect(fs.existsSync('/path/to/project/.enb/loaded.executed')).to.be.true;
         });
 
         it('should return rejected promise if exception thrown while executing personal config', function () {

@@ -69,7 +69,9 @@ describe('make/initNode', function () {
         var expectedLogger = sinon.createStubInstance(Logger);
 
         logger.subLogger.withArgs('path/to/node').returns(expectedLogger);
-        setup({ logger: logger }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
+        makePlatform.setLogger(logger);
+        
         makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.setLogger).to.be.calledWith(expectedLogger);
@@ -82,7 +84,7 @@ describe('make/initNode', function () {
     });
 
     it('should create node dir', function () {
-        setup({ nodePath: 'path/to/node' }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(vowFs.makeDir).to.be.calledWith(path.normalize('/path/to/project/path/to/node'));
@@ -95,8 +97,7 @@ describe('make/initNode', function () {
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig
-
-        }, makePlatform);
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(nodeConfig.exec)
@@ -105,11 +106,7 @@ describe('make/initNode', function () {
     });
 
     it('should return rejected promise if project config does not have node config for requested node', function () {
-        setup({
-            nodePath: 'path/to/node',
-            nodeConfig: sinon.createStubInstance(NodeConfig)
-
-        }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
 
         return expect(makePlatform.initNode('path/to/another/node')).to.be.rejected;
     });
@@ -117,11 +114,9 @@ describe('make/initNode', function () {
     it('should execute node mask config', function () {
         var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
 
-        setup({
-            nodePath: 'path/to/node',
-            nodeMaskConfig: nodeMaskConfig
-
-        }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
+        ProjectConfig.prototype.getNodeMaskConfigs
+            .withArgs('path/to/node').returns([nodeMaskConfig]);
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(nodeMaskConfig.exec).to.be.called;
@@ -134,10 +129,10 @@ describe('make/initNode', function () {
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig,
-            nodeMaskConfig: nodeMaskConfig
-
-        }, makePlatform);
+            nodeConfig: nodeConfig
+        });
+        ProjectConfig.prototype.getNodeMaskConfigs
+            .withArgs('path/to/node').returns([nodeMaskConfig]);
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(nodeMaskConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
@@ -146,12 +141,15 @@ describe('make/initNode', function () {
 
     it('should execute mode config', function () {
         var modeConfig = sinon.createStubInstance(ModeConfig);
+        var nodeConfig = sinon.createStubInstance(NodeConfig);
+
+        nodeConfig.getModeConfig
+            .withArgs('mode').returns(modeConfig);
 
         setup({
             nodePath: 'path/to/node',
-            modeConfig: modeConfig
-
-        }, makePlatform);
+            nodeConfig: nodeConfig
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(modeConfig.exec).to.be.called;
@@ -162,12 +160,12 @@ describe('make/initNode', function () {
         var modeConfig = sinon.createStubInstance(ModeConfig);
         var nodeConfig = sinon.createStubInstance(NodeConfig);
 
+        nodeConfig.getModeConfig
+            .withArgs('mode').returns(modeConfig);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig,
-            modeConfig: modeConfig
-
-        }, makePlatform);
+            nodeConfig: nodeConfig
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(modeConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
@@ -181,8 +179,7 @@ describe('make/initNode', function () {
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig
-
-        }, makePlatform);
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
@@ -192,7 +189,7 @@ describe('make/initNode', function () {
     it('should set node languages as make platform languages if languages are not available from node ' +
         'config', function () {
         makePlatform.setLanguages(['ru']);
-        setup({ nodePath: 'path/to/node'}, makePlatform);
+        setup({ nodePath: 'path/to/node'});
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
@@ -206,8 +203,7 @@ describe('make/initNode', function () {
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig
-
-        }, makePlatform);
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTargetsToBuild).to.be.calledWith(['?.js']);
@@ -221,8 +217,7 @@ describe('make/initNode', function () {
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig
-
-        }, makePlatform);
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTargetsToClean).to.be.calledWith(['?.js']);
@@ -237,8 +232,7 @@ describe('make/initNode', function () {
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig
-
-        }, makePlatform);
+        });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setTechs).to.be.calledWith([tech]);
@@ -246,7 +240,7 @@ describe('make/initNode', function () {
     });
 
     it('should set node build state', function () {
-        setup({ nodePath: 'path/to/node' }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setBuildState).to.be.calledWith({});
@@ -254,7 +248,7 @@ describe('make/initNode', function () {
     });
 
     it('should force node to load techs', function () {
-        setup({ nodePath: 'path/to/node' }, makePlatform);
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.loadTechs).to.be.called;
@@ -262,22 +256,15 @@ describe('make/initNode', function () {
     });
 });
 
-function setup (params, makePlatform) {
+function setup (params) {
     _.defaults(params, {
-        nodePath: 'path/to/node',
+        nodePath: 'default/path',
         nodeConfig: sinon.createStubInstance(NodeConfig),
-        modeConfig: sinon.createStubInstance(ModeConfig),
-        nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig),
-        logger: sinon.createStubInstance(Logger)
+        nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig)
     });
-
-    params.nodeConfig.getModeConfig
-        .withArgs('mode').returns(params.modeConfig);
 
     ProjectConfig.prototype.getNodeConfig
         .withArgs(params.nodePath).returns(params.nodeConfig);
     ProjectConfig.prototype.getNodeMaskConfigs
         .withArgs(params.nodePath).returns([params.nodeMaskConfig]);
-
-    makePlatform.setLogger(params.logger);
 }

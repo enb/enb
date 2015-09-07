@@ -24,7 +24,7 @@ describe('make/buildTargets', function () {
         sandbox.stub(Cache.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill());
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init(projectPath, 'mode', function () {}).then(done);
@@ -77,7 +77,7 @@ describe('make/buildTargets', function () {
     });
 
     it('should build all possible node targets if passed targets are empty', function () {
-        setup({ nodePath: 'path/to/node' });
+        setup();
 
         return makePlatform.buildTargets([]).then(function () {
             expect(Node.prototype.build).to.be.calledWith(['*']);
@@ -114,10 +114,8 @@ describe('make/buildTargets', function () {
     });
 
     it('should fulfill promise with built targets', function () {
-        setup({
-            nodePath: 'path/to/node',
-            nodeBuildResult: { builtTargets: ['?.js'] }
-        });
+        setup({ nodePath: 'path/to/node' });
+        Node.prototype.build.returns({ builtTargets: ['?.js'] });
 
         return expect(makePlatform.buildTargets(['path/to/node/?.js'])).
             to.be.eventually.deep.equal({ builtTargets: ['?.js'] });
@@ -127,16 +125,20 @@ describe('make/buildTargets', function () {
 function setup (settings) {
     var nodeConfigs = {};
 
+    settings = settings || {};
+
     _.defaults(settings, {
-        nodePath: 'path/to/node',
-        nodeBuildResult: {}
+        nodePath: 'default/path'
     });
 
     nodeConfigs[settings.nodePath] = sinon.createStubInstance(NodeConfig);
 
-    ProjectConfig.prototype.getNodeConfig.returns(sinon.createStubInstance(NodeConfig));
-    ProjectConfig.prototype.getNodeConfigs.returns(nodeConfigs);
-    ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
+    ProjectConfig.prototype.getNodeConfig
+        .withArgs(settings.nodePath).returns(sinon.createStubInstance(NodeConfig));
+    ProjectConfig.prototype.getNodeConfigs
+        .returns(nodeConfigs);
+    ProjectConfig.prototype.getNodeMaskConfigs
+        .withArgs(settings.nodePath).returns([sinon.createStubInstance(NodeMaskConfig)]);
 
-    Node.prototype.build.returns(settings.nodeBuildResult);
+    Node.prototype.build.returns({});
 }

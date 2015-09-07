@@ -1,7 +1,7 @@
 var fs = require('fs');
-var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
+var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var Node = require('../../../lib/node');
 var NodeConfig = require('../../../lib/config/node-config');
@@ -27,11 +27,8 @@ describe('make/misc', function () {
         fs.existsSync.returns(true);
         vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
-        ProjectConfig.prototype.getNodeConfig.returns(sinon.createStubInstance(NodeConfig));
-        ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
-
         makePlatform = new MakePlatform();
-        makePlatform.init(path.normalize('/path/to/project'), 'mode', function () {}).then(done);
+        makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
         makePlatform.setLogger(sinon.createStubInstance(Logger));
     });
 
@@ -41,7 +38,7 @@ describe('make/misc', function () {
 
     describe('requireNodeSources', function () {
         it('should return promise', function () {
-            var result = makePlatform.requireNodeSources(path.normalize('path/to/node'));
+            var result = makePlatform.requireNodeSources('path/to/node');
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -49,19 +46,23 @@ describe('make/misc', function () {
         it('should init required node', function () {
             var initNode = sinon.spy(makePlatform, 'initNode');
 
-            makePlatform.requireNodeSources(path.normalize('path/to/node'));
+            makePlatform.requireNodeSources('path/to/node');
 
-            expect(initNode).to.be.calledWith(path.normalize('path/to/node'));
+            expect(initNode).to.be.calledWith('path/to/node');
         });
 
         it('should require sources from initialized node', function () {
-            return makePlatform.requireNodeSources(path.normalize('path/to/node')).then(function () {
+            setup({ nodePath: 'path/to/node' });
+
+            return makePlatform.requireNodeSources('path/to/node').then(function () {
                 expect(Node.prototype.requireSources).to.be.called;
             });
         });
 
         it('should pass required targets to node when require sources from it', function () {
-            return makePlatform.requireNodeSources(path.normalize('path/to/node'), ['?.js']).then(function () {
+            setup({ nodePath: 'path/to/node' });
+
+            return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(function () {
                 expect(Node.prototype.requireSources).to.be.calledWith(['?.js']);
             });
         });
@@ -106,3 +107,13 @@ describe('make/misc', function () {
         });
     });
 });
+
+function setup (settings) {
+    settings = settings || {};
+    _.defaults(settings, { nodePath: 'default/path' });
+
+    ProjectConfig.prototype.getNodeConfig
+        .withArgs(settings.nodePath).returns(sinon.createStubInstance(NodeConfig));
+    ProjectConfig.prototype.getNodeMaskConfigs
+        .withArgs(settings.nodePath).returns([sinon.createStubInstance(NodeMaskConfig)]);
+}

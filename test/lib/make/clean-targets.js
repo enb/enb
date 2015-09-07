@@ -24,7 +24,7 @@ describe('make/cleanTarget', function () {
         sandbox.stub(Cache.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill());
+        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init(projectPath, 'mode', function () {}).then(done);
@@ -77,7 +77,7 @@ describe('make/cleanTarget', function () {
     });
 
     it('should build all possible node targets if passed targets are empty', function () {
-        setup({ nodePath: 'path/to/node' });
+        setup();
 
         return makePlatform.cleanTargets([]).then(function () {
             expect(Node.prototype.clean).to.be.calledWith(['*']);
@@ -117,13 +117,18 @@ describe('make/cleanTarget', function () {
 function setup (settings) {
     var nodeConfigs = {};
 
+    settings = settings || {};
+
     _.defaults(settings, {
-        nodePath: 'path/to/node'
+        nodePath: 'default/path'
     });
 
     nodeConfigs[settings.nodePath] = sinon.createStubInstance(NodeConfig);
 
-    ProjectConfig.prototype.getNodeConfig.returns(sinon.createStubInstance(NodeConfig));
-    ProjectConfig.prototype.getNodeConfigs.returns(nodeConfigs);
-    ProjectConfig.prototype.getNodeMaskConfigs.returns([sinon.createStubInstance(NodeMaskConfig)]);
+    ProjectConfig.prototype.getNodeConfig
+        .withArgs(settings.nodePath).returns(sinon.createStubInstance(NodeConfig));
+    ProjectConfig.prototype.getNodeConfigs
+        .returns(nodeConfigs);
+    ProjectConfig.prototype.getNodeMaskConfigs
+        .withArgs(settings.nodePath).returns([sinon.createStubInstance(NodeMaskConfig)]);
 }

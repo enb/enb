@@ -1,6 +1,6 @@
 var vowFs = require('vow-fs');
 var path = require('path');
-var dropRequireCache = require('../../../lib/fs/drop-require-cache');
+var clearRequire = require('clear-require');
 
 describe('fs/async-fs', function () {
     var previousLimit;
@@ -14,7 +14,7 @@ describe('fs/async-fs', function () {
     });
 
     beforeEach(function () {
-        dropRequireCache(require, asyncFsPath);
+        clearRequire(asyncFsPath);
         optionsSpy.reset();
     });
 

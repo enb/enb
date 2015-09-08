@@ -57,6 +57,10 @@ describe('make/init', function () {
                 ProjectConfig.prototype.getNodeMaskConfigs.returns([]);
             });
 
+            afterEach(function () {
+                delete process.env.YENV;
+            });
+
             it('should set mode as mode passed in params', function () {
                 makePlatform.init('/path/to/project', 'test_mode', function () {});
 
@@ -77,8 +81,6 @@ describe('make/init', function () {
 
             it('should set mode as development if no mode passed and no value available in ' +
                 'process.env.YENV', function () {
-                delete process.env.YENV;
-
                 makePlatform.init('/path/to/project', undefined, function () {});
 
                 return makePlatform.initNode('path/to/node').then(function () {
@@ -224,223 +226,227 @@ describe('make/init', function () {
             mockFs.restore();
         });
 
-        it('throw error if project directory does not have either .enb/ or .bem/ dirs', function () {
-            mockFs({
-                '/path/to/project': {}
+        describe('regular config', function () {
+            it('throw error if project directory does not have either .enb/ or .bem/ dirs', function () {
+                mockFs({
+                    '/path/to/project': {}
+                });
+
+                expect(function () { makePlatform.init('/path/to/project'); })
+                    .to.throw('Cannot find enb config directory. Should be either .enb/ or .bem/.');
             });
 
-            expect(function () { makePlatform.init('/path/to/project'); })
-                .to.throw('Cannot find enb config directory. Should be either .enb/ or .bem/.');
-        });
-
-        it('should load config from .enb directory if it exists there', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
+            it('should load config from .enb directory if it exists there', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-        });
-
-        it('should load config from .bem directory if it exists there', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.bem': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
+            it('should load config from .bem directory if it exists there', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.bem': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-        });
-
-        it('should load config from .enb directory if both .enb and .bem dirs exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
-                    },
-                    '.bem': {
-                        'make.js': makeFileTemplate({ lang: 'en' })
+            it('should load config from .enb directory if both .enb and .bem dirs exists', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        },
+                        '.bem': {
+                            'make.js': makeFileTemplate({ lang: 'en' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
-        });
-
-        it('should load enb-make.js config file if it exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'enb-make.js': makeFileTemplate({ lang: 'ru' })
+            it('should load enb-make.js config file if it exists', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'enb-make.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-        });
-
-        it('should load make.js config file if it exists', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
+            it('should load make.js config file if it exists', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-        });
-
-        it('should load enb-make.js config if both exist in config dir', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'en' }),
-                        'enb-make.js': makeFileTemplate({ lang: 'ru' })
+            it('should load enb-make.js config if both exist in config dir', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'en' }),
+                            'enb-make.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.not.calledWith(['en']);
-        });
-
-        it('should return rejected promise if there is no config file in .enb and .bem directories', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {},
-                    '.bem': {}
-                }
-            });
-
-            return expect(makePlatform.init('/path/to/project'))
-                .to.be.rejectedWith('Cannot find make configuration file.');
-        });
-
-        it('should drop require cache for for config file', function () {
-            var modulePath = path.resolve('/path/to/project/.enb/make.js');
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
+            it('should return rejected promise if there is no config file in .enb and .bem directories', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {},
+                        '.bem': {}
                     }
-                }
+                });
+
+                return expect(makePlatform.init('/path/to/project'))
+                    .to.be.rejectedWith('Cannot find make configuration file.');
             });
-            require.cache[modulePath] = 'foo';
 
-            makePlatform.init('/path/to/project');
+            it('should drop require cache for for config file', function () {
+                var modulePath = path.resolve('/path/to/project/.enb/make.js');
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        }
+                    }
+                });
+                require.cache[modulePath] = 'foo';
 
-            expect(require.cache[modulePath]).to.be.not.equal('foo');
+                makePlatform.init('/path/to/project');
+
+                expect(require.cache[modulePath]).to.be.not.equal('foo');
+            });
+
+            it('should return rejected promise if exception thrown while executing config', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': 'module.exports = function () { ' +
+                            'throw new Error("exc_in_config");' +
+                            '};'
+                        }
+                    }
+                });
+
+                return expect(makePlatform.init('/path/to/project'))
+                    .to.be.rejectedWith('exc_in_config');
+            });
+
+            it('should pass project config instance to executed config', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': makeFileTemplate({ lang: 'ru' })
+                        }
+                    }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
+            });
         });
 
-        it('should return rejected promise if exception thrown while executing config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () { ' +
-                                       'throw new Error("exc_in_config");' +
-                                   '};'
+        describe('personal config', function () {
+            it('should load personal config using same rules with regular config loading', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.personal.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
             });
 
-            return expect(makePlatform.init('/path/to/project'))
-                .to.be.rejectedWith('exc_in_config');
-        });
-
-        it('should pass project config instance to executed config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': makeFileTemplate({ lang: 'ru' })
+            it('should drop require cache for personal config', function () {
+                var modulePath = path.resolve('/path/to/project/.enb/make.personal.js');
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.personal.js': 'module.exports = function () {};'
+                        }
                     }
-                }
+                });
+
+                require.cache[modulePath] = 'foo';
+                makePlatform.init('/path/to/project');
+
+                expect(require.cache[modulePath]).to.be.not.equal('foo');
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
-        });
-
-        it('should load personal config using same rules with regular config loading', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': makeFileTemplate({ lang: 'ru' })
+            it('should return rejected promise if exception thrown while executing personal config', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.personal.js': 'module.exports = function () { ' +
+                            'throw new Error("exc_in_personal_config");' +
+                            '};'
+                        }
                     }
-                }
+                });
+
+                return expect(makePlatform.init('/path/to/project'))
+                    .to.be.rejectedWith('exc_in_personal_config');
             });
 
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
-        });
-
-        it('should drop require cache for personal config', function () {
-            var modulePath = path.resolve('/path/to/project/.enb/make.personal.js');
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () {};'
+            it('should pass project config instance to executed personal config', function () {
+                mockFs({
+                    '/path/to/project': {
+                        '.enb': {
+                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.personal.js': makeFileTemplate({ lang: 'ru' })
+                        }
                     }
-                }
+                });
+
+                makePlatform.init('/path/to/project');
+
+                expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
             });
-
-            require.cache[modulePath] = 'foo';
-            makePlatform.init('/path/to/project');
-
-            expect(require.cache[modulePath]).to.be.not.equal('foo');
-        });
-
-        it('should return rejected promise if exception thrown while executing personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function () { ' +
-                                                'throw new Error("exc_in_personal_config");' +
-                                            '};'
-                    }
-                }
-            });
-
-            return expect(makePlatform.init('/path/to/project'))
-                .to.be.rejectedWith('exc_in_personal_config');
-        });
-
-        it('should pass project config instance to executed personal config', function () {
-            mockFs({
-                '/path/to/project': {
-                    '.enb': {
-                        'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': makeFileTemplate({ lang: 'ru' })
-                    }
-                }
-            });
-
-            makePlatform.init('/path/to/project');
-
-            expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
         });
     });
 });

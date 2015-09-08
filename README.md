@@ -433,14 +433,14 @@ module.exports.createBuilder = function(options) { /* ... */ };
 Пример использования:
 
 ```javascript
+var clearRequire = require('clear-require');
 var enbBuilder = require('enb/lib/server/server-middleware').createBuilder();
-var dropRequireCache = require('enb/lib/fs/drop-require-cache');
 app
     .get('/', function (req, res, next) {
         var bemhtmlFilePath = 'pages/index/index.bemhtml.js';
         enbBuilder(bemhtmlFilePath).then(function() {
             var bemhtmlAbsFilePath = process.process.cwd() + '/' + bemhtmlFilePath;
-            dropRequireCache(require, bemhtmlAbsFilePath);
+            clearRequire(bemhtmlAbsFilePath);
             var bemhtml = require(bemhtmlAbsFilePath);
             res.end(bemhtml.BEMHTML.apply({block: 'b-page', content: 'Hello World'}));
             next();

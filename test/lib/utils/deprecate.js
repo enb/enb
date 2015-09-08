@@ -1,6 +1,6 @@
 var vm = require('vm');
+var clearRequire = require('clear-require');
 var Logger = require('../../../lib/logger');
-var dropRequireCache = require('../../../lib/fs/drop-require-cache');
 
 describe('deprecate', function () {
     var deprecate;
@@ -8,7 +8,7 @@ describe('deprecate', function () {
 
     beforeEach (function () {
         //dropping cache because need to have uninitialized deprecate before each test
-        dropRequireCache(require, deprecatePath);
+        clearRequire(deprecatePath);
         deprecate = require(deprecatePath);
         sinon.sandbox.stub(Logger.prototype);
     });

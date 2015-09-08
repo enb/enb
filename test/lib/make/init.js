@@ -13,7 +13,7 @@ var Logger = require('../../../lib/logger');
 var BuildGraph = require('../../../lib/ui/build-graph');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe.only('make/init', function () {
+describe('make/init', function () {
     var makePlatform;
     var sandbox = sinon.sandbox.create();
 

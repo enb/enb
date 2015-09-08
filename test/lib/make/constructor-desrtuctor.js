@@ -7,10 +7,15 @@ var Cache = require('../../../lib/cache/cache');
 var SharedResources = require('../../../lib/shared-resources');
 
 describe('make/constructor-destructor', function () {
+    var sandbox = sinon.sandbox.create();
     var makePlatform;
 
     beforeEach(function () {
         makePlatform = new MakePlatform();
+    });
+
+    afterEach(function () {
+        sandbox.restore();
     });
 
     describe('constructor', function () {
@@ -26,11 +31,11 @@ describe('make/constructor-destructor', function () {
 
     describe('destructor', function () {
         it('should destroy shared resources', function () {
-            var destruct = sinon.stub(makePlatform.getSharedResources(), 'destruct');
+            sandbox.stub(SharedResources.prototype);
 
             makePlatform.destruct();
 
-            expect(destruct).to.be.called;
+            expect(SharedResources.prototype.destruct).to.be.called;
         });
 
         it('should delete reference to project config', function () {
@@ -56,27 +61,17 @@ describe('make/constructor-destructor', function () {
             expect(makePlatform.getCacheStorage()).to.be.undefined;
         });
 
-        describe('cache destruct', function () {
-            before(function () {
-                sinon.sandbox.stub(Cache.prototype);
-            });
+        it('should destroy cache', function () {
+            sandbox.stub(Cache.prototype);
 
-            after(function () {
-                sinon.sandbox.restore();
-            });
+            makePlatform.buildTargets(); //creates cache internally
 
-            it('should destroy cache', function () {
-                makePlatform.buildTargets(); //creates cache internally
+            makePlatform.destruct();
 
-                makePlatform.destruct();
-
-                expect(Cache.prototype.destruct).to.be.called;
-            });
+            expect(Cache.prototype.destruct).to.be.called;
         });
 
         describe('tests require node init', function () {
-            var sandbox = sinon.sandbox.create();
-
             beforeEach(function () {
                 sandbox.stub(fs);
                 sandbox.stub(Node.prototype);

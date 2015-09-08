@@ -12,8 +12,12 @@ describe('make/cache', function () {
 
     beforeEach(function () {
         sinon.stub(fs, 'existsSync');
-        fs.existsSync.withArgs('/path/to/project/.enb').returns(true);
-        fs.existsSync.withArgs('/path/to/project/.enb/make.js').returns(true);
+        fs.existsSync
+            .withArgs(path.normalize('/path/to/project/.enb'))
+            .returns(true);
+        fs.existsSync
+            .withArgs(path.normalize('/path/to/project/.enb/make.js'))
+            .returns(true);
 
         cacheStorage = sinon.createStubInstance(CacheStorage);
 
@@ -97,6 +101,9 @@ describe('make/cache', function () {
         });
 
         it('should save makefile mtimes', function () {
+            var expectedMakefiles = {};
+            expectedMakefiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
+
             setup(cacheStorage, makePlatform, {
                 currentMakeFileMtime: new Date(1)
             });
@@ -104,7 +111,7 @@ describe('make/cache', function () {
             makePlatform.saveCache();
 
             expect(cacheStorage.set)
-                .to.be.calledWith(':make', 'makefiles', { '/path/to/project/.enb/make.js': new Date(1).valueOf() });
+                .to.be.calledWith(':make', 'makefiles', expectedMakefiles);
         });
 
         it('should write cached data to disk', function () {
@@ -154,7 +161,7 @@ function setup(cacheStorage, makePlatform, settings) {
     });
 
     var makeFiles = {};
-    makeFiles['/path/to/project/.enb/make.js'] = settings.savedMakeFileMtime.valueOf();
+    makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.savedMakeFileMtime.valueOf();
 
     cacheStorage.get.withArgs(':make', 'version').returns(settings.savedENBVersion);
     cacheStorage.get.withArgs(':make', 'mode').returns(settings.savedMakePlatformMode);
@@ -168,7 +175,7 @@ function setup(cacheStorage, makePlatform, settings) {
                 })
             }
         },
-        'package.json': '{ "version": "'+ settings.currentENBVersion +'" }'
+        'package.json': '{ "version": "' + settings.currentENBVersion + '" }'
     });
 
     clearRequire('../../../package.json');

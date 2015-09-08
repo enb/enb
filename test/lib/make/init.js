@@ -3,6 +3,7 @@ var vowFs = require('vow-fs');
 var fs = require('fs');
 var mockFs = require('mock-fs');
 var path = require('path');
+var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var NodeConfig = require('../../../lib/config/node-config');
 var Node = require('../../../lib/node');
@@ -12,7 +13,7 @@ var Logger = require('../../../lib/logger');
 var BuildGraph = require('../../../lib/ui/build-graph');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe('make/init', function () {
+describe.only('make/init', function () {
     var makePlatform;
     var sandbox = sinon.sandbox.create();
 
@@ -213,6 +214,12 @@ describe('make/init', function () {
     });
 
     describe('config loading from fs tests', function () {
+        var makeFileTemplate = _.template(
+            'module.exports = function (projectConfig) { ' +
+                'projectConfig.setLanguages(["${lang}"]); ' +
+            '};'
+        );
+
         afterEach(function () {
             mockFs.restore();
         });
@@ -230,7 +237,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -244,7 +251,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.bem': {
-                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -258,10 +265,10 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["ru"]); };'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     },
                     '.bem': {
-                        'make.js': 'module.exports = function (projectConfig) { projectConfig.setLanguages(["en"]); };'
+                        'make.js': makeFileTemplate({ lang: 'en' })
                     }
                 }
             });
@@ -276,9 +283,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'enb-make.js': 'module.exports = function (projectConfig) { ' +
-                                            'projectConfig.setLanguages(["ru"]); ' +
-                                       '};'
+                        'enb-make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -292,9 +297,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { ' +
-                                        'projectConfig.setLanguages(["ru"]); ' +
-                                   '};'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -308,12 +311,8 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { ' +
-                                        'projectConfig.setLanguages(["en"]); ' +
-                                   '};',
-                        'enb-make.js': 'module.exports = function (projectConfig) { ' +
-                                            'projectConfig.setLanguages(["ru"]); ' +
-                                       '};'
+                        'make.js': makeFileTemplate({ lang: 'en' }),
+                        'enb-make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -341,7 +340,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function () {};'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -371,9 +370,7 @@ describe('make/init', function () {
             mockFs({
                 '/path/to/project': {
                     '.enb': {
-                        'make.js': 'module.exports = function (projectConfig) { ' +
-                                       'projectConfig.setLanguages(["ru"]);' +
-                                   '};'
+                        'make.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -388,9 +385,7 @@ describe('make/init', function () {
                 '/path/to/project': {
                     '.enb': {
                         'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function (projectConfig) { ' +
-                                                'projectConfig.setLanguages(["ru"]); ' +
-                                            '};'
+                        'make.personal.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });
@@ -438,9 +433,7 @@ describe('make/init', function () {
                 '/path/to/project': {
                     '.enb': {
                         'make.js': 'module.exports = function () {};', //will throw if no make file in dir
-                        'make.personal.js': 'module.exports = function (projectConfig) { ' +
-                                               'projectConfig.setLanguages(["ru"]);' +
-                                            '};'
+                        'make.personal.js': makeFileTemplate({ lang: 'ru' })
                     }
                 }
             });

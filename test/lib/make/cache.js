@@ -6,7 +6,7 @@ var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe.only('make/cache', function () {
+describe('make/cache', function () {
     var makePlatform;
     var cacheStorage;
 

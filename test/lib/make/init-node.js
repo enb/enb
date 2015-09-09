@@ -43,10 +43,9 @@ describe('make/initNode', function () {
 
     it('should not start node initialization if it was already started', function () {
         makePlatform.initNode('path/to/node');
-        Node.prototype.__constructor.reset();
         makePlatform.initNode('path/to/node');
 
-        expect(Node.prototype.__constructor).to.be.not.called;
+        expect(Node.prototype.__constructor).to.be.calledOnce;
     });
 
     it('should get node config from project config', function () {
@@ -87,7 +86,7 @@ describe('make/initNode', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(vowFs.makeDir).to.be.calledWith(path.normalize('/path/to/project/path/to/node'));
+            expect(vowFs.makeDir).to.be.calledWith(path.normalize(makePlatform.getDir() + '/path/to/node'));
         });
     });
 
@@ -111,19 +110,7 @@ describe('make/initNode', function () {
         return expect(makePlatform.initNode('path/to/another/node')).to.be.rejected;
     });
 
-    it('should execute node mask config', function () {
-        var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
-
-        setup({ nodePath: 'path/to/node' });
-        ProjectConfig.prototype.getNodeMaskConfigs
-            .withArgs('path/to/node').returns([nodeMaskConfig]);
-
-        return makePlatform.initNode('path/to/node').then(function () {
-            expect(nodeMaskConfig.exec).to.be.called;
-        });
-    });
-
-    it('should pass node config to node mask configs as context', function () {
+    it('should execute node mask config and pass it node config as context', function () {
         var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
         var nodeConfig = sinon.createStubInstance(NodeConfig);
 
@@ -139,29 +126,13 @@ describe('make/initNode', function () {
         });
     });
 
-    it('should execute mode config', function () {
+    it('should execute mode config and pass it node config as context', function () {
         var modeConfig = sinon.createStubInstance(ModeConfig);
         var nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getModeConfig
             .withArgs('mode').returns(modeConfig);
 
-        setup({
-            nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
-        });
-
-        return makePlatform.initNode('path/to/node').then(function () {
-            expect(modeConfig.exec).to.be.called;
-        });
-    });
-
-    it('should pass node config to mode config as context', function () {
-        var modeConfig = sinon.createStubInstance(ModeConfig);
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
-
-        nodeConfig.getModeConfig
-            .withArgs('mode').returns(modeConfig);
         setup({
             nodePath: 'path/to/node',
             nodeConfig: nodeConfig

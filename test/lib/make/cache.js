@@ -48,7 +48,7 @@ describe('make/cache', function () {
         it('should drop cache if cached mode is not equal current mode', function () {
             setup(cacheStorage, makePlatform, {
                 currentMakePlatformMode: 'current_mode',
-                savedMakePlatformMode: 'saved_mode'
+                cachedMakePlatformMode: 'cached_mode'
             });
 
             makePlatform.loadCache();
@@ -59,7 +59,7 @@ describe('make/cache', function () {
         it('should drop cache if cached enb version differs from current enb version', function () {
             setup(cacheStorage, makePlatform, {
                 currentENBVersion: 'current_ver',
-                savedENBVersion: 'saved_ver'
+                cachedENBVersion: 'saved_ver'
             });
 
             makePlatform.loadCache();
@@ -70,7 +70,7 @@ describe('make/cache', function () {
         it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
             setup(cacheStorage, makePlatform, {
                 currentMakeFileMtime: new Date(1),
-                savedMakeFileMtime: new Date(2)
+                cachedMakeFileMtime: new Date(2)
             });
 
             makePlatform.loadCache();
@@ -153,18 +153,18 @@ function setup(cacheStorage, makePlatform, settings) {
 
     _.defaults(settings, {
         currentENBVersion: 'defaultENBVersion',
-        savedENBVersion: 'defaultENBVersion',
+        cachedENBVersion: 'defaultENBVersion',
         currentMakePlatformMode: 'defaultMakePlatformMode',
-        savedMakePlatformMode: 'defaultMakePlatformMode',
+        cachedMakePlatformMode: 'defaultMakePlatformMode',
         currentMakeFileMtime: new Date(1),
-        savedMakeFileMtime: new Date(1)
+        cachedMakeFileMtime: new Date(1)
     });
 
     var makeFiles = {};
-    makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.savedMakeFileMtime.valueOf();
+    makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.cachedMakeFileMtime.valueOf();
 
-    cacheStorage.get.withArgs(':make', 'version').returns(settings.savedENBVersion);
-    cacheStorage.get.withArgs(':make', 'mode').returns(settings.savedMakePlatformMode);
+    cacheStorage.get.withArgs(':make', 'version').returns(settings.cachedENBVersion);
+    cacheStorage.get.withArgs(':make', 'mode').returns(settings.cachedMakePlatformMode);
     cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
 
     mockFs({

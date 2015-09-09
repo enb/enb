@@ -4,13 +4,11 @@ var clearRequire = require('clear-require');
 
 describe('fs/async-fs', function () {
     var previousLimit;
-    var asyncFsPath;
-    var sandbox;
+    var asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
+    var sandbox = sinon.sandbox.create();
 
     before(function () {
-        sandbox = sinon.sandbox.create();
         previousLimit = process.env.ENB_FILE_LIMIT;
-        asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
     });
 
     beforeEach(function () {
@@ -19,11 +17,11 @@ describe('fs/async-fs', function () {
     });
 
     afterEach(function () {
+        delete process.env.ENB_FILE_LIMIT;
         sandbox.restore();
     });
 
     after(function () {
-        delete process.env.ENB_FILE_LIMIT;
         previousLimit && (process.env.ENB_FILE_LIMIT = previousLimit);
     });
 
@@ -34,8 +32,6 @@ describe('fs/async-fs', function () {
     });
 
     it('should not set file limit if it was not defined in process.env', function () {
-        delete process.env.ENB_FILE_LIMIT; //remove process.env.ENB_FILE_LIMIT explicitly
-
         require(asyncFsPath);
 
         sinon.assert.notCalled(vowFs.options);

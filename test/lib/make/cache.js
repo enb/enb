@@ -7,11 +7,12 @@ var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/cache', function () {
+    var sandbox = sinon.sandbox.create();
     var makePlatform;
     var cacheStorage;
 
     beforeEach(function () {
-        sinon.stub(fs, 'existsSync');
+        sandbox.stub(fs, 'existsSync');
         fs.existsSync
             .withArgs(path.normalize('/path/to/project/.enb'))
             .returns(true);
@@ -26,7 +27,7 @@ describe('make/cache', function () {
     });
 
     afterEach(function () {
-        fs.existsSync.restore();
+        sandbox.restore();
         mockFs.restore();
     });
 

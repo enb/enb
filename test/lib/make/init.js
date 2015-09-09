@@ -38,12 +38,12 @@ describe('make/init', function () {
         });
 
         it('should return promise', function () {
-            expect(setup(makePlatform))
+            expect(init_(makePlatform))
                 .to.be.instanceOf(vow.Promise);
         });
 
         it('should set path to project', function () {
-            setup(makePlatform, {
+            init_(makePlatform, {
                 projectPath: '/path/to/project'
             });
 
@@ -64,7 +64,7 @@ describe('make/init', function () {
             });
 
             it('should set mode as mode passed in params', function () {
-                setup(makePlatform, {
+                init_(makePlatform, {
                     mode: 'test_mode'
                 });
 
@@ -75,7 +75,7 @@ describe('make/init', function () {
 
             it('should set mode as value of process.env.YENV if no mode passed in params', function () {
                 process.env.YENV = 'test_mode';
-                setup(makePlatform, { mode: null });
+                init_(makePlatform, { mode: null });
 
                 return makePlatform.initNode('path/to/node').then(function () {
                     expect(nodeConfig.getModeConfig).to.be.calledWith('test_mode');
@@ -84,7 +84,7 @@ describe('make/init', function () {
 
             it('should set mode as development if no mode passed and no value available in ' +
                 'process.env.YENV', function () {
-                setup(makePlatform, { mode: null });
+                init_(makePlatform, { mode: null });
 
                 return makePlatform.initNode('path/to/node').then(function () {
                     expect(nodeConfig.getModeConfig).to.be.calledWith('development');
@@ -93,20 +93,20 @@ describe('make/init', function () {
         });
 
         it('should create project config', function () {
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(makePlatform.getProjectConfig()).to.be.instanceOf(ProjectConfig);
         });
 
         it('should initialize project config with project dir', function () {
-            setup(makePlatform, { projectPath: '/path/to/project' });
+            init_(makePlatform, { projectPath: '/path/to/project' });
 
             expect(makePlatform.getProjectConfig().__constructor)
                 .to.be.calledWith('/path/to/project');
         });
 
         it('should create logger', function () {
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(makePlatform.getLogger()).to.be.instanceOf(Logger);
         });
@@ -117,13 +117,13 @@ describe('make/init', function () {
             });
 
             it('should create build graph', function () {
-                setup(makePlatform);
+                init_(makePlatform);
 
                 expect(makePlatform.getBuildGraph()).to.be.instanceOf(BuildGraph);
             });
 
             it('should initialize build graph with project name', function () {
-                setup(makePlatform, { projectPath: '/path/to/project-name' });
+                init_(makePlatform, { projectPath: '/path/to/project-name' });
 
                 expect(makePlatform.getBuildGraph().__constructor).to.be.calledWith('project-name');
             });
@@ -132,7 +132,7 @@ describe('make/init', function () {
         it('should execute config function if it passed', function () {
             var config = sinon.stub();
 
-            setup(makePlatform, { config: config });
+            init_(makePlatform, { config: config });
 
             expect(config).to.be.called;
         });
@@ -140,7 +140,7 @@ describe('make/init', function () {
         it('should pass project config instance to config function', function () {
             var config = sinon.stub();
 
-            setup(makePlatform, { config: config });
+            init_(makePlatform, { config: config });
 
             expect(config).to.be.calledWith(makePlatform.getProjectConfig());
         });
@@ -149,18 +149,18 @@ describe('make/init', function () {
             var config = sinon.stub();
             config.throws('test_error');
 
-            return expect(setup(makePlatform, { config: config }))
+            return expect(init_(makePlatform, { config: config }))
                 .to.be.rejectedWith('test_error');
         });
 
         it('should load included configs from project config', function () {
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(ProjectConfig.prototype.getIncludedConfigFilenames).to.be.called;
         });
 
         it('should load mode config from project config for make platform mode', function () {
-            setup(makePlatform, {
+            init_(makePlatform, {
                 mode: 'test_mode'
             });
 
@@ -171,7 +171,7 @@ describe('make/init', function () {
             var modeConfig = sinon.createStubInstance(ModeConfig);
             ProjectConfig.prototype.getModeConfig.withArgs('test_mode').returns(modeConfig);
 
-            setup(makePlatform, {
+            init_(makePlatform, {
                 mode: 'test_mode'
             });
 
@@ -181,7 +181,7 @@ describe('make/init', function () {
         it('should save languages from project config', function () {
             ProjectConfig.prototype.getLanguages.returns(['ru']);
 
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(makePlatform.getLanguages()).to.be.deep.equal(['ru']);
         });
@@ -189,7 +189,7 @@ describe('make/init', function () {
         it('should save env values from project config', function () {
             ProjectConfig.prototype.getEnvValues.returns({ foo: 'bar' });
 
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(makePlatform.getEnv()).to.be.deep.equal({ foo: 'bar' });
         });
@@ -197,19 +197,19 @@ describe('make/init', function () {
         it('should save level naming schemes from project config', function () {
             ProjectConfig.prototype.getLevelNamingSchemes.returns({ foo: 'bar' });
 
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(makePlatform.getLevelNamingScheme('foo')).to.be.equal('bar');
         });
 
         it('should submit clean task for project config', function () {
-            setup(makePlatform);
+            init_(makePlatform);
 
             expect(ProjectConfig.prototype.task).to.be.calledWith('clean');
         });
 
         it('should create temp dir in .enb directory in project dir', function () {
-            setup(makePlatform, {
+            init_(makePlatform, {
                 projectPath: '/path/to/project'
             });
 
@@ -217,7 +217,7 @@ describe('make/init', function () {
         });
 
         it('should instantiate cache storage with path to cache file located in temp dir', function () {
-            return setup(makePlatform, {
+            return init_(makePlatform, {
                 projectPath: '/path/to/project'
             }).then(function () {
                 expect(makePlatform.getCacheStorage())
@@ -240,9 +240,9 @@ describe('make/init', function () {
         describe('regular config', function () {
             it('throw error if project directory does not have either .enb/ or .bem/ dirs', function () {
                 var func = function () {
-                    setup(makePlatform, {
+                    init_(makePlatform, {
                         projectPath: '/path/to/project',
-                        config: null
+                        config: null //null because need to implicitly call makePlatform.init without configurator
                     });
                 };
 
@@ -263,9 +263,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -280,9 +280,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -300,9 +300,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -318,9 +318,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -335,9 +335,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -353,9 +353,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -370,9 +370,9 @@ describe('make/init', function () {
                     }
                 });
 
-                return expect(setup(makePlatform, {
+                return expect(init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 }))
                     .to.be.rejectedWith('Cannot find make configuration file.');
             });
@@ -388,9 +388,9 @@ describe('make/init', function () {
                 });
                 require.cache[modulePath] = 'foo';
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(require.cache[modulePath]).to.be.not.equal('foo');
@@ -407,9 +407,9 @@ describe('make/init', function () {
                     }
                 });
 
-                return expect(setup(makePlatform, {
+                return expect(init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 }))
                     .to.be.rejectedWith('exc_in_config');
             });
@@ -423,9 +423,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
@@ -443,9 +443,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
@@ -463,9 +463,9 @@ describe('make/init', function () {
                 });
 
                 require.cache[modulePath] = 'foo';
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(require.cache[modulePath]).to.be.not.equal('foo');
@@ -483,9 +483,9 @@ describe('make/init', function () {
                     }
                 });
 
-                return expect(setup(makePlatform, {
+                return expect(init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 }))
                     .to.be.rejectedWith('exc_in_personal_config');
             });
@@ -500,9 +500,9 @@ describe('make/init', function () {
                     }
                 });
 
-                setup(makePlatform, {
+                init_(makePlatform, {
                     projectPath: '/path/to/project',
-                    config: null
+                    config: null //null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
@@ -511,7 +511,7 @@ describe('make/init', function () {
     });
 });
 
-function setup(makePlatform, settings) {
+function init_(makePlatform, settings) {
     settings = settings || {};
 
     _.defaults(settings, {

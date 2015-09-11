@@ -112,14 +112,20 @@ describe('make/init', function () {
                 sandbox.stub(BuildGraph.prototype);
             });
 
-            it('should create build graph', function () {
+            it('should not create build graph by default', function () {
                 init_();
+
+                expect(makePlatform.getBuildGraph()).to.be.equal(null);
+            });
+
+            it('should create build graph on demand', function () {
+                init_({opts: {graph: true}});
 
                 expect(makePlatform.getBuildGraph()).to.be.instanceOf(BuildGraph);
             });
 
             it('should initialize build graph with project name', function () {
-                init_({ projectPath: '/path/to/project-name' });
+                init_({ projectPath: '/path/to/project-name', opts: {graph: true}});
 
                 expect(makePlatform.getBuildGraph().__constructor).to.be.calledWith('project-name');
             });
@@ -516,7 +522,8 @@ describe('make/init', function () {
         return makePlatform.init(
             settings.projectPath,
             settings.mode,
-            settings.config
+            settings.config,
+            settings.opts
         );
     }
 });

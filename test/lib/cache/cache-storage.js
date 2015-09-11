@@ -1,132 +1,228 @@
+var vow = require('vow');
 var fs = require('fs');
 var path = require('path');
 var mockFs = require('mock-fs');
+var clearRequire = require('clear-require');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('cache/cache-storage', function () {
-    var CACHE_FILE = path.resolve('cache.json');
-    var INVALID_FILE = path.resolve('cache.txt');
-    var TEST_DATA = {
-            prefix1: {
-                key1: 'value1',
-                key2: 'value2'
-            }
-        };
-
-    beforeEach(function () {
-        mockFs({});
-    });
+    var sandbox = sinon.sandbox.create();
 
     afterEach(function () {
+        sandbox.restore();
         mockFs.restore();
     });
 
     describe('constructor', function () {
-        it('success', function () {
-            var cacheStorage = new CacheStorage(CACHE_FILE);
-
-            cacheStorage._filename.should.equal(CACHE_FILE);
-            cacheStorage._data.should.be.instanceOf(Object);
-            Object.keys(cacheStorage._data).should.have.length(0);
-            cacheStorage._mtime.should.equal(0);
-        });
-    });
-
-    describe('instance methods', function () {
-        var cacheStorage;
-
         beforeEach(function () {
-            cacheStorage = new CacheStorage(CACHE_FILE);
+            sandbox.stub(fs);
         });
 
-        describe('load', function () {
-            it('should load without file', function () {
-                cacheStorage.load();
-                cacheStorage._data.should.be.instanceOf(Object);
-                Object.keys(cacheStorage._data).should.have.length(0);
+        it('should save filename', function () {
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            storage.load();
+
+            expect(fs.existsSync).to.be.calledWith('/path/to/test_file.js');
+        });
+    });
+
+    describe('load', function () {
+        it('should set data as empty object if cache file does not exist', function () {
+            mockFs({
+                '/path/to': {
+                    'test_file.js': ''
+                }
             });
 
-            it('should load with invalid json file', function () {
-                fs.writeFileSync(INVALID_FILE, -1, { encoding: 'utf-8' });
-                cacheStorage = new CacheStorage(INVALID_FILE);
-                cacheStorage.load();
-                cacheStorage._data.should.be.instanceOf(Object);
-                Object.keys(cacheStorage._data).should.have.length(0);
-                cacheStorage._mtime.should.equal(fs.statSync(cacheStorage._filename).mtime.getTime());
-            });
+            var storage = createCacheStorage_('/path/to/test_file.js');
 
-            it('should load with valid json file', function () {
-                var d = { key: 'value' };
-                fs.writeFileSync(CACHE_FILE, JSON.stringify(d), { encoding: 'utf-8' });
-                cacheStorage.load();
+            storage.load();
+            storage.save(); //the only way to check internal data contents is to save cache to file
 
-                cacheStorage._data.should.be.instanceOf(Object);
-                Object.keys(cacheStorage._data).should.have.length(1);
-                cacheStorage._mtime.should.equal(fs.statSync(cacheStorage._filename).mtime.getTime());
-            });
+            assertStorageData('/path/to/test_file.js', {});
         });
 
-        describe('set', function () {
-            it('prefix not-exists', function () {
-                Object.keys(cacheStorage._data).should.have.length(0);
-                cacheStorage.set('prefix1', 'key1', 'value1');
-                Object.keys(cacheStorage._data).should.have.length(1);
-                Object.keys(cacheStorage._data.prefix1).should.have.length(1);
-
+        it('should clear require for cache file', function () {
+            mockFs({
+                '/path/to': {
+                    'test_file.js': 'module.exports = {};'
+                }
             });
 
-            it('prefix exists', function () {
-                cacheStorage.set('prefix1', 'key1', 'value1');
-                cacheStorage.set('prefix1', 'key2', 'value2');
-                Object.keys(cacheStorage._data.prefix1).should.have.length(2);
-            });
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            require.cache[path.resolve('/path/to/test_file.js')] = 'foo';
+            storage.load();
+
+            expect(require.cache[path.resolve('/path/to/test_file.js')])
+                .to.be.not.equal('foo');
         });
 
-        describe('with predefined data', function () {
-            beforeEach(function () {
-                cacheStorage._data = JSON.parse(JSON.stringify(TEST_DATA));
+        it('should load cached data', function () {
+            mockFs({
+                '/path/to': {
+                    'test_file.js': 'module.exports = { foo: "bar" };'
+                }
             });
 
-            describe('save', function () {
-                it('should save synchronous', function () {
-                    fs.existsSync(CACHE_FILE).should.equal(false);
-                    cacheStorage.save();
-                    fs.existsSync(CACHE_FILE).should.equal(true);
-                    cacheStorage._mtime.should.equal(fs.statSync(cacheStorage._filename).mtime.getTime());
-                });
+            var storage = createCacheStorage_('/path/to/test_file.js');
 
-                it('should save asynchronous', function (done) {
-                    fs.existsSync(CACHE_FILE).should.equal(false);
-                    cacheStorage.saveAsync().then(function () {
-                        fs.existsSync(CACHE_FILE).should.equal(true);
-                        cacheStorage._mtime.should.equal(fs.statSync(cacheStorage._filename).mtime.getTime());
-                        done();
-                    });
-                });
+            storage.load();
+            storage.save(); //the only way to check internal data contents is to save cache to file
+
+            assertStorageData('/path/to/test_file.js', { foo: 'bar' });
+        });
+
+        it('should set data as empty object if exception occured during loading cache file', function () {
+            mockFs({
+                '/path/to': {
+                    'test_file.js': 'throw new Error();'
+                }
             });
 
-            it('should get valid data from cache', function () {
-                cacheStorage.get('prefix1', 'key1').should.equal('value1');
-                cacheStorage.get('prefix1', 'key2').should.equal('value2');
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            storage.load();
+            storage.save();
+
+            assertStorageData('/path/to/test_file.js', {});
+        });
+    });
+
+    describe('save', function () {
+        it('should write data prepending it with module.exports = ', function () {
+            mockFs({
+                '/path/to': {}
             });
 
-            it('should invalidate cached data properly', function () {
-                Object.keys(cacheStorage._data.prefix1).should.have.length(2);
-                cacheStorage.invalidate('prefix1', 'key1');
-                Object.keys(cacheStorage._data.prefix1).should.have.length(1);
-            });
+            var storage = createCacheStorage_('/path/to/test_file.js');
 
-            it('should drop prefix in cache', function () {
-                Object.keys(cacheStorage._data).should.have.length(1);
-                cacheStorage.dropPrefix('prefix1');
-                Object.keys(cacheStorage._data).should.have.length(0);
-            });
+            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.save();
 
-            it('should drop data in cache', function () {
-                Object.keys(cacheStorage._data).should.have.length(1);
-                cacheStorage.drop();
-                Object.keys(cacheStorage._data).should.have.length(0);
+            assertStorageData('/path/to/test_file.js', {
+                test_prefix: {
+                    test_key: 'test_value'
+                }
             });
         });
     });
+
+    describe('saveAsync', function () {
+        it('should return promise', function () {
+            var storage = createCacheStorage_();
+            var result = storage.saveAsync();
+
+            expect(result).to.be.instanceOf(vow.Promise);
+        });
+
+        it('should save data to file asynchronously', function () {
+            mockFs({
+                '/path/to': {}
+            });
+
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+
+            return storage.saveAsync().then(function () {
+                assertStorageData('/path/to/test_file.js', {
+                    test_prefix: {
+                        test_key: 'test_value'
+                    }
+                });
+            });
+        });
+
+        it('should write data to stream split in chunks by prefix', function () {
+            var writeStream = sinon.createStubInstance(fs.WriteStream);
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            sandbox.stub(fs, 'createWriteStream');
+            fs.createWriteStream.returns(writeStream);
+            writeStream.on.returns(writeStream);
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.saveAsync();
+
+            expect(writeStream.write).to.be.calledWith('"test_prefix":');
+            expect(writeStream.write).to.be.calledWith(JSON.stringify({
+                test_key: 'test_value'
+            }));
+        });
+
+        it('should reject promise if error ocured during file write', function () {
+            mockFs({});
+
+            var storage = createCacheStorage_('/path/to/test_file.js');
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+
+            return expect(storage.saveAsync()).to.be.rejected; //saving to missing dir
+        });
+    });
+
+    describe('invalidate', function () {
+        it('should remove value by key and prefix', function () {
+            var storage = createCacheStorage_();
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+            expect(storage.get('test_prefix', 'test_key'))
+                .to.be.equal('test_value');
+
+            storage.invalidate('test_prefix', 'test_key');
+            expect(storage.get('test_prefix', 'test_key'))
+                .to.be.undefined;
+        });
+
+        it('should not delete another data for this prefix', function () {
+            var storage = createCacheStorage_();
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('test_prefix', 'another_test_key', 'another_test_value');
+
+            storage.invalidate('test_prefix', 'test_key');
+            expect(storage.get('test_prefix', 'another_test_key'))
+                .to.be.equal('another_test_value');
+        });
+    });
+
+    describe('dropPrefix', function () {
+        it('should delete all data for provided prefix', function () {
+            var storage = createCacheStorage_();
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('test_prefix', 'another_test_key', 'test_value');
+
+            storage.dropPrefix('test_prefix');
+
+            expect(storage.get('test_prefix', 'test_key')).to.be.undefined;
+            expect(storage.get('test_prefix', 'another_test_key')).to.be.undefined;
+        });
+    });
+
+    describe('drop', function () {
+        it('should clear current cache state', function () {
+            var storage = createCacheStorage_();
+
+            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('another_test_prefix', 'another_test_key', 'test_value');
+
+            storage.drop();
+
+            expect(storage.get('test_prefix', 'test_key')).to.be.undefined;
+            expect(storage.get('another_test_prefix', 'another_test_key')).to.be.undefined;
+        });
+    });
+
+    function createCacheStorage_(filename) {
+        return new CacheStorage(filename || '/path/to/default_file.js');
+    }
+
+    function assertStorageData(dataPath, expected) {
+        clearRequire(path.resolve(dataPath)); //in test becaue it throws on non-existing file
+
+        expect(require(dataPath)).to.be.deep.equal(expected);
+    }
 });

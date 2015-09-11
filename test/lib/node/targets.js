@@ -1,11 +1,10 @@
 var path = require('path');
 var vow = require('vow');
-var Node = require('../../../lib/node');
+var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
 var Logger = require('../../../lib/logger');
 var BaseTech = require('../../../lib/tech/base-tech');
-var BuildGraph = require('../../../lib/ui/build-graph');
 
 describe('node/targets', function () {
     var node;
@@ -25,7 +24,7 @@ describe('node/targets', function () {
         tech.getTargets.returns(['node.js']);
         tech.getName.returns('tech');
 
-        node = new Node(nodePath, makePlatform, sinon.createStubInstance(Cache));
+        node = nodeFactory.mkNode(nodePath, makePlatform, sinon.createStubInstance(Cache));
         node.setTargetsToBuild(['node.js']);
         node.setTechs([tech]);
         node.setLogger(logger);
@@ -84,15 +83,6 @@ describe('node/targets', function () {
 
         it('should fulfill target execution promise with value passed to resolveTarget', function () {
             return expect(node.resolveTarget('node.js', 'test_value')).to.be.eventually.equal('test_value');
-        });
-
-        it('should add resolved target to build graph if it was set', function () {
-            var graph = sinon.createStubInstance(BuildGraph);
-
-            node.setBuildGraph(graph);
-            node.resolveTarget('node.js');
-
-            expect(graph.resolveTarget).to.be.calledWith(path.join(node.getPath(), 'node.js'));
         });
 
         it('should log rebuild action if target was not marked valid', function () {

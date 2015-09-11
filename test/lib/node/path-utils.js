@@ -1,5 +1,5 @@
 var path = require('path');
-var Node = require('../../../lib/node');
+var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
 
@@ -12,7 +12,7 @@ describe('node/path utils', function () {
         var makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
-        node = new Node(nodePath, makePlatform, sinon.createStubInstance(Cache));
+        node = nodeFactory.mkNode(nodePath, makePlatform, sinon.createStubInstance(Cache));
     });
 
     describe('resolvePath', function () {

@@ -1,10 +1,9 @@
 var path = require('path');
-var Node = require('../../../lib/node');
+var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
 var Logger = require('../../../lib/logger');
 var BaseTech = require('../../../lib/tech/base-tech');
-var BuildGraph = require('../../../lib/ui/build-graph');
 
 describe('node', function () {
     describe('accessors', function () {
@@ -22,7 +21,7 @@ describe('node', function () {
             nodeCache = sinon.createStubInstance(Cache);
             nodeCache.subCache.returns(sinon.createStubInstance(Cache));
             cache.subCache.returns(nodeCache);
-            node = new Node(nodePath, makePlatform, cache);
+            node = nodeFactory.mkNode(nodePath, makePlatform, cache);
         });
 
         describe('setBuildState', function () {
@@ -107,22 +106,6 @@ describe('node', function () {
             it('should return empty array if no techs were registered', function () {
                 expect(node.getTechs()).to.be.instanceOf(Array)
                     .and.to.be.empty;
-            });
-        });
-
-        describe('setBuildGraph', function () {
-            var buildGraph = sinon.createStubInstance(BuildGraph);
-
-            it('should set build graph', function () {
-                node.setLogger(sinon.createStubInstance(Logger));
-                node.setBuildGraph(buildGraph);
-                node.resolveTarget('node.js');
-
-                expect(buildGraph.resolveTarget).to.be.called;
-            });
-
-            it('should support method chaining pattern', function () {
-                expect(node.setBuildGraph(buildGraph)).to.be.equal(node);
             });
         });
 

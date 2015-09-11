@@ -3,27 +3,30 @@ var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
 var _ = require('lodash');
-var Node = require('../../../lib/node');
+var Node = require('../../../lib/node/node');
+var nodeFactory = require('../../../lib/node');
 var ProjectConfig = require('../../../lib/config/project-config');
 var NodeConfig = require('../../../lib/config/node-config');
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 var ModeConfig = require('../../../lib/config/mode-config');
 var Logger = require('../../../lib/logger');
 var MakePlatform = require('../../../lib/make');
-var BuildGraph = require('../../../lib/ui/build-graph');
 var Cache = require('../../../lib/cache/cache');
 var BaseTech = require('../../../lib/tech/base-tech');
 
 describe('make/initNode', function () {
     var sandbox = sinon.sandbox.create();
     var makePlatform;
+    var node;
 
     beforeEach(function () {
         sandbox.stub(fs);
         sandbox.stub(vowFs);
-        sandbox.stub(Node.prototype);
+        sandbox.stub(nodeFactory);
         sandbox.stub(ProjectConfig.prototype);
-        sandbox.stub(BuildGraph.prototype);
+
+        node = sinon.createStubInstance(Node);
+        nodeFactory.mkNode.returns(node);
 
         fs.existsSync.returns(true);
         vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
@@ -45,7 +48,7 @@ describe('make/initNode', function () {
         makePlatform.initNode('path/to/node');
         makePlatform.initNode('path/to/node');
 
-        expect(Node.prototype.__constructor).to.be.calledOnce;
+        expect(nodeFactory.mkNode).to.be.calledOnce;
     });
 
     it('should get node config from project config', function () {
@@ -59,8 +62,9 @@ describe('make/initNode', function () {
 
         makePlatform.initNode('path/to/node');
 
-        expect(Node.prototype.__constructor)
-            .to.be.calledWith('path/to/node', makePlatform, sinon.match.instanceOf(Cache));
+        expect(nodeFactory.mkNode)
+            .to.be.calledWith('path/to/node', makePlatform, sinon.match.instanceOf(Cache),
+                makePlatform.getBuildGraph());
     });
 
     it('should set node logger as sublogger of own logger', function () {
@@ -73,13 +77,7 @@ describe('make/initNode', function () {
 
         makePlatform.initNode('path/to/node');
 
-        expect(Node.prototype.setLogger).to.be.calledWith(expectedLogger);
-    });
-
-    it('should set node build graph as own build graph', function () {
-        makePlatform.initNode('path/to/node');
-
-        expect(Node.prototype.setBuildGraph).to.be.calledWith(makePlatform.getBuildGraph());
+        expect(node.setLogger).to.be.calledWith(expectedLogger);
     });
 
     it('should create node dir', function () {
@@ -153,7 +151,7 @@ describe('make/initNode', function () {
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
+            expect(node.setLanguages).to.be.calledWith(['ru']);
         });
     });
 
@@ -163,7 +161,7 @@ describe('make/initNode', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);
+            expect(node.setLanguages).to.be.calledWith(['ru']);
         });
     });
 
@@ -177,7 +175,7 @@ describe('make/initNode', function () {
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setTargetsToBuild).to.be.calledWith(['?.js']);
+            expect(node.setTargetsToBuild).to.be.calledWith(['?.js']);
         });
     });
 
@@ -191,7 +189,7 @@ describe('make/initNode', function () {
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setTargetsToClean).to.be.calledWith(['?.js']);
+            expect(node.setTargetsToClean).to.be.calledWith(['?.js']);
         });
     });
 
@@ -206,7 +204,7 @@ describe('make/initNode', function () {
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setTechs).to.be.calledWith([tech]);
+            expect(node.setTechs).to.be.calledWith([tech]);
         });
     });
 
@@ -214,7 +212,7 @@ describe('make/initNode', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.setBuildState).to.be.calledWith({});
+            expect(node.setBuildState).to.be.calledWith({});
         });
     });
 
@@ -222,7 +220,7 @@ describe('make/initNode', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(Node.prototype.loadTechs).to.be.called;
+            expect(node.loadTechs).to.be.called;
         });
     });
 });

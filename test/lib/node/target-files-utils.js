@@ -2,7 +2,7 @@ var fs = require('fs');
 var mockFs = require('mock-fs');
 var vow = require('vow');
 var path = require('path');
-var Node = require('../../../lib/node');
+var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
 var Logger = require('../../../lib/logger');
@@ -23,7 +23,7 @@ describe('node/target files utils', function () {
         var makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
-        node = new Node(nodePath, makePlatform, sinon.createStubInstance(Cache));
+        node = nodeFactory.mkNode(nodePath, makePlatform, sinon.createStubInstance(Cache));
     });
 
     afterEach(function () {

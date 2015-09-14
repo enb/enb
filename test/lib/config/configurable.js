@@ -8,20 +8,15 @@ describe('config/configurable', function () {
         configurable = new Configurable();
     });
 
-    describe('constructor', function () {
-        it('should create empty container for chains', function () {
-            expect(configurable._chains).to.be.instanceOf(Array)
-                .and.to.be.empty;
-        });
-    });
-
     describe('addChain', function () {
         it('should add calback to call chain', function () {
-            var testFunc = function () {};
+            var testFunc = sinon.stub();
 
             configurable.addChain(testFunc);
 
-            expect(configurable._chains).to.contain(testFunc);
+            return configurable.exec().then(function () {
+                expect(testFunc).to.be.called;
+            });
         });
 
         it('should support method chaining pattern', function () {
@@ -32,12 +27,14 @@ describe('config/configurable', function () {
     });
 
     describe('configure', function () {
-        it('should add calback to call chain', function () {
-            var testFunc = function () {};
+        it('should add callback to call chain', function () {
+            var testFunc = sinon.stub();
 
             configurable.configure(testFunc);
 
-            expect(configurable._chains).to.contain(testFunc);
+            return configurable.exec().then(function () {
+                expect(testFunc).to.be.called;
+            });
         });
 
         it('should support method chaining pattern', function () {

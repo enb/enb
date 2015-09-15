@@ -3,6 +3,7 @@ var fs = require('fs');
 var inherit = require('inherit');
 var mockFs = require('mock-fs');
 var deasync = require('deasync');
+var loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync;
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
@@ -1015,7 +1016,7 @@ describe('build-flow', function () {
 
             var list = new FileList();
 
-            list.addFiles(getFiles(dir));
+            list.addFiles(loadDirSync(dir));
             node.provideTechData('?.files', list);
 
             return node.runTechAndGetContent(Tech)
@@ -1765,7 +1766,7 @@ describe('build-flow', function () {
                         .builder(function () {})
                         .createTech();
 
-                    fileList.addFiles(getFiles(blocksDirname));
+                    fileList.addFiles(loadDirSync(blocksDirname));
                     bundle.provideTechData('?.files', fileList);
 
                     return bundle.runTech(Tech)
@@ -1793,7 +1794,7 @@ describe('build-flow', function () {
                         })
                         .createTech();
 
-                    fileList.addFiles(getFiles(blocksDirname));
+                    fileList.addFiles(loadDirSync(blocksDirname));
                     bundle.provideTechData('?.files', fileList);
 
                     return bundle.runTech(Tech)
@@ -1820,7 +1821,7 @@ describe('build-flow', function () {
                         })
                         .createTech();
 
-                    fileList.addFiles(getFiles(blocksDirname));
+                    fileList.addFiles(loadDirSync(blocksDirname));
                     bundle.provideTechData('?.files', fileList);
 
                     return bundle.runTech(Tech)
@@ -1828,7 +1829,7 @@ describe('build-flow', function () {
                             helper.change(blockFilename);
 
                             fileList = new FileList();
-                            fileList.addFiles(getFiles(blocksDirname));
+                            fileList.addFiles(loadDirSync(blocksDirname));
                             bundle.provideTechData('?.files', fileList);
 
                             return bundle.runTech(Tech);
@@ -2113,31 +2114,4 @@ function init(node, Tech, opts) {
     tech.init(node);
 
     return tech;
-}
-
-function getFiles(dirname) {
-    var files = [];
-    filterFiles(fs.readdirSync(dirname)).forEach(function (filename) {
-        var fullname = path.join(dirname, filename);
-        var stat = fs.statSync(fullname);
-        if (stat.isFile()) {
-            files.push({
-                name: filename,
-                fullname: fullname,
-                suffix: getSuffix(filename),
-                mtime: stat.mtime.getTime()
-            });
-        }
-    });
-    return files;
-}
-
-function filterFiles(filenames) {
-    return filenames.filter(function (filename) {
-        return filename.charAt(0) !== '.';
-    });
-}
-
-function getSuffix(filename) {
-    return filename.split('.').slice(1).join('.');
 }

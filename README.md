@@ -1361,8 +1361,6 @@ var vowFs = require('vow-fs');
 // ...
 ```
 
-Пример использования: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L31)
-
 node.relativePath
 -----------------
 
@@ -1370,8 +1368,6 @@ node.relativePath
 // Возвращает относительный путь к таргету относительно ноды.
 String Node::relativePath(String targetName)
 ```
-
-Пример использования: [Технология css-includes](/mdevils/enb/blob/master/techs/css-includes.js#L16)
 
 node.getDir
 -----------
@@ -1405,8 +1401,6 @@ Logger Node::getLogger()
 this.node.getLogger().log('Hello World');
 ```
 
-Пример использования: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L79)
-
 node.getNodeCache
 -----------------
 
@@ -1423,10 +1417,6 @@ Cache Node::getNodeCache(String targetName)
 
 С помощью методов `undefined cacheFileInfo(String cacheKey, String filePath)` и `undefined cacheFileList(String cacheKey, FileInfo[] files)` производится сохранение информации о файлах в кэш.
 
-Пример использования:
-
-* Валидация кэша: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L33)
-* Кэширование результатов сборки: [Технология deps](/mdevils/enb/blob/master/techs/deps.js#L73)
 
 node.getSharedResources
 -----------------------

@@ -1,3 +1,0 @@
-BEM.DOM.decl('page', {
-
-});

@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var childProcess = require('child_process');
 var vow = require('vow');
@@ -6,6 +7,7 @@ var MakePlatform = require('../../../lib/make');
 var EOL = require('os').EOL;
 
 describe('config/task-config', function () {
+    var sandbox = sinon.sandbox.create();
     var taskConfig;
     var taskName = 'test_task';
     var makePlatform;
@@ -13,10 +15,17 @@ describe('config/task-config', function () {
     var makePlatformMode = 'test';
 
     beforeEach(function () {
+        sandbox.stub(fs, 'existsSync');
+        fs.existsSync.returns(true);
+
         taskConfig = new TaskConfig(taskName);
         makePlatform = new MakePlatform();
-        makePlatform.init(projectPath, makePlatformMode);
+        makePlatform.init(projectPath, makePlatformMode, function () {});
         taskConfig.setMakePlatform(makePlatform);
+    });
+
+    afterEach(function () {
+        sandbox.restore();
     });
 
     describe('constructor', function () {

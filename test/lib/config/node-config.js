@@ -2,8 +2,6 @@ var path = require('path');
 var NodeConfig = require('../../../lib/config/node-config');
 var ModeConfig = require('../../../lib/config/mode-config');
 var BaseTech = require('../../../lib/tech/base-tech');
-var FileAssembleTech = require('../../../lib/tech/file-assemble-tech');
-var ChunksTech = require('../../../lib/tech/chunks');
 
 describe('config/node-config', function () {
     describe('constructor', function () {
@@ -511,6 +509,8 @@ describe('config/node-config', function () {
 
     describe('addTechs', function () {
         var nodeConfig;
+        var SecondTech = function (params) { this.second = params; }; //need because instantiated objects must differ
+        var ThirdTech = function (params) { this.third = params; };
 
         beforeEach(function () {
             nodeConfig = new NodeConfig();
@@ -520,7 +520,7 @@ describe('config/node-config', function () {
             var firstTechParams = { foo: 'bar' };
             var firstTechClass = BaseTech;
             var secondTechParams = { fizz: 'baz' };
-            var secondTechClass = FileAssembleTech;
+            var secondTechClass = SecondTech;
             var firstTech = [firstTechClass, firstTechParams];
             var secondTech = [secondTechClass, secondTechParams];
             var techs = [firstTech, secondTech];
@@ -536,7 +536,7 @@ describe('config/node-config', function () {
             var firstTechParams = { foo: 'bar' };
             var firstTechClass = BaseTech;
             var secondTechParams = { fizz: 'baz' };
-            var secondTechClass = FileAssembleTech;
+            var secondTechClass = SecondTech;
             var firstTech = [firstTechClass, firstTechParams];
             var secondTech = [secondTechClass, secondTechParams];
             var techs = [firstTech, secondTech];
@@ -550,7 +550,7 @@ describe('config/node-config', function () {
 
         it('should add multiple techs passed as tech classes', function () {
             var firstTechClass = BaseTech;
-            var secondTechClass = FileAssembleTech; //need to make sure different techs are being added
+            var secondTechClass = SecondTech;
             var techs = [firstTechClass, secondTechClass];
 
             nodeConfig.addTechs(techs);
@@ -561,7 +561,7 @@ describe('config/node-config', function () {
 
         it('should add multiple instantiated techs', function () {
             var firstTech = new BaseTech();
-            var secondTech = new FileAssembleTech();
+            var secondTech = new SecondTech();
             var techs = [firstTech, secondTech];
 
             nodeConfig.addTechs(techs);
@@ -572,9 +572,9 @@ describe('config/node-config', function () {
 
         it('should add multiple techs declared in all supported ways', function () {
             var firstTech = new BaseTech();
-            var secondTechClass = FileAssembleTech;
+            var secondTechClass = SecondTech;
             var thirdTechParams = { foo: 'bar' };
-            var thirdTechClass = ChunksTech;
+            var thirdTechClass = ThirdTech;
             var thirdTech = [thirdTechClass, thirdTechParams];
             var techs = [firstTech, secondTechClass, thirdTech];
 

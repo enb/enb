@@ -107,9 +107,9 @@ describe('logger', function () {
 
         it('should wrap scope part after last : into magenta color, excluding last :', function () {
             var scope = 'test_scope:trailing_part';
-            var expectedScope = scope.replace(/(:.+)$/, function (s, g) {
+            var expectedScope = colors.blue(scope.replace(/(:.+)$/, function (s, g) {
                 return colors.magenta(g.substr(1));
-            });
+            }));
 
             logger.log(message, scope);
 
@@ -467,7 +467,7 @@ describe('logger', function () {
 
         it('should make new option bold', function () {
             var newOptionBold = colors.bold(newOption);
-            logger.logOptionIsDeprecated(null, null, null, null, newOptionBold);
+            logger.logOptionIsDeprecated(null, null, null, null, newOption);
 
             expect(consoleLogSpy).to.be.calledWithMatch(newOptionBold);
         });

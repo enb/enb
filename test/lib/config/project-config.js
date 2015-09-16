@@ -1,4 +1,5 @@
 var path = require('path');
+var mockFs = require('mock-fs');
 var ProjectConfig = require('../../../lib/config/project-config');
 var NodeConfig = require('../../../lib/config/node-config');
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
@@ -7,11 +8,11 @@ var ModeConfig = require('../../../lib/config/mode-config');
 var ModuleConfig = require('../../../lib/config/module-config');
 
 describe('config/project-config', function () {
-    var projectRoot = path.join(__dirname, '../../fixtures/sample-project');
+    var projectRoot = path.normalize('/project/root');
     var projectConfig;
 
     beforeEach(function () {
-        projectConfig = new ProjectConfig(projectRoot);
+        projectConfig =  new ProjectConfig(projectRoot);
     });
 
     describe('constructor', function () {
@@ -205,6 +206,19 @@ describe('config/project-config', function () {
 
     describe('nodes', function () {
         var configurator = function () {};
+
+        beforeEach(function () {
+            mockFs({
+                '/project/root': {
+                    blocks: {},
+                    page: {}
+                }
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
+        });
 
         it('should add configurator to node configs', function () {
             var nodePath = 'path/to/node';

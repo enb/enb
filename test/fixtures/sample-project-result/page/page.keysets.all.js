@@ -1,1 +1,0 @@
-module.exports = {"":"BEM = { I18N: function(keysetName, key) { return (BEM.I18N.keysets[keysetName] || {})[key] || \"\"; } };\nBEM.I18N.keysets = {};\nBEM.I18N.decl = function(keysetName, keysetData) {\n   BEM.I18N.keysets[keysetName] = keysetData;\n};\nBEM.I18N.lang = function(){};\n"};

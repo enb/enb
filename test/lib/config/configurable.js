@@ -97,31 +97,25 @@ describe('config/configurable', function () {
         });
 
         it('should return promise which will be fulfilled when all tasks in chain will be complete', function () {
-            var promise = vow.promise();
             var task = function () {
-                return promise;
+                return vow.resolve();
             };
 
-            promise.fulfill();
             configurable.addChain(task);
 
-            return configurable.exec().then(function () {
-                expect(promise).to.be.fulfilled;
-            });
+            return expect(configurable.exec())
+                .to.be.fulfilled;
         });
 
         it('should return rejected promise if one of tasks in chain was rejected', function () {
-            var promise = vow.promise();
             var task = function () {
-                return promise;
+                return vow.reject();
             };
 
-            promise.reject();
             configurable.addChain(task);
 
-            return configurable.exec().fail(function () {
-                expect(promise).to.be.rejected;
-            });
+            return expect(configurable.exec())
+                .to.be.rejected;
         });
     });
 });

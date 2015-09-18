@@ -62,7 +62,7 @@ describe('node/targets', function () {
             it('should log target is valid', function () {
                 node.isValidTarget('node.js');
 
-                //not checking target name logged because tech not registered
+                // not checking target name logged because tech not registered
                 expect(logger.isValid).to.be.calledWith('node.js');
             });
 
@@ -98,7 +98,7 @@ describe('node/targets', function () {
         it('should log rebuild action if target was not marked valid', function () {
             node.resolveTarget('node.js');
 
-            //not checking target name logged because tech not registered
+            // not checking target name logged because tech not registered
             expect(logger.logAction).to.be.calledWith('rebuild', 'node.js');
         });
     });
@@ -109,7 +109,7 @@ describe('node/targets', function () {
         it('should log node failed to build target', function () {
             node.rejectTarget('node.js', error);
 
-            //not checking target name logged because tech not registered
+            // not checking target name logged because tech not registered
             expect(logger.logErrorAction).to.be.calledWith('failed', 'node.js');
         });
 

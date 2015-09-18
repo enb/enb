@@ -7,7 +7,7 @@ describe('deprecate', function () {
     var deprecatePath = require.resolve('../../../lib/utils/deprecate.js');
 
     beforeEach (function () {
-        //dropping cache because need to have uninitialized deprecate before each test
+        // dropping cache because need to have uninitialized deprecate before each test
         clearRequire(deprecatePath);
         deprecate = require(deprecatePath);
         sinon.sandbox.stub(Logger.prototype);
@@ -39,7 +39,7 @@ describe('deprecate', function () {
             deprecate.initialize();
 
             Logger.prototype.logWarningAction
-                .should.be.calledWithMatch(sinon.match.any, __filename); //locates test file as smth called deprecate
+                .should.be.calledWithMatch(sinon.match.any, __filename); // locates test file as smth called deprecate
         });
 
         describe('initialized deprecate', function () {
@@ -101,6 +101,5 @@ describe('deprecate', function () {
                     .should.be.calledWithMatch(sinon.match.any, sinon.match.any, 'replacement_method');
             });
         });
-
     });
 });

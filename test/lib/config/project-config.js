@@ -259,7 +259,7 @@ describe('config/project-config', function () {
         it('should add node configs for multiple paths passed as shell mask, adding node configs as relative paths ' +
             'after resolving shell mask', function () {
             var nodeMask = '/*';
-            var blocksNodePath = 'blocks'; //blocks and pages are directories in root of project fixture
+            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
             var pageNodePath = 'page';
 
             projectConfig.nodes(nodeMask, configurator);
@@ -274,7 +274,7 @@ describe('config/project-config', function () {
             'paths and shell mask', function () {
             var nodePath = 'path/to/node';
             var anotherNodePath = 'path/to/another/node';
-            var blocksNodePath = 'blocks'; //blocks and pages are directories in root of project fixture
+            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
             var pageNodePath = 'page';
             var nodeMask = '/*';
             var pathsArray = [anotherNodePath];
@@ -312,7 +312,6 @@ describe('config/project-config', function () {
             projectConfig.nodeMask(mask, configurator);
 
             expect(projectConfig.getNodeMaskConfigs()[0]._chains).to.contain(configurator);
-
         });
 
         it('should create different node mask configs for same masks', function () {

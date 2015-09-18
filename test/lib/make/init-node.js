@@ -26,7 +26,7 @@ describe('make/initNode', function () {
         sandbox.stub(BuildGraph.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
+        vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init('/path/to/project', 'mode', function () {});
@@ -55,7 +55,7 @@ describe('make/initNode', function () {
     });
 
     it('should create node', function () {
-        makePlatform.buildTargets(); //creates cache in makePlatform
+        makePlatform.buildTargets(); // creates cache in makePlatform
 
         makePlatform.initNode('path/to/node');
 
@@ -70,7 +70,7 @@ describe('make/initNode', function () {
         logger.subLogger.withArgs('path/to/node').returns(expectedLogger);
         setup({ nodePath: 'path/to/node' });
         makePlatform.setLogger(logger);
-        
+
         makePlatform.initNode('path/to/node');
 
         expect(Node.prototype.setLogger).to.be.calledWith(expectedLogger);
@@ -160,7 +160,7 @@ describe('make/initNode', function () {
     it('should set node languages as make platform languages if languages are not available from node ' +
         'config', function () {
         makePlatform.setLanguages(['ru']);
-        setup({ nodePath: 'path/to/node'});
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
             expect(Node.prototype.setLanguages).to.be.calledWith(['ru']);

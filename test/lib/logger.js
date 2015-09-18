@@ -20,7 +20,7 @@ describe('logger', function () {
     var message;
 
     before(function () {
-        consoleLogSpy = sinon.spy(console, 'log'); //spying at console.log because logger built on top of it
+        consoleLogSpy = sinon.spy(console, 'log'); // spying at console.log because logger built on top of it
         logger = new Logger();
         message = 'test_message';
     });
@@ -665,6 +665,5 @@ describe('logger', function () {
 
             expect(sublogger.isEnabled()).to.be.equal(newLogger.isEnabled());
         });
-
     });
 });

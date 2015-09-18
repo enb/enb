@@ -1440,13 +1440,13 @@ describe('build-flow', function () {
 
         beforeEach(function () {
             mockFs({
-                'blocks': {
+                blocks: {
                     'block.dir': {
                         'block.ext': 'value'
                     },
                     'block.ext': 'value'
                 },
-                'bundle': {
+                bundle: {
                     '.dependants': 'value',
                     '.dependants-1': 'value-1',
                     '.dependants-2': 'value-2'

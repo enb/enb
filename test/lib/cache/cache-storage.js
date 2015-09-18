@@ -38,7 +38,7 @@ describe('cache/cache-storage', function () {
             var storage = createCacheStorage_('/path/to/test_file.js');
 
             storage.load();
-            storage.save(); //the only way to check internal data contents is to save cache to file
+            storage.save(); // the only way to check internal data contents is to save cache to file
 
             assertStorageData('/path/to/test_file.js', {});
         });
@@ -69,7 +69,7 @@ describe('cache/cache-storage', function () {
             var storage = createCacheStorage_('/path/to/test_file.js');
 
             storage.load();
-            storage.save(); //the only way to check internal data contents is to save cache to file
+            storage.save(); // the only way to check internal data contents is to save cache to file
 
             assertStorageData('/path/to/test_file.js', { foo: 'bar' });
         });
@@ -98,12 +98,12 @@ describe('cache/cache-storage', function () {
 
             var storage = createCacheStorage_('/path/to/test_file.js');
 
-            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
             storage.save();
 
             assertStorageData('/path/to/test_file.js', {
-                test_prefix: {
-                    test_key: 'test_value'
+                testPrefix: {
+                    testKey: 'test_value'
                 }
             });
         });
@@ -124,12 +124,12 @@ describe('cache/cache-storage', function () {
 
             var storage = createCacheStorage_('/path/to/test_file.js');
 
-            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
 
             return storage.saveAsync().then(function () {
                 assertStorageData('/path/to/test_file.js', {
-                    test_prefix: {
-                        test_key: 'test_value'
+                    testPrefix: {
+                        testKey: 'test_value'
                     }
                 });
             });
@@ -143,12 +143,12 @@ describe('cache/cache-storage', function () {
             fs.createWriteStream.returns(writeStream);
             writeStream.on.returns(writeStream);
 
-            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
             storage.saveAsync();
 
-            expect(writeStream.write).to.be.calledWith('"test_prefix":');
+            expect(writeStream.write).to.be.calledWith('"testPrefix":');
             expect(writeStream.write).to.be.calledWith(JSON.stringify({
-                test_key: 'test_value'
+                testKey: 'test_value'
             }));
         });
 
@@ -157,9 +157,9 @@ describe('cache/cache-storage', function () {
 
             var storage = createCacheStorage_('/path/to/test_file.js');
 
-            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
 
-            return expect(storage.saveAsync()).to.be.rejected; //saving to missing dir
+            return expect(storage.saveAsync()).to.be.rejected; // saving to missing dir
         });
     });
 
@@ -167,23 +167,23 @@ describe('cache/cache-storage', function () {
         it('should remove value by key and prefix', function () {
             var storage = createCacheStorage_();
 
-            storage.set('test_prefix', 'test_key', 'test_value');
-            expect(storage.get('test_prefix', 'test_key'))
+            storage.set('testPrefix', 'testKey', 'test_value');
+            expect(storage.get('testPrefix', 'testKey'))
                 .to.be.equal('test_value');
 
-            storage.invalidate('test_prefix', 'test_key');
-            expect(storage.get('test_prefix', 'test_key'))
+            storage.invalidate('testPrefix', 'testKey');
+            expect(storage.get('testPrefix', 'testKey'))
                 .to.be.undefined;
         });
 
         it('should not delete another data for this prefix', function () {
             var storage = createCacheStorage_();
 
-            storage.set('test_prefix', 'test_key', 'test_value');
-            storage.set('test_prefix', 'another_test_key', 'another_test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
+            storage.set('testPrefix', 'another_test_key', 'another_test_value');
 
-            storage.invalidate('test_prefix', 'test_key');
-            expect(storage.get('test_prefix', 'another_test_key'))
+            storage.invalidate('testPrefix', 'testKey');
+            expect(storage.get('testPrefix', 'another_test_key'))
                 .to.be.equal('another_test_value');
         });
     });
@@ -192,13 +192,13 @@ describe('cache/cache-storage', function () {
         it('should delete all data for provided prefix', function () {
             var storage = createCacheStorage_();
 
-            storage.set('test_prefix', 'test_key', 'test_value');
-            storage.set('test_prefix', 'another_test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
+            storage.set('testPrefix', 'another_test_key', 'test_value');
 
-            storage.dropPrefix('test_prefix');
+            storage.dropPrefix('testPrefix');
 
-            expect(storage.get('test_prefix', 'test_key')).to.be.undefined;
-            expect(storage.get('test_prefix', 'another_test_key')).to.be.undefined;
+            expect(storage.get('testPrefix', 'testKey')).to.be.undefined;
+            expect(storage.get('testPrefix', 'another_test_key')).to.be.undefined;
         });
     });
 
@@ -206,12 +206,12 @@ describe('cache/cache-storage', function () {
         it('should clear current cache state', function () {
             var storage = createCacheStorage_();
 
-            storage.set('test_prefix', 'test_key', 'test_value');
+            storage.set('testPrefix', 'testKey', 'test_value');
             storage.set('another_test_prefix', 'another_test_key', 'test_value');
 
             storage.drop();
 
-            expect(storage.get('test_prefix', 'test_key')).to.be.undefined;
+            expect(storage.get('testPrefix', 'testKey')).to.be.undefined;
             expect(storage.get('another_test_prefix', 'another_test_key')).to.be.undefined;
         });
     });
@@ -221,7 +221,7 @@ describe('cache/cache-storage', function () {
     }
 
     function assertStorageData(dataPath, expected) {
-        clearRequire(path.resolve(dataPath)); //in test becaue it throws on non-existing file
+        clearRequire(path.resolve(dataPath)); // in test because it throws on non-existing file
 
         expect(require(dataPath)).to.be.deep.equal(expected);
     }

@@ -24,12 +24,12 @@ describe('cache/cache', function () {
             var cacheStorage = sinon.createStubInstance(CacheStorage);
             var cache = createCache_({
                 storage: cacheStorage,
-                prefix: 'test_prefix'
+                prefix: 'testPrefix'
             });
 
             cache.get();
 
-            expect(cacheStorage.get).to.be.calledWith('test_prefix');
+            expect(cacheStorage.get).to.be.calledWith('testPrefix');
         });
     });
 
@@ -49,12 +49,12 @@ describe('cache/cache', function () {
             var cacheStorage = sinon.createStubInstance(CacheStorage);
             var cache = createCache_({
                 storage: cacheStorage,
-                prefix: 'test_prefix'
+                prefix: 'testPrefix'
             });
 
-            cache.get('test_key');
+            cache.get('testKey');
 
-            expect(cacheStorage.get).to.be.calledWith('test_prefix', 'test_key');
+            expect(cacheStorage.get).to.be.calledWith('testPrefix', 'testKey');
         });
     });
 
@@ -72,12 +72,12 @@ describe('cache/cache', function () {
             var cacheStorage = sinon.createStubInstance(CacheStorage);
             var cache = createCache_({
                 storage: cacheStorage,
-                prefix: 'test_prefix'
+                prefix: 'testPrefix'
             });
 
-            cache.set('test_key', 'test_data');
+            cache.set('testKey', 'test_data');
 
-            expect(cacheStorage.set).to.be.calledWith('test_prefix', 'test_key', 'test_data');
+            expect(cacheStorage.set).to.be.calledWith('testPrefix', 'testKey', 'test_data');
         });
     });
 
@@ -95,12 +95,12 @@ describe('cache/cache', function () {
             var cacheStorage = sinon.createStubInstance(CacheStorage);
             var cache = createCache_({
                 storage: cacheStorage,
-                prefix: 'test_prefix'
+                prefix: 'testPrefix'
             });
 
-            cache.invalidate('test_key');
+            cache.invalidate('testKey');
 
-            expect(cacheStorage.invalidate).to.be.calledWith('test_prefix', 'test_key');
+            expect(cacheStorage.invalidate).to.be.calledWith('testPrefix', 'testKey');
         });
     });
 
@@ -118,12 +118,12 @@ describe('cache/cache', function () {
             var cacheStorage = sinon.createStubInstance(CacheStorage);
             var cache = createCache_({
                 storage: cacheStorage,
-                prefix: 'test_prefix'
+                prefix: 'testPrefix'
             });
 
             cache.drop();
 
-            expect(cacheStorage.dropPrefix).to.be.calledWith('test_prefix');
+            expect(cacheStorage.dropPrefix).to.be.calledWith('testPrefix');
         });
     });
 
@@ -254,7 +254,7 @@ describe('cache/cache', function () {
             var cache = createCache_();
             var fileList = [
                 { fullname: '/path/to/file.js' },
-                { fullname: '/path/to/another_file.js'}
+                { fullname: '/path/to/another_file.js' }
             ];
 
             sandbox.stub(cache, 'get');
@@ -304,9 +304,9 @@ describe('cache/cache', function () {
             var cache = createCache_();
 
             sinon.stub(cache, 'set');
-            cache.set('test_key', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
+            cache.set('testKey', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
 
-            expect(cache.set).to.be.calledWith('test_key', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
+            expect(cache.set).to.be.calledWith('testKey', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
         });
     });
 

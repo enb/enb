@@ -47,9 +47,9 @@
     "clear-require": "1.0.1",
     "commander": "2.8.1",
     "connect": "3.1.1",
-    "enb-source-map": "1.7.2",
+    "enb-source-map": "1.8.0",
     "glob": "5.0.14",
-    "inherit": "~2.1.0",
+    "inherit": "2.2.2",
     "lodash": "3.10.1",
     "mime": "1.2.11",
     "puml-link": "0.0.1",
@@ -61,19 +61,17 @@
     "worker-farm": "1.3.1"
   },
   "devDependencies": {
-    "bh": "0.1.14",
     "chai": "3.2.0",
     "chai-as-promised": "5.1.0",
-    "coveralls": "~2.11.2",
-    "deasync": "0.1.0",
-    "enb-validate-code": "0.0.1",
-    "istanbul": "0.2.10",
-    "jscs": "~1.2.3",
-    "jshint": "2.1.3",
-    "mocha": "2.1.0",
+    "coveralls": "2.11.4",
+    "deasync": "0.1.2",
+    "istanbul": "0.3.20",
+    "jscs": "2.1.1",
+    "jshint": "2.8.0",
+    "mocha": "2.3.2",
     "mock-enb": "0.2.0",
     "mock-fs": "3.2.0",
-    "sinon": "1.7.3",
+    "sinon": "1.16.1",
     "sinon-chai": "2.8.0"
   },
   "bin": {
@@ -85,7 +83,7 @@
     "jshint": "jshint .",
     "unit-test": "mocha --recursive test/lib",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
-    "check-style": "jscs -c node_modules/enb-validate-code/jscs.json lib techs test",
+    "check-style": "jscs lib test",
     "coverage": "istanbul cover _mocha -- -R dot --recursive test/lib",
     "coveralls": "npm i coveralls && istanbul cover _mocha -- -R dot --recursive test/lib --report lcovonly && cat ./coverage/lcov.info | coveralls"
   }

@@ -56,8 +56,8 @@
     "send": "0.8.3",
     "serve-static": "1.5.3",
     "stack-trace": "0.0.9",
-    "vow": "~0.3.9",
-    "vow-fs": "~0.2.2",
+    "vow": "0.4.10",
+    "vow-fs": "0.3.4",
     "worker-farm": "1.3.1"
   },
   "devDependencies": {
@@ -72,7 +72,7 @@
     "jshint": "2.1.3",
     "mocha": "2.1.0",
     "mock-enb": "0.2.0",
-    "mock-fs": "2.7.1",
+    "mock-fs": "3.2.0",
     "sinon": "1.7.3",
     "sinon-chai": "2.8.0"
   },

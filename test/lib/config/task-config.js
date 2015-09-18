@@ -279,7 +279,7 @@ describe('config/task-config', function () {
             });
         });
 
-        it('should reject promise of command execution was no successful', function () {
+        it('should reject promise of command execution was not successful', function () {
             var brokenCommand = 'cal -a';
 
             return expect(taskConfig.shell(brokenCommand)).to.be.rejected;

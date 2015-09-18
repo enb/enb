@@ -8,7 +8,7 @@ var ModeConfig = require('../../../lib/config/mode-config');
 var ModuleConfig = require('../../../lib/config/module-config');
 
 describe('config/project-config', function () {
-    var projectRoot = path.normalize('/project/root');
+    var projectRoot = path.resolve('/project/root');
     var projectConfig;
 
     beforeEach(function () {
@@ -208,12 +208,14 @@ describe('config/project-config', function () {
         var configurator = function () {};
 
         beforeEach(function () {
-            mockFs({
-                '/project/root': {
-                    blocks: {},
-                    page: {}
-                }
-            });
+            var config = {};
+
+            config[projectRoot] = {
+                blocks: {},
+                page: {}
+            };
+
+            mockFs(config);
         });
 
         afterEach(function () {

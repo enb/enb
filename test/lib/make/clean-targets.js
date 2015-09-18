@@ -24,7 +24,7 @@ describe('make/cleanTarget', function () {
         sandbox.stub(Cache.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
+        vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init(projectPath, 'mode', function () {}).then(done);
@@ -51,7 +51,7 @@ describe('make/cleanTarget', function () {
     });
 
     it('should return rejected promise if required target does not match any available node', function () {
-        setup({ nodePath: 'path/to/node'});
+        setup({ nodePath: 'path/to/node' });
 
         return expect(makePlatform.cleanTargets(['path/to/another/node']))
             .to.be.rejectedWith('Target not found: path/to/another/node');

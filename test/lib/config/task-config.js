@@ -39,7 +39,7 @@ describe('config/task-config', function () {
         });
     });
 
-    describe('setMakePlatform', function () { //setMakePlatform is being called implicitly in beforeEach
+    describe('setMakePlatform', function () { // setMakePlatform is being called implicitly in beforeEach
         it('should set make platform', function () {
             expect(taskConfig._makePlatform).to.be.equal(makePlatform);
         });

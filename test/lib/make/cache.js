@@ -122,7 +122,7 @@ describe('make/cache', function () {
         });
     });
 
-    //skipped tests for cache attrs saving becausame with tests in saveCached with saveCache
+    // skipped tests for cache attrs saving becausame with tests in saveCached with saveCache
     describe('saveCacheAsync', function () {
         it('should write cached data to disk', function () {
             makePlatform.saveCacheAsync();

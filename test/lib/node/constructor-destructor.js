@@ -60,7 +60,7 @@ describe('node/constructor and destructor', function () {
         it('should delete reference to make platform', function () {
             node.destruct();
 
-            expect(node.getLevelNamingScheme).to.throw(); //level naming scheme returned from make platform
+            expect(node.getLevelNamingScheme).to.throw(); // level naming scheme returned from make platform
         });
 
         it('should call destruct of node cache', function () {

@@ -27,7 +27,7 @@ describe('node/cleanup', function () {
 
     describe('cleanTargets', function () {
         beforeEach(function (done) {
-            //no public method for registering targets available, clean does registering targets inside
+            // no public method for registering targets available, clean does registering targets inside
             node.clean().then(function () {
                 done();
             });
@@ -45,7 +45,7 @@ describe('node/cleanup', function () {
         });
 
         it('should call clean for techs associated with target', function () {
-            tech.clean.reset(); //reset because clean is being called in constructor
+            tech.clean.reset(); // reset because clean is being called in constructor
 
             return node.cleanTargets(['node.js']).then(function  () {
                 expect(tech.clean).to.be.calledOnce;

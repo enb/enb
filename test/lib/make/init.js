@@ -22,7 +22,7 @@ describe('make/init', function () {
         sandbox.stub(Node.prototype);
         sandbox.stub(ProjectConfig.prototype);
 
-        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
+        vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
     });
@@ -71,7 +71,7 @@ describe('make/init', function () {
 
             it('should set mode as value of process.env.YENV if no mode passed in params', function () {
                 process.env.YENV = 'test_mode';
-                init_({ mode: null }); //null because need to implicitly call makePlatform.init without mode
+                init_({ mode: null }); // null because need to implicitly call makePlatform.init without mode
 
                 return makePlatform.initNode('path/to/node').then(function () {
                     expect(nodeConfig.getModeConfig).to.be.calledWith('test_mode');
@@ -80,7 +80,7 @@ describe('make/init', function () {
 
             it('should set mode as development if no mode passed and no value available in ' +
                 'process.env.YENV', function () {
-                init_({ mode: null }); //null because need to implicitly call makePlatform.init without mode
+                init_({ mode: null }); // null because need to implicitly call makePlatform.init without mode
 
                 return makePlatform.initNode('path/to/node').then(function () {
                     expect(nodeConfig.getModeConfig).to.be.calledWith('development');
@@ -230,7 +230,7 @@ describe('make/init', function () {
                 var func = function () {
                     init_({
                         projectPath: '/path/to/project',
-                        config: null //null because need to implicitly call makePlatform.init without configurator
+                        config: null // null because need to implicitly call makePlatform.init without configurator
                     });
                 };
 
@@ -253,7 +253,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -270,7 +270,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -290,7 +290,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -308,7 +308,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -325,7 +325,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -343,7 +343,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWith(['ru']);
@@ -360,7 +360,7 @@ describe('make/init', function () {
 
                 var initPromise = init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 return expect(initPromise)
@@ -380,7 +380,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(require.cache[modulePath]).to.be.not.equal('foo');
@@ -399,7 +399,7 @@ describe('make/init', function () {
 
                 var initPromise = init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 return expect(initPromise)
@@ -417,7 +417,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
@@ -429,7 +429,7 @@ describe('make/init', function () {
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
-                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
                             'make.personal.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
@@ -437,7 +437,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);
@@ -448,7 +448,7 @@ describe('make/init', function () {
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
-                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
                             'make.personal.js': 'module.exports = function () {};'
                         }
                     }
@@ -457,7 +457,7 @@ describe('make/init', function () {
                 require.cache[modulePath] = 'foo';
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(require.cache[modulePath]).to.be.not.equal('foo');
@@ -467,7 +467,7 @@ describe('make/init', function () {
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
-                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
                             'make.personal.js': 'module.exports = function () { ' +
                                                     'throw new Error("exc_in_personal_config");' +
                                                 '};'
@@ -477,7 +477,7 @@ describe('make/init', function () {
 
                 var initPromise = init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 return expect(initPromise)
@@ -488,7 +488,7 @@ describe('make/init', function () {
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
-                            'make.js': 'module.exports = function () {};', //will throw if no make file in dir
+                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
                             'make.personal.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
@@ -496,7 +496,7 @@ describe('make/init', function () {
 
                 init_({
                     projectPath: '/path/to/project',
-                    config: null //null because need to implicitly call makePlatform.init without configurator
+                    config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
                 expect(makePlatform.getProjectConfig().setLanguages).to.be.calledWithMatch(['ru']);

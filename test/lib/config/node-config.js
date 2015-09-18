@@ -27,7 +27,7 @@ describe('config/node-config', function () {
         });
 
         it('should set project config', function () {
-            var projectConfig = { 'test_config_field': 'test_config_val' };
+            var projectConfig = { testConfigField: 'test_config_val' };
             var nodeConfig = new NodeConfig(null, null, projectConfig);
 
             expect(nodeConfig._projectConfig).to.be.equal(projectConfig);
@@ -215,7 +215,7 @@ describe('config/node-config', function () {
 
     describe('addTarget', function () {
         var nodeConfig;
-        var languages = []; //setting languages because _processTarget will crash without it
+        var languages = []; // setting languages because _processTarget will crash without it
 
         beforeEach(function () {
             nodeConfig = new NodeConfig();
@@ -263,7 +263,7 @@ describe('config/node-config', function () {
 
     describe('addTargets', function () {
         var nodeConfig;
-        var languages = []; //setting languages because _processTarget will crash without it
+        var languages = []; // setting languages because _processTarget will crash without it
 
         beforeEach(function () {
             nodeConfig = new NodeConfig();
@@ -364,7 +364,7 @@ describe('config/node-config', function () {
     });
 
     describe('addCleanTarget', function () {
-        var languages = []; //setting languages because _processTarget will crash without it
+        var languages = []; // setting languages because _processTarget will crash without it
         var nodeConfig;
 
         beforeEach(function () {
@@ -396,7 +396,7 @@ describe('config/node-config', function () {
     });
 
     describe('addCleanTargets', function () {
-        var languages = []; //setting languages because _processTarget will crash without it
+        var languages = []; // setting languages because _processTarget will crash without it
         var nodeConfig;
 
         beforeEach(function () {
@@ -441,27 +441,27 @@ describe('config/node-config', function () {
         });
 
         it('should add tech passed as array containing tech class', function () {
-            var techClass = BaseTech;
-            var tech = [techClass];
+            var TechClass = BaseTech;
+            var tech = [TechClass];
 
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new techClass());
+            expect(nodeConfig.getTechs()).to.contain(new TechClass());
         });
 
         it('should add tech passed as tech class with params', function () {
             var techParams = { foo: 'bar' };
-            var techClass = BaseTech;
-            var tech = [techClass, techParams];
+            var TechClass = BaseTech;
+            var tech = [TechClass, techParams];
 
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new techClass(techParams));
+            expect(nodeConfig.getTechs()).to.contain(new TechClass(techParams));
         });
 
         it('should process tech params when adding tech as tech class and params', function () {
             var spy = new sinon.spy(nodeConfig, '_processTechOptions');
-            var techParams = { foo: 'bar'};
+            var techParams = { foo: 'bar' };
             var techClass = BaseTech;
             var tech = [techClass, techParams];
 
@@ -473,25 +473,25 @@ describe('config/node-config', function () {
 
         it('should add multiple tech instances for each language if language set in options', function () {
             var languages = ['ru', 'en'];
-            var techParams = { lang: '{lang}'};
+            var techParams = { lang: '{lang}' };
             var ruTechParams = { lang: 'ru' };
             var enTechParams = { lang: 'en' };
-            var techClass = BaseTech;
-            var tech = [techClass, techParams];
+            var TechClass = BaseTech;
+            var tech = [TechClass, techParams];
 
             nodeConfig.setLanguages(languages);
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new techClass(ruTechParams))
-                .and.to.contain(new techClass(enTechParams));
+            expect(nodeConfig.getTechs()).to.contain(new TechClass(ruTechParams))
+                .and.to.contain(new TechClass(enTechParams));
         });
 
         it('should add tech passed as tech class', function () {
-            var techClass = BaseTech;
+            var TechClass = BaseTech;
 
-            nodeConfig.addTech(techClass);
+            nodeConfig.addTech(TechClass);
 
-            expect(nodeConfig.getTechs()).to.contain(new techClass());
+            expect(nodeConfig.getTechs()).to.contain(new TechClass());
         });
 
         it('should add already instantiated tech', function () {
@@ -509,7 +509,7 @@ describe('config/node-config', function () {
 
     describe('addTechs', function () {
         var nodeConfig;
-        var SecondTech = function (params) { this.second = params; }; //need because instantiated objects must differ
+        var SecondTech = function (params) { this.second = params; }; // need because instantiated objects must differ
         var ThirdTech = function (params) { this.third = params; };
 
         beforeEach(function () {
@@ -518,17 +518,17 @@ describe('config/node-config', function () {
 
         it('should add multiple techs passed as tech class with params', function () {
             var firstTechParams = { foo: 'bar' };
-            var firstTechClass = BaseTech;
+            var FirstTechClass = BaseTech;
             var secondTechParams = { fizz: 'baz' };
-            var secondTechClass = SecondTech;
-            var firstTech = [firstTechClass, firstTechParams];
-            var secondTech = [secondTechClass, secondTechParams];
+            var SecondTechClass = SecondTech;
+            var firstTech = [FirstTechClass, firstTechParams];
+            var secondTech = [SecondTechClass, secondTechParams];
             var techs = [firstTech, secondTech];
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(new firstTechClass(firstTechParams))
-                .and.to.contain(new secondTechClass(secondTechParams));
+            expect(nodeConfig.getTechs()).to.contain(new FirstTechClass(firstTechParams))
+                .and.to.contain(new SecondTechClass(secondTechParams));
         });
 
         it('should process tech params for all techs when adding tech as tech class and params', function () {
@@ -549,14 +549,14 @@ describe('config/node-config', function () {
         });
 
         it('should add multiple techs passed as tech classes', function () {
-            var firstTechClass = BaseTech;
-            var secondTechClass = SecondTech;
-            var techs = [firstTechClass, secondTechClass];
+            var FirstTechClass = BaseTech;
+            var SecondTechClass = SecondTech;
+            var techs = [FirstTechClass, SecondTechClass];
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(new firstTechClass())
-                .and.to.contain(new secondTechClass());
+            expect(nodeConfig.getTechs()).to.contain(new FirstTechClass())
+                .and.to.contain(new SecondTechClass());
         });
 
         it('should add multiple instantiated techs', function () {
@@ -572,17 +572,17 @@ describe('config/node-config', function () {
 
         it('should add multiple techs declared in all supported ways', function () {
             var firstTech = new BaseTech();
-            var secondTechClass = SecondTech;
+            var SecondTechClass = SecondTech;
             var thirdTechParams = { foo: 'bar' };
-            var thirdTechClass = ThirdTech;
-            var thirdTech = [thirdTechClass, thirdTechParams];
-            var techs = [firstTech, secondTechClass, thirdTech];
+            var ThirdTechClass = ThirdTech;
+            var thirdTech = [ThirdTechClass, thirdTechParams];
+            var techs = [firstTech, SecondTechClass, thirdTech];
 
             nodeConfig.addTechs(techs);
 
             expect(nodeConfig.getTechs()).to.contain(firstTech)
-                .and.to.contain(new secondTechClass())
-                .and.to.contain(new thirdTechClass(thirdTechParams));
+                .and.to.contain(new SecondTechClass())
+                .and.to.contain(new ThirdTechClass(thirdTechParams));
         });
 
         it('should support method chaining pattern', function () {

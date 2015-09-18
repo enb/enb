@@ -64,7 +64,7 @@ describe('make/constructor-destructor', function () {
         it('should destroy cache', function () {
             sandbox.stub(Cache.prototype);
 
-            makePlatform.buildTargets(); //creates cache internally
+            makePlatform.buildTargets(); // creates cache internally
 
             makePlatform.destruct();
 

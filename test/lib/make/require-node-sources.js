@@ -24,7 +24,7 @@ describe('make/requireNodeSources', function () {
         sandbox.stub(Node.prototype);
 
         fs.existsSync.returns(true);
-        vowFs.makeDir.returns(vow.fulfill()); //prevent temp dir creation on MakePlatform.init()
+        vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
         makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
@@ -50,7 +50,7 @@ describe('make/requireNodeSources', function () {
     });
 
     it('should require sources from initialized node', function () {
-        setup({nodePath: 'path/to/node'});
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.requireNodeSources('path/to/node').then(function () {
             expect(Node.prototype.requireSources).to.be.called;
@@ -58,7 +58,7 @@ describe('make/requireNodeSources', function () {
     });
 
     it('should pass required targets to node when require sources from it', function () {
-        setup({nodePath: 'path/to/node'});
+        setup({ nodePath: 'path/to/node' });
 
         return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(function () {
             expect(Node.prototype.requireSources).to.be.calledWith(['?.js']);

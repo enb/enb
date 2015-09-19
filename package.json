@@ -79,9 +79,10 @@
   },
   "main": "lib/api/index",
   "scripts": {
-    "test": "npm run jshint && npm run check-style && npm run unit-test",
+    "test": "npm run jshint && npm run check-style && npm run unit-test && npm run tech-test",
     "jshint": "jshint .",
     "unit-test": "mocha --recursive test/lib",
+    "tech-test": "mocha --recursive test/techs",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs lib test",
     "coverage": "istanbul cover _mocha -- -R dot --recursive test/lib",

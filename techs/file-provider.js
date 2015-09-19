@@ -15,9 +15,9 @@
  * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
  * ```
  */
-var fs = require('fs');
-var Vow = require('vow');
-var inherit = require('inherit');
+var vfs = require('../lib/fs/async-fs'),
+    inherit = require('inherit'),
+    _ = require('lodash');
 
 module.exports = inherit(require('../lib/tech/base-tech'), {
     getName: function () {
@@ -33,23 +33,19 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
     },
 
     build: function () {
-        var promise;
-        var target;
-        var targetPath;
-        var _this = this;
-        promise = Vow.promise();
-        target = this.node.unmaskTargetName(this._target);
-        targetPath = this.node.resolvePath(target);
-        fs.exists(targetPath, function (exists) {
-            if (exists) {
-                _this.node.resolveTarget(target);
-            } else {
-                _this.node.rejectTarget(target, new Error('File not found: ' + targetPath));
-            }
-            return promise.fulfill();
-        });
-        return promise;
+        var node = this.node,
+            target = node.unmaskTargetName(this._target),
+            filename = node.resolvePath(target);
+
+        return vfs.exists(filename)
+            .then(function (exists) {
+                if (exists) {
+                    node.resolveTarget(target);
+                } else {
+                    node.rejectTarget(target, new Error('file not found: ' + filename));
+                }
+            }, _.noop);
     },
 
-    clean: function () {}
+    clean: _.noop
 });

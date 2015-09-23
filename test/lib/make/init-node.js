@@ -32,7 +32,7 @@ describe('make/initNode', function () {
         vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}, {graph: true});
+        makePlatform.init('/path/to/project', 'mode', function () {}, { graph: true });
     });
 
     afterEach(function () {

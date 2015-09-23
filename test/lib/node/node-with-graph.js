@@ -83,13 +83,13 @@ describe('node-with-graph', function () {
             sandbox.stub(Node.prototype, 'requireNodeSources');
             Node.prototype.requireNodeSources.returns(vow.resolve());
 
-            return node.requireNodeSources({'node': ['?.js']}, ['target.js'])
+            return node.requireNodeSources({ node: ['?.js'] }, ['target.js'])
                 .then(function () {
                     expect(graph.addDep).to.be.calledWith(
                         path.join(nodePath, 'target.js'),
                         path.join('node', 'node.js')
                     );
-                    expect(Node.prototype.requireNodeSources).to.be.calledWith({'node': ['?.js']}, ['target.js']);
+                    expect(Node.prototype.requireNodeSources).to.be.calledWith({ node: ['?.js'] }, ['target.js']);
                 });
         });
     });

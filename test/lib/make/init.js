@@ -119,13 +119,13 @@ describe('make/init', function () {
             });
 
             it('should create build graph on demand', function () {
-                init_({opts: {graph: true}});
+                init_({ opts: { graph: true } });
 
                 expect(makePlatform.getBuildGraph()).to.be.instanceOf(BuildGraph);
             });
 
             it('should initialize build graph with project name', function () {
-                init_({ projectPath: '/path/to/project-name', opts: {graph: true}});
+                init_({ projectPath: '/path/to/project-name', opts: { graph: true } });
 
                 expect(makePlatform.getBuildGraph().__constructor).to.be.calledWith('project-name');
             });

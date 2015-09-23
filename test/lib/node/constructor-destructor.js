@@ -1,9 +1,7 @@
 var path = require('path');
-var Node = require('../../../lib/node');
+var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
-var BuildGraph = require('../../../lib/ui/build-graph');
-var Logger = require('../../../lib/logger');
 
 describe('node/constructor and destructor', function () {
     var nodePath = path.join('path', 'to', 'node');
@@ -19,7 +17,7 @@ describe('node/constructor and destructor', function () {
         makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
-        node = new Node(nodePath, makePlatform, cache);
+        node = nodeFactory.mkNode(nodePath, makePlatform, cache);
     });
 
     describe('constructor', function () {
@@ -79,18 +77,6 @@ describe('node/constructor and destructor', function () {
             node.destruct();
 
             expect(node.getTechs()).to.be.undefined;
-        });
-
-        it('should delete reference to build graph', function () {
-            var graph = sinon.createStubInstance(BuildGraph);
-            node.setBuildGraph(graph);
-            node.setLogger(sinon.createStubInstance(Logger));
-
-            node.destruct();
-
-            return node.resolveTarget('node.js').then(function () {
-                expect(graph.resolveTarget).to.be.not.called;
-            });
         });
     });
 });

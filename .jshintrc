@@ -3,5 +3,6 @@
     "maxlen": 120,
     "unused": true,
     "undef": true,
-    "node": true
+    "node": true,
+    "laxbreak": true
 }

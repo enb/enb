@@ -1,6 +1,34 @@
 История изменений
 =================
 
+1.0.0
+-----
+
+Начиная с данной версии предполагается, что внутреннее устройство `ENB` может произвольно меняться. Пользователям предлагается использовать исключительно публичный API. Если необходимая функциональность там отсутствует - ожидается [issue] или [pull request].
+
+Для удобства участия в разработке `ENB` большая часть ядра `ENB` покрыта тестами. Покрытие на данный момент составляет 90.96%.
+
+### Крупные изменения
+
+* Обновлены зависимости до актуальных на момент релиза версий. ([#386])
+* Обновлен публичный API: Добавлены классы `BaseTech`, `BuildFlow`, `FileList`. Также добавлен namespace `asyncFs`. ([#398])
+* Удалена `cli` команда `help`. ([#358])
+* Для команды `enb server` опция `host` теперь задается ключем `-H` вместо `-h`. ([#101])
+* Граф сборки не строится по умолчанию. Таким образом уменьшается время сборки и потребление памяти. ([#357])
+* Удалены технологии, переехавшие в `enb-bem-techs`, `enb-bem-i18n`, `enb-bembundle` и другие отдельные пакеты. Оставшиеся в ядре технологии: `file-copy`, `file-merge`, `file-provider`, `symlink`. ([#367])
+* Удален старый генератор `project-stub` ([#360])
+* Удалены старые моки: `test-node`, `test-logger`, `test-file-system`. `mock-node` и `mock-logger` могут быть найдены в пакете `mock-enb`. Вместо `test-file-system` предполагается использовать пакет `mock-fs`. ([#365], [#369], [#371])
+* Удалена утилита `dir-glob`. В качестве замены предполагается пакет `glob`. ([#378])
+* Удалена утилита `drop-require-cache`, для совместимости с использующими её на момент релиза технологиями оставлена заглушка. Вместо `drop-require-cache` предполагается использовать модуль `clear-require`. ([#341], [#342])
+* Удалена утилита `async-require`, для совместимости с использующими её на момент релиза технологиями оставлена заглушка. Вместо `async-require` предполагается использовать модуль `enb-async-require`. ([#400])
+* Удалена утилита `require-or-eval`, для совместимости с использующими её на момент релиза технологиями оставлена заглушка. Вместо `require-or-eval` предполагается использовать модуль `enb-require-or-eval`. ([#400])
+* Удалены устаревшие методы из `FileList`. ([#363])
+* Обновлен `ENB server`: удалены избыточные зависимости, остальные обновлены до актуальных на момент релиза версий. ([#393])
+
+### Исправления ошибок
+
+* По команде `npm test` тесты запускаются только один раз ([#334])
+
 0.17.2
 ------
 
@@ -372,6 +400,22 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#400]: https://github.com/enb-make/enb/issues/400
+[#398]: https://github.com/enb-make/enb/issues/398
+[#393]: https://github.com/enb-make/enb/issues/393
+[#386]: https://github.com/enb-make/enb/issues/386
+[#378]: https://github.com/enb-make/enb/issues/378
+[#371]: https://github.com/enb-make/enb/issues/371
+[#369]: https://github.com/enb-make/enb/issues/369
+[#367]: https://github.com/enb-make/enb/issues/367
+[#365]: https://github.com/enb-make/enb/issues/365
+[#363]: https://github.com/enb-make/enb/issues/363
+[#360]: https://github.com/enb-make/enb/issues/360
+[#358]: https://github.com/enb-make/enb/issues/358
+[#357]: https://github.com/enb-make/enb/pull/357
+[#342]: https://github.com/enb-make/enb/issues/342
+[#341]: https://github.com/enb-make/enb/issues/341
+[#334]: https://github.com/enb-make/enb/issues/334
 [#321]: https://github.com/enb-make/enb/pull/321
 [#314]: https://github.com/enb-make/enb/issues/314
 [#313]: https://github.com/enb-make/enb/pull/313
@@ -387,3 +431,7 @@
 [#268]: https://github.com/enb-make/enb/issues/268
 [#257]: https://github.com/enb-make/enb/pull/257
 [#242]: https://github.com/enb-make/enb/issues/242
+[#101]: https://github.com/enb-make/enb/issues/101
+
+[issue]: https://github.com/enb-make/enb/issues/
+[pull request]: https://github.com/enb-make/enb/pulls

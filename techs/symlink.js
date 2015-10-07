@@ -19,10 +19,11 @@
  * } ]);
  * ```
  */
-var vowFs = require('../lib/fs/async-fs');
-var inherit = require('inherit');
+ var inherit = require('inherit'),
+     enb = require('../lib/api'),
+     vfs = enb.asyncFs;
 
-module.exports = inherit(require('../lib/tech/base-tech'), {
+module.exports = inherit(enb.BaseTech, {
     getName: function () {
         return 'symlink';
     },
@@ -42,14 +43,14 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
         var fileTarget = this.node.unmaskTargetName(this._fileTarget);
         var _this = this;
         function createSymlink() {
-            return vowFs.symLink(fileTarget, symlinkTargetPath).then(function () {
+            return vfs.symLink(fileTarget, symlinkTargetPath).then(function () {
                 _this.node.resolveTarget(symlinkTarget);
             });
         }
         return this.node.requireSources([fileTarget]).then(function () {
-            return vowFs.exists(symlinkTargetPath).then(function (exists) {
+            return vfs.exists(symlinkTargetPath).then(function (exists) {
                 if (exists) {
-                    return vowFs.remove(symlinkTargetPath).then(createSymlink);
+                    return vfs.remove(symlinkTargetPath).then(createSymlink);
                 } else {
                     return createSymlink();
                 }

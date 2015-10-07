@@ -20,10 +20,11 @@
  * } ]);
  * ```
  */
-var vowFs = require('../lib/fs/async-fs');
-var inherit = require('inherit');
+var inherit = require('inherit'),
+    enb = require('../lib/api'),
+    vfs = enb.asyncFs;
 
-module.exports = inherit(require('../lib/tech/base-tech'), {
+module.exports = inherit(enb.BaseTech, {
     getName: function () {
         return 'file-copy';
     },
@@ -73,8 +74,8 @@ module.exports = inherit(require('../lib/tech/base-tech'), {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {
-                return vowFs.read(sourcePath, 'utf8').then(function (data) {
-                    return vowFs.write(targetPath, data, 'utf8').then(function () {
+                return vfs.read(sourcePath, 'utf8').then(function (data) {
+                    return vfs.write(targetPath, data, 'utf8').then(function () {
                         cache.cacheFileInfo('source-file', sourcePath);
                         cache.cacheFileInfo('target-file', targetPath);
                         _this.node.resolveTarget(target);

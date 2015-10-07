@@ -20,11 +20,12 @@
  * } ]);
  * ```
  */
-var Vow = require('vow');
-var vowFs = require('../lib/fs/async-fs');
-var File = require('enb-source-map/lib/file');
+var vow = require('vow'),
+    enb = require('../lib/api'),
+    vfs = enb.asyncFs,
+    File = require('enb-source-map/lib/file');
 
-module.exports = require('../lib/build-flow').create()
+module.exports = enb.buildFlow.create()
     .name('file-merge')
     .target('target', '?.target')
     .defineOption('divider', '\n')
@@ -37,8 +38,8 @@ module.exports = require('../lib/build-flow').create()
         var sourcemap = this._sourcemap;
         var target = this._target;
 
-        return Vow.all(sources.map(function (sourceFilename) {
-            return vowFs.read(sourceFilename, 'utf8');
+        return vow.all(sources.map(function (sourceFilename) {
+            return vfs.read(sourceFilename, 'utf8');
         })).then(function (results) {
             if (!sourcemap) {
                 return results.join(divider);

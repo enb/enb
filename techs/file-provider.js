@@ -15,11 +15,12 @@
  * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
  * ```
  */
-var vfs = require('../lib/fs/async-fs'),
-    inherit = require('inherit'),
-    _ = require('lodash');
+var inherit = require('inherit'),
+    _ = require('lodash'),
+    enb = require('../lib/api'),
+    vfs = enb.asyncFs;
 
-module.exports = inherit(require('../lib/tech/base-tech'), {
+module.exports = inherit(enb.BaseTech, {
     getName: function () {
         return 'file-provider';
     },

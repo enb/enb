@@ -1,6 +1,6 @@
 {
   "name": "enb",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Faster BEM/BEViS assembler",
   "keywords": [
     "enb",

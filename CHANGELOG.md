@@ -1,6 +1,23 @@
 История изменений
 =================
 
+1.0.1
+-----
+
+### Исправления ошибок
+
+* Исправлен метод `make`: возможность передавать только опции ([#397]).
+* Исправлено получение `buildFlow` через API ([#404]).
+
+### Зависимости
+
+* Модуль `glob@5.0.14` обновлен до версии `5.0.15`.
+* Модуль `vow@0.4.10` обновлен до версии `0.4.11`.
+
+### Остальное
+
+* Технологии `file-copy`, `file-merge`, `file-provider` и `symlink` используют публичное API ([#406]).
+
 1.0.0
 -----
 
@@ -400,10 +417,13 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#406]: https://github.com/enb-make/enb/issues/406
+[#404]: https://github.com/enb-make/enb/issues/404
 [#400]: https://github.com/enb-make/enb/issues/400
 [#398]: https://github.com/enb-make/enb/issues/398
 [#393]: https://github.com/enb-make/enb/issues/393
 [#386]: https://github.com/enb-make/enb/issues/386
+[#397]: https://github.com/enb-make/enb/pull/397
 [#378]: https://github.com/enb-make/enb/issues/378
 [#371]: https://github.com/enb-make/enb/issues/371
 [#369]: https://github.com/enb-make/enb/issues/369

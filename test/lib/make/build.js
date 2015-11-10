@@ -39,12 +39,6 @@ describe('make/build', function () {
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
-    it('should log build started message', function () {
-        makePlatform.build([]);
-
-        expect(makePlatform.getLogger().log).to.be.calledWith('build started');
-    });
-
     it('should build task if target provided and task config available in project config', function () {
         var buildTask = sinon.spy(makePlatform, 'buildTask');
 
@@ -101,14 +95,6 @@ describe('make/build', function () {
         Node.prototype.build.returns(vow.reject(new Error('test_err')));
 
         return expect(makePlatform.build([])).to.be.rejectedWith('test_err');
-    });
-
-    it('should log build finished message', function () {
-        setup();
-
-        return makePlatform.build([]).then(function () {
-            expect(makePlatform.getLogger().log).to.be.calledWithMatch(/build finished - \S+ms/);
-        });
     });
 
     it('should disable logger for each node', function () {

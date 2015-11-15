@@ -274,8 +274,8 @@ ENB_FILE_LIMIT=100 ./node_modules/.bin/enb make
 
         nodeConfig.mode('production', function(nodeConfig) {
           nodeConfig.addTechs([
-            [ require('enb/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js', minify: true } ],
-            [ require('enb/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css', minify: true } ]
+            [ require('enb-borschik/techs/borschik'), { sourceTarget: '?.js', destTarget: '_?.js', minify: true } ],
+            [ require('enb-borschik/techs/borschik'), { sourceTarget: '?.css', destTarget: '_?.css', minify: true } ]
           ]);
         });
 

@@ -37,6 +37,7 @@ module.exports = enb.buildFlow.create()
         var divider = this._divider;
         var sourcemap = this._sourcemap;
         var target = this._target;
+        var node = this.node;
 
         return vow.all(sources.map(function (sourceFilename) {
             return vfs.read(sourceFilename, 'utf8');
@@ -45,7 +46,9 @@ module.exports = enb.buildFlow.create()
                 return results.join(divider);
             }
 
-            return joinWithSourceMaps(sources, results, divider, target);
+            var relFileNames = sources.map(node.relativePath, node);
+
+            return joinWithSourceMaps(relFileNames, results, divider, target);
         });
     })
     .createTech();

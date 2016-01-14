@@ -1295,6 +1295,161 @@ describe('build-flow', function () {
             });
         });
 
+        describe('super', function () {
+            var BaseTech, Tech, bundle;
+            beforeEach(function () {
+                bundle = new MockNode('bundle');
+                BaseTech = flow
+                    .name('name')
+                    .target('target', 'file.ext')
+                    .createTech();
+            });
+
+            describe('builder', function () {
+                beforeEach(function () {
+                    Tech = BaseTech.buildFlow()
+                        .builder(function () { return '42'; })
+                        .createTech();
+                });
+
+                it('should call base builder by default', function () {
+                    var ChildTech = Tech.buildFlow().createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['42']);
+                });
+
+                it('should allow to call base builder via __base property', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(function () {
+                            return '!' + this.__base.apply(this, arguments);
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+
+                it('should be passed thru the child to the base builder', function () {
+                    var ChildTech = Tech.buildFlow().createTech();
+                    var GrandChildTech = ChildTech.buildFlow()
+                        .builder(function () {
+                            return '!' + this.__base.apply(this, arguments);
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(GrandChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+            });
+
+            describe('methods', function () {
+                function _thisHello() {
+                    return this.hello();
+                }
+                beforeEach(function () {
+                    Tech = BaseTech.buildFlow()
+                        .builder(function () { return 'Definitely not forty two.'; })
+                        .methods({
+                            hello: function () { return 42; }
+                        })
+                        .createTech();
+                });
+
+                it('should call base method by default', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_thisHello)
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['42']);
+                });
+
+                it('should allow to call base method via __base property', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_thisHello)
+                        .methods({
+                            hello: function () {
+                                return '!' + this.__base.apply(this, arguments);
+                            }
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+
+                it('should be passed thru the child to the base method', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_thisHello)
+                        .createTech();
+                    var GrandChildTech = ChildTech.buildFlow()
+                        .methods({
+                            hello: function () {
+                                return '!' + this.__base.apply(this, arguments);
+                            }
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(GrandChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+            });
+
+            describe('static methods', function () {
+                function _staticHello() {
+                    return this.__self.hello();
+                }
+                beforeEach(function () {
+                    Tech = BaseTech.buildFlow()
+                        .builder(function () { return 'Definitely not forty two.'; })
+                        .staticMethods({
+                            hello: function () { return 42; }
+                        })
+                        .createTech();
+                });
+
+                it('should call base static method by default', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_staticHello)
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['42']);
+                });
+
+                it('should allow to call base static method via __base property', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_staticHello)
+                        .staticMethods({
+                            hello: function () {
+                                return '!' + this.__base.apply(this, arguments);
+                            }
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(ChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+
+                it('should be passed thru the child to the base static method', function () {
+                    var ChildTech = Tech.buildFlow()
+                        .builder(_staticHello)
+                        .createTech();
+                    var GrandChildTech = ChildTech.buildFlow()
+                        .staticMethods({
+                            hello: function () {
+                                return '!' + this.__base.apply(this, arguments);
+                            }
+                        })
+                        .createTech();
+
+                    return bundle.runTechAndGetContent(GrandChildTech)
+                        .should.eventually.eql(['!42']);
+                });
+            });
+        });
+
         describe('dependencies', function () {
             it('should inherit dependence', function () {
                 var dir = 'bundle';

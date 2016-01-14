@@ -68,7 +68,7 @@ describe('node/require sources', function () {
         });
 
         it('should return promise', function () {
-            expect(node.requireSources('?.js')).to.be.instanceOf(vow.Promise);
+            expect(node.requireSources(['?.js'])).to.be.instanceOf(vow.Promise);
         });
 
         it('should register targets before start requiring sources', function () {

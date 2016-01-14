@@ -50,13 +50,12 @@ describe('node-with-graph', function () {
             tech.getName.returns('tech');
             node.setTechs([tech]);
 
-            return node.loadTechs()
-                .then(function () {
-                    expect(graph.addTarget).to.be.calledWith(
-                        path.join(nodePath, 'node.js'),
-                        'tech'
-                    );
-                });
+            node.loadTechs();
+
+            expect(graph.addTarget).to.be.calledWith(
+                path.join(nodePath, 'node.js'),
+                'tech'
+            );
         });
     });
 

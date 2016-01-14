@@ -1,5 +1,4 @@
 var path = require('path');
-var vow = require('vow');
 var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
@@ -24,13 +23,9 @@ describe('node/loadTechs', function () {
         node.setTechs([tech]);
     });
 
-    it('should return promise', function () {
-        expect(node.loadTechs()).to.be.instanceOf(vow.Promise);
-    });
-
     it('should init registered techs', function () {
-        return node.loadTechs().then(function () {
-            expect(tech.init).to.be.called;
-        });
+        node.loadTechs();
+
+        expect(tech.init).to.be.called;
     });
 });

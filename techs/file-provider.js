@@ -41,7 +41,7 @@ module.exports = inherit(enb.BaseTech, {
         return vfs.exists(filename)
             .then(function (exists) {
                 if (exists) {
-                    node.resolveTarget(target);
+                    node.resolveTarget(target, {path: filename, content: require('fs').readFileSync(filename, 'utf8')});
                 } else {
                     node.rejectTarget(target, new Error('file not found: ' + filename));
                 }

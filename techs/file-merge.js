@@ -20,7 +20,8 @@
  * } ]);
  * ```
  */
-var vow = require('vow'),
+var _ = require('lodash'),
+    vow = require('vow'),
     enb = require('../lib/api'),
     vfs = enb.asyncFs,
     File = require('enb-source-map/lib/file');
@@ -39,17 +40,16 @@ module.exports = enb.buildFlow.create()
         var target = this._target;
         var node = this.node;
 
-        return vow.all(sources.map(function (sourceFilename) {
-            return vfs.read(sourceFilename, 'utf8');
-        })).then(function (results) {
-            if (!sourcemap) {
-                return results.join(divider);
-            }
+        var contents = _.pluck(sources, 'content');
 
-            var relFileNames = sources.map(node.relativePath, node);
+        if (!sourcemap) {
+            return contents.join(divider);
+        }
 
-            return joinWithSourceMaps(relFileNames, results, divider, target);
-        });
+        var relFileNames = _(sources).pluck(sources, 'path').map(node.relativePath, node).value();
+
+        return joinWithSourceMaps(relFileNames, contents, divider, target);
+
     })
     .createTech();
 

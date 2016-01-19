@@ -1,6 +1,22 @@
 История изменений
 =================
 
+1.1.2
+-----
+
+### Исправления ошибок
+
+* Исправлено наследование технологий в `build-flow` ([#422]):
+  * Исправлена работа `this.__base()` в `builder` ([#230]).
+  * Исправлена работа `this.__base()` для методов технологий ([#222]).
+
+### Зависимости
+
+* Модуль `glob@6.0.2` обновлен до версии `6.0.4`.
+* Модуль `inherit@2.2.2` обновлен до версии `2.2.3`: возможность подменять метод `__base()` при тестировании.
+* Модуль `serve-static@1.10.0` обновлен до версии `1.10.1`.
+* Модуль `vow@0.4.11` обновлен до версии `0.4.12`.
+
 1.1.1
 -----
 
@@ -447,6 +463,7 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#422]: https://github.com/enb-make/enb/pull/422
 [#421]: https://github.com/enb-make/enb/pull/421
 [#411]: https://github.com/enb-make/enb/issues/411
 [#410]: https://github.com/enb-make/enb/issues/410
@@ -484,6 +501,8 @@
 [#268]: https://github.com/enb-make/enb/issues/268
 [#257]: https://github.com/enb-make/enb/pull/257
 [#242]: https://github.com/enb-make/enb/issues/242
+[#230]: https://github.com/enb-make/enb/pull/230
+[#222]: https://github.com/enb-make/enb/issues/222
 [#101]: https://github.com/enb-make/enb/issues/101
 
 [issue]: https://github.com/enb-make/enb/issues/

@@ -2,6 +2,7 @@ var vow = require('vow');
 var fs = require('fs');
 var path = require('path');
 var mockFs = require('mock-fs');
+var mock = require('mock-require');
 var clearRequire = require('clear-require');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
@@ -11,6 +12,7 @@ describe('cache/cache-storage', function () {
     afterEach(function () {
         sandbox.restore();
         mockFs.restore();
+        mock.stop('/path/to/test_file.js');
     });
 
     describe('constructor', function () {
@@ -35,6 +37,8 @@ describe('cache/cache-storage', function () {
                 }
             });
 
+            mock('/path/to/test_file.js', {});
+
             var storage = createCacheStorage_('/path/to/test_file.js');
 
             storage.load();
@@ -49,10 +53,10 @@ describe('cache/cache-storage', function () {
                     'test_file.js': 'module.exports = {};'
                 }
             });
-
             var storage = createCacheStorage_('/path/to/test_file.js');
 
-            require.cache[path.resolve('/path/to/test_file.js')] = 'foo';
+            mock('/path/to/test_file.js', { cache: { '/path/to/test_file.js': 'foo' } });
+
             storage.load();
 
             expect(require.cache[path.resolve('/path/to/test_file.js')])
@@ -65,6 +69,8 @@ describe('cache/cache-storage', function () {
                     'test_file.js': 'module.exports = { foo: "bar" };'
                 }
             });
+
+            mock('/path/to/test_file.js', { foo: 'bar' });
 
             var storage = createCacheStorage_('/path/to/test_file.js');
 
@@ -81,6 +87,8 @@ describe('cache/cache-storage', function () {
                 }
             });
 
+            mock('/path/to/test_file.js', {});
+
             var storage = createCacheStorage_('/path/to/test_file.js');
 
             storage.load();
@@ -94,6 +102,12 @@ describe('cache/cache-storage', function () {
         it('should write data prepending it with module.exports = ', function () {
             mockFs({
                 '/path/to': {}
+            });
+
+            mock('/path/to/test_file.js', {
+                testPrefix: {
+                    testKey: 'test_value'
+                }
             });
 
             var storage = createCacheStorage_('/path/to/test_file.js');
@@ -125,6 +139,12 @@ describe('cache/cache-storage', function () {
             var storage = createCacheStorage_('/path/to/test_file.js');
 
             storage.set('testPrefix', 'testKey', 'test_value');
+
+            mock('/path/to/test_file.js', {
+                testPrefix: {
+                    testKey: 'test_value'
+                }
+            });
 
             return storage.saveAsync().then(function () {
                 assertStorageData('/path/to/test_file.js', {

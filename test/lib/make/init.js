@@ -215,7 +215,7 @@ describe('make/init', function () {
         it('should instantiate cache storage with path to cache file located in temp dir', function () {
             return init_({ projectPath: '/path/to/project' }).then(function () {
                 expect(makePlatform.getCacheStorage())
-                    .to.be.deep.equal(new CacheStorage(path.normalize('/path/to/project/.enb/tmp/cache.js')));
+                    .to.be.deep.equal(new CacheStorage(path.normalize('/path/to/project/.enb/tmp/cache.json')));
             });
         });
     });

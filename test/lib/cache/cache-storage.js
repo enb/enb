@@ -2,7 +2,6 @@ var vow = require('vow');
 var fs = require('fs');
 var path = require('path');
 var mockFs = require('mock-fs');
-var clearRequire = require('clear-require');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('cache/cache-storage', function () {
@@ -19,11 +18,11 @@ describe('cache/cache-storage', function () {
         });
 
         it('should save filename', function () {
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.load();
 
-            expect(fs.existsSync).to.be.calledWith('/path/to/test_file.js');
+            expect(fs.existsSync).to.be.calledWith('/path/to/test_file.json');
         });
     });
 
@@ -31,77 +30,61 @@ describe('cache/cache-storage', function () {
         it('should set data as empty object if cache file does not exist', function () {
             mockFs({
                 '/path/to': {
-                    'test_file.js': ''
+                    'test_file.json': ''
                 }
             });
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.load();
             storage.save(); // the only way to check internal data contents is to save cache to file
 
-            assertStorageData('/path/to/test_file.js', {});
-        });
-
-        it('should clear require for cache file', function () {
-            mockFs({
-                '/path/to': {
-                    'test_file.js': 'module.exports = {};'
-                }
-            });
-
-            var storage = createCacheStorage_('/path/to/test_file.js');
-
-            require.cache[path.resolve('/path/to/test_file.js')] = 'foo';
-            storage.load();
-
-            expect(require.cache[path.resolve('/path/to/test_file.js')])
-                .to.be.not.equal('foo');
+            assertStorageData('/path/to/test_file.json', {});
         });
 
         it('should load cached data', function () {
             mockFs({
                 '/path/to': {
-                    'test_file.js': 'module.exports = { foo: "bar" };'
+                    'test_file.json': '{ "foo": "bar" }'
                 }
             });
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.load();
             storage.save(); // the only way to check internal data contents is to save cache to file
 
-            assertStorageData('/path/to/test_file.js', { foo: 'bar' });
+            assertStorageData('/path/to/test_file.json', { foo: 'bar' });
         });
 
         it('should set data as empty object if exception occured during loading cache file', function () {
             mockFs({
                 '/path/to': {
-                    'test_file.js': 'throw new Error();'
+                    'test_file.json': 'throw new Error();'
                 }
             });
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.load();
             storage.save();
 
-            assertStorageData('/path/to/test_file.js', {});
+            assertStorageData('/path/to/test_file.json', {});
         });
     });
 
     describe('save', function () {
-        it('should write data prepending it with module.exports = ', function () {
+        it('should write data in JSON format', function () {
             mockFs({
                 '/path/to': {}
             });
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.set('testPrefix', 'testKey', 'test_value');
             storage.save();
 
-            assertStorageData('/path/to/test_file.js', {
+            assertStorageData('/path/to/test_file.json', {
                 testPrefix: {
                     testKey: 'test_value'
                 }
@@ -122,12 +105,12 @@ describe('cache/cache-storage', function () {
                 '/path/to': {}
             });
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.set('testPrefix', 'testKey', 'test_value');
 
             return storage.saveAsync().then(function () {
-                assertStorageData('/path/to/test_file.js', {
+                assertStorageData('/path/to/test_file.json', {
                     testPrefix: {
                         testKey: 'test_value'
                     }
@@ -137,7 +120,7 @@ describe('cache/cache-storage', function () {
 
         it('should write data to stream split in chunks by prefix', function () {
             var writeStream = sinon.createStubInstance(fs.WriteStream);
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             sandbox.stub(fs, 'createWriteStream');
             fs.createWriteStream.returns(writeStream);
@@ -155,7 +138,7 @@ describe('cache/cache-storage', function () {
         it('should reject promise if error ocured during file write', function () {
             mockFs({});
 
-            var storage = createCacheStorage_('/path/to/test_file.js');
+            var storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.set('testPrefix', 'testKey', 'test_value');
 
@@ -217,12 +200,12 @@ describe('cache/cache-storage', function () {
     });
 
     function createCacheStorage_(filename) {
-        return new CacheStorage(filename || '/path/to/default_file.js');
+        return new CacheStorage(filename || '/path/to/default_file.json');
     }
 
     function assertStorageData(dataPath, expected) {
-        clearRequire(path.resolve(dataPath)); // in test because it throws on non-existing file
+        var data = JSON.parse(fs.readFileSync(path.resolve(dataPath), 'utf8'));
 
-        expect(require(dataPath)).to.be.deep.equal(expected);
+        expect(data).to.be.deep.equal(expected);
     }
 });

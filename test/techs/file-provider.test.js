@@ -11,7 +11,8 @@ describe('techs/file-provider', function () {
         mockFS({
             bundle: {
                 'file.txt': 'I\'m here'
-            }
+            },
+            '/absolute.txt': 'You\'re here'
         });
 
         bundle = new MockNode('bundle');
@@ -28,6 +29,14 @@ describe('techs/file-provider', function () {
             .should.be.fulfilled
             .then(function () {
                 resolveSpy.should.calledWith('file.txt');
+            });
+    });
+
+    it('should provide file to target with absolute path', function () {
+        return bundle.runTech(FileProviderTech, { target: '/absolute.txt' })
+            .should.be.fulfilled
+            .then(function () {
+                resolveSpy.should.calledWith('/absolute.txt');
             });
     });
 

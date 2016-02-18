@@ -82,11 +82,11 @@
   "scripts": {
     "test": "npm run jshint && npm run check-style && npm run unit-test && npm run tech-test",
     "jshint": "jshint .",
-    "unit-test": "mocha --recursive test/lib",
-    "tech-test": "mocha --recursive test/techs",
+    "unit-test": "mocha test/lib",
+    "tech-test": "mocha test/techs",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "check-style": "jscs lib test",
-    "coverage": "istanbul cover _mocha -- -R dot --recursive test/lib",
-    "coveralls": "npm i coveralls && istanbul cover _mocha -- -R dot --recursive test/lib --report lcovonly && cat ./coverage/lcov.info | coveralls"
+    "coverage": "istanbul cover _mocha -- -R dot test/lib",
+    "coveralls": "npm i coveralls && istanbul cover _mocha -- -R dot test/lib --report lcovonly && cat ./coverage/lcov.info | coveralls"
   }
 }

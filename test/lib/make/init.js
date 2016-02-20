@@ -1,10 +1,15 @@
+var fs = require('fs');
 var vow = require('vow');
 var vowFs = require('vow-fs');
-var fs = require('fs');
 var mockFs = require('mock-fs');
+var proxyquire = require('proxyquire');
+var mockRequire = require('mock-require');
 var path = require('path');
 var _ = require('lodash');
-var MakePlatform = require('../../../lib/make');
+var clearRequire = sinon.spy();
+var MakePlatform = proxyquire('../../../lib/make', {
+    'clear-require': clearRequire
+});
 var NodeConfig = require('../../../lib/config/node-config');
 var Node = require('../../../lib/node/node');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -257,6 +262,10 @@ describe('make/init', function () {
                     }
                 });
 
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
@@ -272,6 +281,10 @@ describe('make/init', function () {
                             'make.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.bem/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -294,6 +307,13 @@ describe('make/init', function () {
                     }
                 });
 
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+                mockRequire('/path/to/project/.bem/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
@@ -310,6 +330,10 @@ describe('make/init', function () {
                             'enb-make.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/enb-make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -329,6 +353,10 @@ describe('make/init', function () {
                     }
                 });
 
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
@@ -345,6 +373,13 @@ describe('make/init', function () {
                             'enb-make.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['en']);
+                });
+                mockRequire('/path/to/project/.enb/enb-make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -374,7 +409,6 @@ describe('make/init', function () {
             });
 
             it('should drop require cache for for config file', function () {
-                var modulePath = path.resolve('/path/to/project/.enb/make.js');
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
@@ -382,14 +416,17 @@ describe('make/init', function () {
                         }
                     }
                 });
-                require.cache[modulePath] = 'foo';
+
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
 
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(require.cache[modulePath]).to.be.not.equal('foo');
+                expect(clearRequire.calledWith('/path/to/project/.enb/make.js')).to.be.true;
             });
 
             it('should return rejected promise if exception thrown while executing config', function () {
@@ -401,6 +438,10 @@ describe('make/init', function () {
                                        '};'
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/make.js', function () {
+                    throw new Error('exc_in_config');
                 });
 
                 var initPromise = init_({
@@ -419,6 +460,10 @@ describe('make/init', function () {
                             'make.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -441,6 +486,11 @@ describe('make/init', function () {
                     }
                 });
 
+                mockRequire('/path/to/project/.enb/make.js', function () {});
+                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
@@ -450,7 +500,6 @@ describe('make/init', function () {
             });
 
             it('should drop require cache for personal config', function () {
-                var modulePath = path.resolve('/path/to/project/.enb/make.personal.js');
                 mockFs({
                     '/path/to/project': {
                         '.enb': {
@@ -460,13 +509,17 @@ describe('make/init', function () {
                     }
                 });
 
-                require.cache[modulePath] = 'foo';
+                mockRequire('/path/to/project/.enb/make.js', function () {});
+                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(require.cache[modulePath]).to.be.not.equal('foo');
+                expect(clearRequire.calledWith('/path/to/project/.enb/make.personal.js')).to.be.true;
             });
 
             it('should return rejected promise if exception thrown while executing personal config', function () {
@@ -479,6 +532,11 @@ describe('make/init', function () {
                                                 '};'
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/make.js', function () {});
+                mockRequire('/path/to/project/.enb/make.personal.js', function () {
+                    throw new Error('exc_in_personal_config');
                 });
 
                 var initPromise = init_({
@@ -498,6 +556,11 @@ describe('make/init', function () {
                             'make.personal.js': makeFileTemplate({ lang: 'ru' })
                         }
                     }
+                });
+
+                mockRequire('/path/to/project/.enb/make.js', function () {});
+                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({

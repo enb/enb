@@ -252,7 +252,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -269,7 +269,7 @@ describe('make/init', function () {
                     '/path/to/project/.bem/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.bem/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.bem/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -289,11 +289,11 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
-                mockRequire('/path/to/project/.bem/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.bem/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['en']);
                 });
 
@@ -311,7 +311,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/enb-make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/enb-make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/enb-make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -328,7 +328,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -348,10 +348,10 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['en']);
                 });
-                mockRequire('/path/to/project/.enb/enb-make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/enb-make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -386,7 +386,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -395,7 +395,7 @@ describe('make/init', function () {
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(clearRequire).to.be.calledWith('/path/to/project/.enb/make.js');
+                expect(clearRequire).to.be.calledWith(path.normalize('/path/to/project/.enb/make.js'));
             });
 
             it('should return rejected promise if exception thrown while executing config', function () {
@@ -403,7 +403,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function () {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {
                     throw new Error('exc_in_config');
                 });
 
@@ -421,7 +421,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': ''
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function (projectConfig) {
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -443,8 +443,9 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function () {}); // will throw if no make file in dir
-                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -464,8 +465,9 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function () {}); // will throw if no make file in dir
-                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 
@@ -474,7 +476,7 @@ describe('make/init', function () {
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(clearRequire).to.be.calledWith('/path/to/project/.enb/make.personal.js');
+                expect(clearRequire).to.be.calledWith(path.normalize('/path/to/project/.enb/make.personal.js'));
             });
 
             it('should return rejected promise if exception thrown while executing personal config', function () {
@@ -485,8 +487,9 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function () {}); // will throw if no make file in dir
-                mockRequire('/path/to/project/.enb/make.personal.js', function () {
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function () {
                     throw new Error('exc_in_personal_config');
                 });
 
@@ -507,8 +510,9 @@ describe('make/init', function () {
                     }
                 });
 
-                mockRequire('/path/to/project/.enb/make.js', function () {}); // will throw if no make file in dir
-                mockRequire('/path/to/project/.enb/make.personal.js', function (projectConfig) {
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
                     projectConfig.setLanguages(['ru']);
                 });
 

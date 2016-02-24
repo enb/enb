@@ -1,10 +1,15 @@
+var fs = require('fs');
 var vow = require('vow');
 var vowFs = require('vow-fs');
-var fs = require('fs');
 var mockFs = require('mock-fs');
+var proxyquire = require('proxyquire');
+var mockRequire = require('mock-require');
 var path = require('path');
 var _ = require('lodash');
-var MakePlatform = require('../../../lib/make');
+var clearRequire = sinon.spy();
+var MakePlatform = proxyquire('../../../lib/make', {
+    'clear-require': clearRequire
+});
 var NodeConfig = require('../../../lib/config/node-config');
 var Node = require('../../../lib/node/node');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -221,12 +226,6 @@ describe('make/init', function () {
     });
 
     describe('config loading from fs tests', function () {
-        var makeFileTemplate = _.template(
-            'module.exports = function (projectConfig) { ' +
-                'projectConfig.setLanguages(["${lang}"]); ' +
-            '};'
-        );
-
         afterEach(function () {
             mockFs.restore();
         });
@@ -250,11 +249,11 @@ describe('make/init', function () {
 
             it('should load config from .enb directory if it exists there', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.enb/make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -267,11 +266,11 @@ describe('make/init', function () {
 
             it('should load config from .bem directory if it exists there', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.bem': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.bem/make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.bem/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -285,13 +284,17 @@ describe('make/init', function () {
             it('should load config from .enb directory if both .enb and .bem dirs exists', function () {
                 mockFs({
                     '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        },
-                        '.bem': {
-                            'make.js': makeFileTemplate({ lang: 'en' })
-                        }
+                        '.enb': { 'make.js': '' },
+                        '.bem': { 'make.js': '' }
                     }
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
+                mockRequire(path.normalize('/path/to/project/.bem/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['en']);
                 });
 
                 init_({
@@ -305,11 +308,11 @@ describe('make/init', function () {
 
             it('should load enb-make.js config file if it exists', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'enb-make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.enb/enb-make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/enb-make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -322,11 +325,11 @@ describe('make/init', function () {
 
             it('should load make.js config file if it exists', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.enb/make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -339,12 +342,17 @@ describe('make/init', function () {
 
             it('should load enb-make.js config if both exist in config dir', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'en' }),
-                            'enb-make.js': makeFileTemplate({ lang: 'ru' })
-                        }
+                    '/path/to/project/.enb': {
+                        'make.js': '',
+                        'enb-make.js': ''
                     }
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['en']);
+                });
+                mockRequire(path.normalize('/path/to/project/.enb/enb-make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -374,33 +382,29 @@ describe('make/init', function () {
             });
 
             it('should drop require cache for for config file', function () {
-                var modulePath = path.resolve('/path/to/project/.enb/make.js');
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.enb/make.js': ''
                 });
-                require.cache[modulePath] = 'foo';
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
 
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(require.cache[modulePath]).to.be.not.equal('foo');
+                expect(clearRequire).to.be.calledWith(path.normalize('/path/to/project/.enb/make.js'));
             });
 
             it('should return rejected promise if exception thrown while executing config', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': 'module.exports = function () { ' +
-                                            'throw new Error("exc_in_config");' +
-                                       '};'
-                        }
-                    }
+                    '/path/to/project/.enb/make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {
+                    throw new Error('exc_in_config');
                 });
 
                 var initPromise = init_({
@@ -414,11 +418,11 @@ describe('make/init', function () {
 
             it('should pass project config instance to executed config', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': makeFileTemplate({ lang: 'ru' })
-                        }
-                    }
+                    '/path/to/project/.enb/make.js': ''
+                });
+
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -433,12 +437,16 @@ describe('make/init', function () {
         describe('personal config', function () {
             it('should load personal config using same rules with regular config loading', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
-                            'make.personal.js': makeFileTemplate({ lang: 'ru' })
-                        }
+                    '/path/to/project/.enb': {
+                        'make.js': '',
+                        'make.personal.js': ''
                     }
+                });
+
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({
@@ -450,35 +458,39 @@ describe('make/init', function () {
             });
 
             it('should drop require cache for personal config', function () {
-                var modulePath = path.resolve('/path/to/project/.enb/make.personal.js');
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
-                            'make.personal.js': 'module.exports = function () {};'
-                        }
+                    '/path/to/project/.enb': {
+                        'make.js': '',
+                        'make.personal.js': ''
                     }
                 });
 
-                require.cache[modulePath] = 'foo';
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
+                });
+
                 init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
 
-                expect(require.cache[modulePath]).to.be.not.equal('foo');
+                expect(clearRequire).to.be.calledWith(path.normalize('/path/to/project/.enb/make.personal.js'));
             });
 
             it('should return rejected promise if exception thrown while executing personal config', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
-                            'make.personal.js': 'module.exports = function () { ' +
-                                                    'throw new Error("exc_in_personal_config");' +
-                                                '};'
-                        }
+                    '/path/to/project/.enb': {
+                        'make.js': '',
+                        'make.personal.js': ''
                     }
+                });
+
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function () {
+                    throw new Error('exc_in_personal_config');
                 });
 
                 var initPromise = init_({
@@ -492,12 +504,16 @@ describe('make/init', function () {
 
             it('should pass project config instance to executed personal config', function () {
                 mockFs({
-                    '/path/to/project': {
-                        '.enb': {
-                            'make.js': 'module.exports = function () {};', // will throw if no make file in dir
-                            'make.personal.js': makeFileTemplate({ lang: 'ru' })
-                        }
+                    '/path/to/project/.enb': {
+                        'make.js': '',
+                        'make.personal.js': ''
                     }
+                });
+
+                // will throw if no make file in dir
+                mockRequire(path.normalize('/path/to/project/.enb/make.js'), function () {});
+                mockRequire(path.normalize('/path/to/project/.enb/make.personal.js'), function (projectConfig) {
+                    projectConfig.setLanguages(['ru']);
                 });
 
                 init_({

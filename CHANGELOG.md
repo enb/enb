@@ -1,6 +1,32 @@
 История изменений
 =================
 
+1.2.0
+-----
+
+### Улучшения
+
+* Добавлена технология `write-file` ([#426]).
+
+### Исправления ошибок
+
+* Исправлен метод `Node.resolvePath()`: некорректно обрабатывались абсолютные пути ([#433]).
+* Исправлены тесты для запуска в NodeJS 4 ([#438]).
+
+### Остальное
+
+* Для кэш-файла используется формат `JSON` вместо `CommonJS` ([#434]).
+
+  Было:
+  ```
+  .enb/tmp/cache.js
+  ```
+
+  Стало:
+  ```
+  .enb/tmp/cache.json
+  ```
+
 1.1.2
 -----
 
@@ -463,6 +489,10 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#438]: https://github.com/enb-make/enb/pull/438
+[#434]: https://github.com/enb-make/enb/pull/434
+[#433]: https://github.com/enb-make/enb/pull/433
+[#426]: https://github.com/enb-make/enb/pull/426
 [#422]: https://github.com/enb-make/enb/pull/422
 [#421]: https://github.com/enb-make/enb/pull/421
 [#411]: https://github.com/enb-make/enb/issues/411

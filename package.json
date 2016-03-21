@@ -14,15 +14,15 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/enb-make/enb/blob/master/LICENSE"
+      "url": "https://github.com/enb/enb/blob/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:enb-make/enb.git"
+    "url": "git@github.com:enb/enb.git"
   },
-  "homepage": "https://github.com/enb-make/enb",
-  "bugs": "https://github.com/enb-make/enb/issues",
+  "homepage": "https://github.com/enb/enb",
+  "bugs": "https://github.com/enb/enb/issues",
   "maintainers": [
     {
       "name": "Andrew Abramov",

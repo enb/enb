@@ -1,7 +1,7 @@
 ENB
 ===
 
-[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb-make/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb-make/enb) [![Build status](http://img.shields.io/appveyor/ci/blond/enb.svg?style=flat&label=windows)](https://ci.appveyor.com/project/blond/enb) [![Coverage Status](https://img.shields.io/coveralls/enb-make/enb.svg?style=flat)](https://coveralls.io/r/enb-make/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb-make/enb.svg?style=flat)](https://david-dm.org/enb-make/enb)
+[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb/enb) [![Build status](http://img.shields.io/appveyor/ci/blond/enb.svg?style=flat&label=windows)](https://ci.appveyor.com/project/blond/enb) [![Coverage Status](https://img.shields.io/coveralls/enb/enb.svg?style=flat)](https://coveralls.io/r/enb/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb/enb.svg?style=flat)](https://david-dm.org/enb/enb)
 
 Сборщик проектов. С помощью ENB можно собрать любой проект, который строится на модели node / target.
 
@@ -39,8 +39,8 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 
 **Пакеты для ENB**
 
-* Сборка BEMHTML: https://github.com/enb-make/enb-bemhtml
-* Модульность для нового bem-core: https://github.com/enb-make/enb-modules
+* Сборка BEMHTML: https://github.com/enb/enb-bemhtml
+* Модульность для нового bem-core: https://github.com/enb/enb-modules
 * Интеграция для grunt: https://github.com/megatolya/grunt-enb
 
 Благодарности
@@ -552,7 +552,7 @@ nodeConfig.addTech([ require('enb/techs/symlink'), {
 
 С версии 0.8 технологии рекомендуется писать с использованием хэлпера `BuildFlow`.
 
-Исходный код хэлпера: https://github.com/enb-make/enb/blob/master/lib/build-flow.js
+Исходный код хэлпера: https://github.com/enb/enb/blob/master/lib/build-flow.js
 
 В данном руководстве охвачены не все возможности `BuildFlow`. Полный перечень методов с описанием находится
 в JSDoc файла `build-flow.js`.

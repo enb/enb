@@ -8,7 +8,7 @@ var ModeConfig = require('../../../lib/config/mode-config');
 var ModuleConfig = require('../../../lib/config/module-config');
 
 describe('config/project-config', function () {
-    var projectRoot = path.resolve('/project/root');
+    var projectRoot = path.resolve(__dirname);
     var projectConfig;
 
     beforeEach(function () {
@@ -664,7 +664,7 @@ describe('config/project-config', function () {
         var configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
 
         it('should resolve config path before using it', function () {
-            var nonResolvedConfigPath = '../../test/fixtures/project-configs/project-config.js';
+            var nonResolvedConfigPath = '../../fixtures/project-configs/project-config.js';
             var expectedPath = configPath;
 
             projectConfig.includeConfig(nonResolvedConfigPath);

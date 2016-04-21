@@ -1,141 +1,164 @@
 var fs = require('fs');
 var path = require('path');
-var mockFs = require('mock-fs');
-var clearRequire = require('clear-require');
 var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
+var ProjectConfig = require('../../../lib/config/project-config');
+var pkg = require('../../../lib/utils/package');
+var vowFs = require('vow-fs');
+var vow = require('vow');
 
 describe('make/cache', function () {
     var sandbox = sinon.sandbox.create();
-    var makePlatform;
     var cacheStorage;
 
     beforeEach(function () {
         sandbox.stub(fs, 'existsSync');
-        fs.existsSync
-            .withArgs(path.normalize('/path/to/project/.enb'))
-            .returns(true);
-        fs.existsSync
-            .withArgs(path.normalize('/path/to/project/.enb/make.js'))
-            .returns(true);
+        sandbox.stub(fs, 'statSync');
+
+        sandbox.stub(ProjectConfig.prototype);
+
+        sandbox.stub(pkg);
+
+        sandbox.stub(vowFs, 'makeDir').returns(vow.resolve());
 
         cacheStorage = sinon.createStubInstance(CacheStorage);
-
-        makePlatform = new MakePlatform();
-        makePlatform.setCacheStorage(cacheStorage);
     });
 
     afterEach(function () {
         sandbox.restore();
-        mockFs.restore();
     });
 
     describe('loadCache', function () {
-        it('should load data from cache storage', function () {
-            makePlatform.loadCache();
+        beforeEach(function () {
+            sandbox.stub(MakePlatform.prototype, 'dropCache');
+        });
 
-            expect(cacheStorage.load).to.be.called;
+        it('should load data from cache storage', function () {
+            return setup(cacheStorage)
+                .then(function (makePlatform) {
+                    makePlatform.loadCache();
+
+                    expect(cacheStorage.load).to.be.called;
+                });
         });
 
         it('should not drop cache if current cache attrs same with saved cache attrs', function () {
-            setup(cacheStorage, makePlatform);
+            return setup(cacheStorage)
+                .then(function (makePlatform) {
+                    makePlatform.loadCache();
 
-            makePlatform.loadCache();
-
-            expect(cacheStorage.drop).to.be.not.called;
+                    expect(MakePlatform.prototype.dropCache).to.be.not.called;
+                });
         });
 
         it('should drop cache if cached mode is not equal current mode', function () {
-            setup(cacheStorage, makePlatform, {
-                currentMakePlatformMode: 'current_mode',
-                cachedMakePlatformMode: 'cached_mode'
-            });
+            return setup(cacheStorage, {
+                    currentMakePlatformMode: 'current_mode',
+                    cachedMakePlatformMode: 'cached_mode'
+                })
+                .then(function (makePlatform) {
+                    makePlatform.loadCache();
 
-            makePlatform.loadCache();
-
-            expect(cacheStorage.drop).to.be.called;
+                    expect(MakePlatform.prototype.dropCache).to.be.called;
+                });
         });
 
         it('should drop cache if cached enb version differs from current enb version', function () {
-            setup(cacheStorage, makePlatform, {
-                currentENBVersion: 'current_ver',
-                cachedENBVersion: 'saved_ver'
-            });
+            return setup(cacheStorage, {
+                    currentENBVersion: 'current_ver',
+                    cachedENBVersion: 'saved_ver'
+                })
+                .then(function (makePlatform) {
+                    makePlatform.loadCache();
 
-            makePlatform.loadCache();
-
-            expect(cacheStorage.drop).to.be.called;
+                    expect(MakePlatform.prototype.dropCache).to.be.called;
+                });
         });
 
         it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
-            setup(cacheStorage, makePlatform, {
-                currentMakeFileMtime: new Date(1),
-                cachedMakeFileMtime: new Date(2)
-            });
+            return setup(cacheStorage, {
+                    currentMakeFileMtime: new Date(1),
+                    cachedMakeFileMtime: new Date(2)
+                })
+                .then(function (makePlatform) {
+                    makePlatform.loadCache();
 
-            makePlatform.loadCache();
-
-            expect(cacheStorage.drop).to.be.called;
+                    expect(MakePlatform.prototype.dropCache).to.be.called;
+                });
         });
     });
 
     describe('saveCache', function () {
         it('should save mode', function () {
-            setup(cacheStorage, makePlatform, {
-                currentMakePlatformMode: 'current_mode'
-            });
+            return setup(cacheStorage, {
+                    currentMakePlatformMode: 'current_mode'
+                })
+                .then(function (makePlatform) {
+                    makePlatform.saveCache();
 
-            makePlatform.saveCache();
-
-            expect(cacheStorage.set).to.be.calledWith(':make', 'mode', 'current_mode');
+                    expect(cacheStorage.set).to.be.calledWith(':make', 'mode', 'current_mode');
+                });
         });
 
         it('should save enb version', function () {
-            setup(cacheStorage, makePlatform, {
-                currentENBVersion: 'test_ver'
-            });
+            return setup(cacheStorage, {
+                    currentENBVersion: 'test_ver'
+                })
+                .then(function (makePlatform) {
+                    makePlatform.saveCache();
 
-            makePlatform.saveCache();
-
-            expect(cacheStorage.set).to.be.calledWith(':make', 'version', 'test_ver');
+                    expect(cacheStorage.set).to.be.calledWith(':make', 'version', 'test_ver');
+                });
         });
 
         it('should save makefile mtimes', function () {
-            var expectedMakefiles = {};
-            expectedMakefiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
+            var makeFile = path.normalize('/some/path/to/make.js');
 
-            setup(cacheStorage, makePlatform, {
-                currentMakeFileMtime: new Date(1)
-            });
+            return setup(cacheStorage, {
+                    makeFile: makeFile,
+                    currentMakeFileMtime: new Date(1)
+                })
+                .then(function (makePlatform) {
+                    makePlatform.saveCache();
 
-            makePlatform.saveCache();
-
-            expect(cacheStorage.set)
-                .to.be.calledWith(':make', 'makefiles', expectedMakefiles);
+                    var expectedMakefiles = {};
+                    expectedMakefiles[makeFile] = new Date(1).valueOf();
+                    expect(cacheStorage.set)
+                        .to.be.calledWith(':make', 'makefiles', expectedMakefiles);
+                });
         });
 
         it('should write cached data to disk', function () {
-            makePlatform.saveCache();
+            return setup(cacheStorage)
+                .then(function (makePlatform) {
+                    makePlatform.saveCache();
 
-            expect(cacheStorage.save).to.be.called;
+                    expect(cacheStorage.save).to.be.called;
+                });
         });
     });
 
     // skipped tests for cache attrs saving becausame with tests in saveCached with saveCache
     describe('saveCacheAsync', function () {
         it('should write cached data to disk', function () {
-            makePlatform.saveCacheAsync();
+            return setup(cacheStorage)
+                .then(function (makePlatform) {
+                    makePlatform.saveCacheAsync();
 
-            expect(cacheStorage.saveAsync).to.be.called;
+                    expect(cacheStorage.saveAsync).to.be.called;
+                });
         });
     });
 
     describe('dropCache', function () {
         it('should drop cache', function () {
-            makePlatform.dropCache();
+            return setup(cacheStorage)
+                .then(function (makePlatform) {
+                    makePlatform.dropCache();
 
-            expect(cacheStorage.drop).to.be.called;
+                    expect(cacheStorage.drop).to.be.called;
+                });
         });
     });
 });
@@ -149,36 +172,41 @@ describe('make/cache', function () {
  * In each test checking cacheStorage.drop() is being called one of this conditions is being switched and
  * make platform behavior checked.
  */
-function setup(cacheStorage, makePlatform, settings) {
+function setup(cacheStorage, settings) {
     settings = settings || {};
+
+    var projectDir = path.normalize('/path/to/project');
+    var configDir = path.normalize(path.join(projectDir, '.enb'));
 
     _.defaults(settings, {
         currentENBVersion: 'defaultENBVersion',
         cachedENBVersion: 'defaultENBVersion',
         currentMakePlatformMode: 'defaultMakePlatformMode',
         cachedMakePlatformMode: 'defaultMakePlatformMode',
+        makeFile: path.normalize(path.join(configDir, 'make.js')),
         currentMakeFileMtime: new Date(1),
         cachedMakeFileMtime: new Date(1)
     });
 
-    var makeFiles = {};
-    makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.cachedMakeFileMtime.valueOf();
-
     cacheStorage.get.withArgs(':make', 'version').returns(settings.cachedENBVersion);
     cacheStorage.get.withArgs(':make', 'mode').returns(settings.cachedMakePlatformMode);
+
+    var makeFiles = {};
+    makeFiles[settings.makeFile] = settings.cachedMakeFileMtime.valueOf();
     cacheStorage.get.withArgs(':make', 'makefiles').returns(makeFiles);
 
-    mockFs({
-        '/path/to/project': {
-            '.enb': {
-                'make.js': mockFs.file({
-                    mtime: settings.currentMakeFileMtime
-                })
-            }
-        },
-        'package.json': '{ "version": "' + settings.currentENBVersion + '" }'
-    });
+    fs.existsSync.withArgs(configDir).returns(true);
+    fs.existsSync.withArgs(settings.makeFile).returns(true);
+    fs.statSync.withArgs(settings.makeFile).returns({ mtime: settings.currentMakeFileMtime });
 
-    clearRequire('../../../package.json');
-    makePlatform.init('/path/to/project', settings.currentMakePlatformMode);
+    ProjectConfig.prototype.getIncludedConfigFilenames.returns([settings.makeFile]);
+
+    pkg.version.returns(settings.currentENBVersion);
+
+    var makePlatform = new MakePlatform();
+    return makePlatform.init(projectDir, settings.currentMakePlatformMode, _.noop)
+        .then(function () {
+            makePlatform.setCacheStorage(cacheStorage);
+            return makePlatform;
+        });
 }

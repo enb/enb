@@ -36,6 +36,23 @@ describe('make/init', function () {
         sandbox.restore();
     });
 
+    function init_(settings) {
+        settings = settings || {};
+
+        _.defaults(settings, {
+            projectPath: '/default/project/path',
+            mode: 'default_mode',
+            config: function () {}
+        });
+
+        return makePlatform.init(
+            settings.projectPath,
+            settings.mode,
+            settings.config,
+            settings.opts
+        );
+    }
+
     describe('mocked config directory tests', function () {
         beforeEach(function () {
             mockFs({});
@@ -225,7 +242,10 @@ describe('make/init', function () {
         it('should instantiate cache storage with path to cache file located in temp dir', function () {
             return init_({ projectPath: '/path/to/project' }).then(function () {
                 expect(makePlatform.getCacheStorage())
-                    .to.be.deep.equal(new CacheStorage(path.normalize('/path/to/project/.enb/tmp/cache.json')));
+                    .to.be.deep.equal(new CacheStorage({
+                        tmpDir: path.normalize('/path/to/project/.enb/tmp'),
+                        filename: 'cache.json'
+                    }));
             });
         });
     });
@@ -530,21 +550,4 @@ describe('make/init', function () {
             });
         });
     });
-
-    function init_(settings) {
-        settings = settings || {};
-
-        _.defaults(settings, {
-            projectPath: '/default/project/path',
-            mode: 'default_mode',
-            config: function () {}
-        });
-
-        return makePlatform.init(
-            settings.projectPath,
-            settings.mode,
-            settings.config,
-            settings.opts
-        );
-    }
 });

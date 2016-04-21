@@ -1,6 +1,7 @@
 var mockFs = require('mock-fs');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
+var FileCache = require('../../../lib/cache/file-cache');
 
 describe('cache/cache', function () {
     var sandbox = sinon.sandbox.create();
@@ -10,9 +11,24 @@ describe('cache/cache', function () {
         mockFs.restore();
     });
 
+    function mkStorage_() {
+        var cacheStorage = sinon.createStubInstance(CacheStorage);
+        cacheStorage.fileCache = sinon.createStubInstance(FileCache);
+        return cacheStorage;
+    }
+
+    function createCache_(params) {
+        params = params || {};
+
+        return new Cache(
+            params.storage || mkStorage_(),
+            params.prefix || 'default_prefix'
+        );
+    }
+
     describe('constructor', function () {
         it('should set cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
 
             cache.get();
@@ -21,7 +37,7 @@ describe('cache/cache', function () {
         });
 
         it('should set prefix', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
@@ -35,7 +51,7 @@ describe('cache/cache', function () {
 
     describe('destruct', function () {
         it('should delete reference to cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
 
             cache.destruct();
@@ -46,7 +62,7 @@ describe('cache/cache', function () {
 
     describe('get', function () {
         it('should query data by cache prefix and key',  function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
@@ -60,7 +76,7 @@ describe('cache/cache', function () {
 
     describe('set', function () {
         it('should set data to cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
 
             cache.set();
@@ -69,7 +85,7 @@ describe('cache/cache', function () {
         });
 
         it('should set value by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
@@ -81,9 +97,31 @@ describe('cache/cache', function () {
         });
     });
 
+    describe('getFile', function () {
+        it('should redirect call to fileCache', function () {
+            var cacheStorage = mkStorage_();
+            var cache = createCache_({ storage: cacheStorage });
+
+            cache.getFile('some/key', 100500);
+
+            expect(cacheStorage.fileCache.get).to.be.calledWith('some/key', 100500);
+        });
+    });
+
+    describe('putFile', function () {
+        it('should redirect call to fileCache', function () {
+            var cacheStorage = mkStorage_();
+            var cache = createCache_({ storage: cacheStorage });
+
+            cache.putFile('some/key', 'some-content');
+
+            expect(cacheStorage.fileCache.put).to.be.calledWith('some/key', 'some-content');
+        });
+    });
+
     describe('invalidate', function () {
         it('should invalidate data in cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
 
             cache.invalidate();
@@ -92,7 +130,7 @@ describe('cache/cache', function () {
         });
 
         it('should invalidate data by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
@@ -106,7 +144,7 @@ describe('cache/cache', function () {
 
     describe('drop', function () {
         it('should drop data by prefix in cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
 
             cache.drop();
@@ -115,7 +153,7 @@ describe('cache/cache', function () {
         });
 
         it('should drop data by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
@@ -136,7 +174,7 @@ describe('cache/cache', function () {
         });
 
         it('should pass cache storage to new cache', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({ storage: cacheStorage });
             var subCache = cache.subCache();
 
@@ -146,7 +184,7 @@ describe('cache/cache', function () {
         });
 
         it('should create new cache with additional prefix based on parent cache prefix', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            var cacheStorage = mkStorage_();
             var cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'cache_prefix'
@@ -222,7 +260,7 @@ describe('cache/cache', function () {
 
             cache.cacheFileInfo('cache_key', '/path/to/test_file.js');
 
-            expect(cache.set).to.be.calledWith('cache_key', {
+            expect(cache.set).to.be.calledWithMatch('cache_key', {
                 name: 'test_file.js',
                 fullname: '/path/to/test_file.js',
                 suffix: 'js',
@@ -309,13 +347,4 @@ describe('cache/cache', function () {
             expect(cache.set).to.be.calledWith('testKey', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);
         });
     });
-
-    function createCache_(params) {
-        params = params || {};
-
-        return new Cache(
-            params.storage || sinon.createStubInstance(CacheStorage),
-            params.prefix || 'default_prefix'
-        );
-    }
 });

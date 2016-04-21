@@ -952,6 +952,12 @@ Cache Node::getNodeCache(String targetName)
 
 С помощью методов `undefined cacheFileInfo(String cacheKey, String filePath)` и `undefined cacheFileList(String cacheKey, FileInfo[] files)` производится сохранение информации о файлах в кэш.
 
+C помощью методов `cache.putFile(key, content)` и `cache.getFile(key, sourceMtime)` можно сохранять в кэш результаты обработки каких-то файлов для дальнейшего их реиспользования.
+Аргументы:
+* `key` - строка. Ключ, по которому можно сохранить, а затем получить файл.
+* `content` - собственно контент файла.
+* `sourceMtime` - время в миллисекундах с 1 января 1970 года, определяющее валидность кэша. Если файл был закэширован раньше этого времени, то он считается невалидным и возвращается `null`.
+
 
 node.getSharedResources
 -----------------------

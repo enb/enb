@@ -53,6 +53,7 @@
     "glob": "7.0.3",
     "inherit": "2.2.3",
     "lodash": "3.10.1",
+    "plotter": "git://github.com/arikon/nodejs-plotter.git#192388e8",
     "puml-link": "0.0.1",
     "resolve": "1.1.7",
     "serve-favicon": "2.3.0",

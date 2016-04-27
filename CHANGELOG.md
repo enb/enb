@@ -1,6 +1,22 @@
 История изменений
 =================
 
+1.3.0
+-----
+
+### API
+
+* Через API теперь можно получить класс `MakePlatform` ([#450]).
+
+```js
+var enb = require('enb');
+var MakePlatform = enb.MakePlatform;
+```
+
+### Зависимости
+
+* Модуль `glob@6.0.4` обновлен до версии `7.0.3`.
+
 1.2.1
 -----
 
@@ -503,6 +519,7 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
+[#450]: https://github.com/enb/enb/pull/450
 [#444]: https://github.com/enb/enb/pull/444
 [#438]: https://github.com/enb/enb/pull/438
 [#434]: https://github.com/enb/enb/pull/434

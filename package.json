@@ -75,7 +75,7 @@
     "mock-fs": "3.9.0",
     "mock-require": "1.2.1",
     "proxyquire": "1.7.4",
-    "sinon": "1.16.1",
+    "sinon": "1.17.3",
     "sinon-chai": "2.8.0"
   },
   "bin": {

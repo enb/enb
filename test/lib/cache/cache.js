@@ -100,22 +100,28 @@ describe('cache/cache', function () {
     describe('getFile', function () {
         it('should redirect call to fileCache', function () {
             var cacheStorage = mkStorage_();
-            var cache = createCache_({ storage: cacheStorage });
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'some/node'
+            });
 
             cache.getFile('some/key', 100500);
 
-            expect(cacheStorage.fileCache.get).to.be.calledWith('some/key', 100500);
+            expect(cacheStorage.fileCache.get).to.be.calledWith('some/node/some/key', 100500);
         });
     });
 
     describe('putFile', function () {
         it('should redirect call to fileCache', function () {
             var cacheStorage = mkStorage_();
-            var cache = createCache_({ storage: cacheStorage });
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'some/node'
+            });
 
             cache.putFile('some/key', 'some-content');
 
-            expect(cacheStorage.fileCache.put).to.be.calledWith('some/key', 'some-content');
+            expect(cacheStorage.fileCache.put).to.be.calledWith('some/node/some/key', 'some-content');
         });
     });
 

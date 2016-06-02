@@ -405,7 +405,7 @@ module.exports.createMiddleware = function(options) { /* ... */ };
 
 ```javascript
 app
-    .use(require('enb/lib/server/server-middleware').createMiddleware())
+    .use(require('enb/lib/server/middleware').createMiddleware())
     .get('/', function (req, res) {
         /* ... */
     });

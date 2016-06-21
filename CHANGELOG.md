@@ -1,6 +1,62 @@
 История изменений
 =================
 
+1.3.0
+-----
+
+### API
+
+* Через API теперь можно получить класс `MakePlatform` ([#450]).
+
+```js
+var enb = require('enb');
+var MakePlatform = enb.MakePlatform;
+```
+
+### Зависимости
+
+* Модуль `glob@6.0.4` обновлен до версии `7.0.3`.
+
+1.2.1
+-----
+
+### Исправления ошибок
+
+* Исправлен метод `ProjectConfig.includeConfig()`: путь к модулю должен расчитываться от корня проекта ([#444]).
+
+### Зависимости
+
+* Модуль `chalk@1.1.1` обновлен до версии `1.1.3`.
+* Модуль `connect@3.4.0` обновлен до версии `3.4.1`.
+* Модуль `serve-static@1.10.1` обновлен до версии `1.10.2`.
+* Модуль `vow-fs@0.3.4` обновлен до версии `0.3.5`.
+
+1.2.0
+-----
+
+### Улучшения
+
+* Добавлена технология `write-file` ([#426]).
+
+### Исправления ошибок
+
+* Исправлен метод `Node.resolvePath()`: некорректно обрабатывались абсолютные пути ([#433]).
+* Исправлены тесты для запуска в NodeJS 4 ([#438]).
+
+### Остальное
+
+* Для кэш-файла используется формат `JSON` вместо `CommonJS` ([#434]).
+
+  Было:
+  ```
+  .enb/tmp/cache.js
+  ```
+
+  Стало:
+  ```
+  .enb/tmp/cache.json
+  ```
+
 1.1.2
 -----
 
@@ -463,47 +519,53 @@
 * Фиксы в превышении лимита открытых файлов.
 * Более понятная ошибка при синтаксической ошибке в депсах.
 
-[#422]: https://github.com/enb-make/enb/pull/422
-[#421]: https://github.com/enb-make/enb/pull/421
-[#411]: https://github.com/enb-make/enb/issues/411
-[#410]: https://github.com/enb-make/enb/issues/410
-[#406]: https://github.com/enb-make/enb/issues/406
-[#404]: https://github.com/enb-make/enb/issues/404
-[#400]: https://github.com/enb-make/enb/issues/400
-[#398]: https://github.com/enb-make/enb/issues/398
-[#393]: https://github.com/enb-make/enb/issues/393
-[#386]: https://github.com/enb-make/enb/issues/386
-[#397]: https://github.com/enb-make/enb/pull/397
-[#378]: https://github.com/enb-make/enb/issues/378
-[#371]: https://github.com/enb-make/enb/issues/371
-[#369]: https://github.com/enb-make/enb/issues/369
-[#367]: https://github.com/enb-make/enb/issues/367
-[#365]: https://github.com/enb-make/enb/issues/365
-[#363]: https://github.com/enb-make/enb/issues/363
-[#360]: https://github.com/enb-make/enb/issues/360
-[#358]: https://github.com/enb-make/enb/issues/358
-[#357]: https://github.com/enb-make/enb/pull/357
-[#342]: https://github.com/enb-make/enb/issues/342
-[#341]: https://github.com/enb-make/enb/issues/341
-[#334]: https://github.com/enb-make/enb/issues/334
-[#321]: https://github.com/enb-make/enb/pull/321
-[#314]: https://github.com/enb-make/enb/issues/314
-[#313]: https://github.com/enb-make/enb/pull/313
-[#312]: https://github.com/enb-make/enb/issues/312
-[#306]: https://github.com/enb-make/enb/issues/306
-[#304]: https://github.com/enb-make/enb/issues/304
-[#303]: https://github.com/enb-make/enb/issues/303
-[#302]: https://github.com/enb-make/enb/issues/302
-[#296]: https://github.com/enb-make/enb/issues/296
-[#293]: https://github.com/enb-make/enb/pull/293
-[#271]: https://github.com/enb-make/enb/pull/271
-[#270]: https://github.com/enb-make/enb/issues/270
-[#268]: https://github.com/enb-make/enb/issues/268
-[#257]: https://github.com/enb-make/enb/pull/257
-[#242]: https://github.com/enb-make/enb/issues/242
-[#230]: https://github.com/enb-make/enb/pull/230
-[#222]: https://github.com/enb-make/enb/issues/222
-[#101]: https://github.com/enb-make/enb/issues/101
+[#450]: https://github.com/enb/enb/pull/450
+[#444]: https://github.com/enb/enb/pull/444
+[#438]: https://github.com/enb/enb/pull/438
+[#434]: https://github.com/enb/enb/pull/434
+[#433]: https://github.com/enb/enb/pull/433
+[#426]: https://github.com/enb/enb/pull/426
+[#422]: https://github.com/enb/enb/pull/422
+[#421]: https://github.com/enb/enb/pull/421
+[#411]: https://github.com/enb/enb/issues/411
+[#410]: https://github.com/enb/enb/issues/410
+[#406]: https://github.com/enb/enb/issues/406
+[#404]: https://github.com/enb/enb/issues/404
+[#400]: https://github.com/enb/enb/issues/400
+[#398]: https://github.com/enb/enb/issues/398
+[#393]: https://github.com/enb/enb/issues/393
+[#386]: https://github.com/enb/enb/issues/386
+[#397]: https://github.com/enb/enb/pull/397
+[#378]: https://github.com/enb/enb/issues/378
+[#371]: https://github.com/enb/enb/issues/371
+[#369]: https://github.com/enb/enb/issues/369
+[#367]: https://github.com/enb/enb/issues/367
+[#365]: https://github.com/enb/enb/issues/365
+[#363]: https://github.com/enb/enb/issues/363
+[#360]: https://github.com/enb/enb/issues/360
+[#358]: https://github.com/enb/enb/issues/358
+[#357]: https://github.com/enb/enb/pull/357
+[#342]: https://github.com/enb/enb/issues/342
+[#341]: https://github.com/enb/enb/issues/341
+[#334]: https://github.com/enb/enb/issues/334
+[#321]: https://github.com/enb/enb/pull/321
+[#314]: https://github.com/enb/enb/issues/314
+[#313]: https://github.com/enb/enb/pull/313
+[#312]: https://github.com/enb/enb/issues/312
+[#306]: https://github.com/enb/enb/issues/306
+[#304]: https://github.com/enb/enb/issues/304
+[#303]: https://github.com/enb/enb/issues/303
+[#302]: https://github.com/enb/enb/issues/302
+[#296]: https://github.com/enb/enb/issues/296
+[#293]: https://github.com/enb/enb/pull/293
+[#271]: https://github.com/enb/enb/pull/271
+[#270]: https://github.com/enb/enb/issues/270
+[#268]: https://github.com/enb/enb/issues/268
+[#257]: https://github.com/enb/enb/pull/257
+[#242]: https://github.com/enb/enb/issues/242
+[#230]: https://github.com/enb/enb/pull/230
+[#222]: https://github.com/enb/enb/issues/222
+[#101]: https://github.com/enb/enb/issues/101
 
-[issue]: https://github.com/enb-make/enb/issues/
-[pull request]: https://github.com/enb-make/enb/pulls
+[issue]: https://github.com/enb/enb/issues/
+[pull request]: https://github.com/enb/enb/pulls

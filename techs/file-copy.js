@@ -50,8 +50,8 @@ module.exports = inherit(enb.BaseTech, {
     build: function () {
         var _this = this;
         var node = this.node;
-        var cache = node.getNodeCache(target);
         var target = node.unmaskTargetName(this._target);
+        var cache = node.getNodeCache(target);
         var targetPath = node.resolvePath(target);
         var sourceNode = this._sourceNode;
         var source;

@@ -50,7 +50,7 @@
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.9.0",
-    "glob": "7.0.4",
+    "glob": "7.0.5",
     "inherit": "2.2.3",
     "lodash": "4.13.1",
     "puml-link": "0.0.1",

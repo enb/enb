@@ -1,4 +1,5 @@
 var fs = require('fs');
+var mockFs = require('mock-fs');
 var MakePlatform = require('../../../lib/make');
 var ProjectConfig = require('../../../lib/config/project-config');
 var Node = require('../../../lib/node/node');
@@ -11,10 +12,12 @@ describe('make/constructor-destructor', function () {
     var makePlatform;
 
     beforeEach(function () {
+        mockFs({});
         makePlatform = new MakePlatform();
     });
 
     afterEach(function () {
+        mockFs.restore();
         sandbox.restore();
     });
 
@@ -73,17 +76,19 @@ describe('make/constructor-destructor', function () {
 
         describe('tests require node init', function () {
             beforeEach(function () {
-                sandbox.stub(fs);
+                mockFs({});
+
                 sandbox.stub(Node.prototype);
                 sandbox.stub(ProjectConfig.prototype);
 
-                fs.existsSync.returns(true);
+                sandbox.stub(fs, 'existsSync').returns(true);
 
                 makePlatform.init('path/to/project', null, function () {});
                 makePlatform.initNode('path/to/node');
             });
 
             afterEach(function () {
+                mockFs.restore();
                 sandbox.restore();
             });
 

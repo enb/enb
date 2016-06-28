@@ -4,6 +4,7 @@ var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
 var proxyquire = require('proxyquire');
 var mockRequire = require('mock-require');
+var mockFs = require('mock-fs');
 var path = require('path');
 var _ = require('lodash');
 var clearRequire = sinon.spy();
@@ -23,11 +24,10 @@ describe('make/init', function () {
     var sandbox = sinon.sandbox.create();
 
     beforeEach(function () {
-        sandbox.stub(vowFs);
         sandbox.stub(Node.prototype);
         sandbox.stub(ProjectConfig.prototype);
 
-        vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
+        sandbox.stub(vowFs, 'makeDir').returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
     });
@@ -38,8 +38,13 @@ describe('make/init', function () {
 
     describe('mocked config directory tests', function () {
         beforeEach(function () {
-            sandbox.stub(fs);
-            fs.existsSync.returns(true);
+            mockFs({});
+
+            sandbox.stub(fs, 'existsSync').returns(true);
+        });
+
+        afterEach(function () {
+            mockFs.restore();
         });
 
         it('should return promise', function () {

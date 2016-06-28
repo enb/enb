@@ -1,6 +1,6 @@
 {
   "name": "enb",
-  "version": "1.1.2",
+  "version": "1.3.0",
   "description": "Faster BEM/BEViS assembler",
   "keywords": [
     "enb",
@@ -14,15 +14,15 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/enb-make/enb/blob/master/LICENSE"
+      "url": "https://github.com/enb/enb/blob/master/LICENSE"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:enb-make/enb.git"
+    "url": "git@github.com:enb/enb.git"
   },
-  "homepage": "https://github.com/enb-make/enb",
-  "bugs": "https://github.com/enb-make/enb/issues",
+  "homepage": "https://github.com/enb/enb",
+  "bugs": "https://github.com/enb/enb/issues",
   "maintainers": [
     {
       "name": "Andrew Abramov",
@@ -43,39 +43,40 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "chalk": "1.1.1",
+    "chalk": "1.1.3",
     "clear-require": "1.0.1",
     "commander": "2.9.0",
-    "connect": "3.4.0",
+    "connect": "3.4.1",
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.9.0",
-    "glob": "6.0.4",
+    "glob": "7.0.5",
     "inherit": "2.2.3",
-    "lodash": "3.10.1",
+    "lodash": "4.13.1",
     "puml-link": "0.0.1",
+    "resolve": "1.1.7",
     "serve-favicon": "2.3.0",
-    "serve-static": "1.10.1",
+    "serve-static": "1.11.1",
     "stack-trace": "0.0.9",
     "vow": "0.4.12",
-    "vow-fs": "0.3.4",
+    "vow-fs": "0.3.5",
     "vow-node": "0.3.0",
     "worker-farm": "1.3.1"
   },
   "devDependencies": {
-    "chai": "3.4.1",
-    "chai-as-promised": "5.2.0",
-    "deasync": "0.1.4",
-    "istanbul": "0.4.1",
-    "jscs": "2.8.0",
-    "jshint": "2.9.1",
-    "mocha": "2.3.4",
-    "mock-enb": "0.3.1",
-    "mock-fs": "3.6.0",
-    "mock-require": "1.2.1",
-    "proxyquire": "1.7.4",
-    "sinon": "1.16.1",
-    "sinon-chai": "2.8.0"
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "deasync": "^0.1.7",
+    "istanbul": "^0.4.3",
+    "jscs": "^3.0.4",
+    "jshint": "^2.9.2",
+    "mocha": "^2.5.3",
+    "mock-enb": "^0.3.2",
+    "mock-fs": "^3.9.0",
+    "mock-require": "^1.3.0",
+    "proxyquire": "^1.7.9",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
   },
   "bin": {
     "enb": "./bin/enb"

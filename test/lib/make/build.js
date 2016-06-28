@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
+var mockFs = require('mock-fs');
 var _ = require('lodash');
 var Node = require('../../../lib/node/node');
 var MakePlatform = require('../../../lib/make');
@@ -16,12 +17,12 @@ describe('make/build', function () {
     var sandbox = sinon.sandbox.create();
 
     beforeEach(function (done) {
-        sandbox.stub(fs);
+        mockFs({});
         sandbox.stub(vowFs);
         sandbox.stub(ProjectConfig.prototype);
         sandbox.stub(Node.prototype);
 
-        fs.existsSync.returns(true);
+        sandbox.stub(fs, 'existsSync').returns(true);
         vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
@@ -30,6 +31,7 @@ describe('make/build', function () {
     });
 
     afterEach(function () {
+        mockFs.restore();
         sandbox.restore();
     });
 

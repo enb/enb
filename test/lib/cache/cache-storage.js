@@ -14,7 +14,9 @@ describe('cache/cache-storage', function () {
 
     describe('constructor', function () {
         beforeEach(function () {
-            sandbox.stub(fs);
+            mockFs({});
+
+            sandbox.spy(fs, 'existsSync');
         });
 
         it('should save filename', function () {

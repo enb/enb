@@ -99,14 +99,14 @@ describe('BuildProfiler', function () {
                 'some-bundle/some-target': {
                     startTime: 100500,
                     endTime: 100501,
-                    pureTime: 1,
+                    selfTime: 1,
                     totalTime: 1,
                     watingTime: 0
                 },
                 'another-bundle/another-target': {
                     startTime: 100500,
                     endTime: 100503,
-                    pureTime: 2,
+                    selfTime: 2,
                     totalTime: 3,
                     watingTime: 1
                 }
@@ -134,14 +134,14 @@ describe('BuildProfiler', function () {
                 'some-bundle/some-target': {
                     startTime: 100503,
                     endTime: 100504,
-                    pureTime: 1,
+                    selfTime: 1,
                     totalTime: 1,
                     watingTime: 0
                 },
                 'another-bundle/another-target': {
                     startTime: 100500,
                     endTime: 100506,
-                    pureTime: 5,
+                    selfTime: 5,
                     totalTime: 6,
                     watingTime: 1
                 }
@@ -168,14 +168,14 @@ describe('BuildProfiler', function () {
                 'some-bundle/some-target': {
                     startTime: 100500,
                     endTime: 100504,
-                    pureTime: 4,
+                    selfTime: 4,
                     totalTime: 4,
                     watingTime: 0
                 },
                 'another-bundle/another-target': {
                     startTime: 100501,
                     endTime: 100510,
-                    pureTime: 6,
+                    selfTime: 6,
                     totalTime: 9,
                     watingTime: 3
                 }
@@ -207,14 +207,14 @@ describe('BuildProfiler', function () {
                 'some-bundle/parallel-target-1': {
                     startTime: 100500,
                     endTime: 100504,
-                    pureTime: 4,
+                    selfTime: 4,
                     totalTime: 4,
                     watingTime: 0
                 },
                 'some-bundle/parallel-target-2': {
                     startTime: 100501,
                     endTime: 100503,
-                    pureTime: 2,
+                    selfTime: 2,
                     totalTime: 2,
                     watingTime: 0
                 }

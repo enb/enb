@@ -109,6 +109,18 @@ describe('cache/cache', function () {
 
             expect(cacheStorage.fileCache.get).to.be.calledWith('some/node/some/key', 100500);
         });
+
+        it('should not add node prefix if corresponding option set', function () {
+            var cacheStorage = mkStorage_();
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'some/node'
+            });
+
+            cache.getFile('some/key', 100500, { nodePrefix: false });
+
+            expect(cacheStorage.fileCache.get).to.be.calledWith('some/key', 100500);
+        });
     });
 
     describe('putFile', function () {
@@ -122,6 +134,18 @@ describe('cache/cache', function () {
             cache.putFile('some/key', 'some-content');
 
             expect(cacheStorage.fileCache.put).to.be.calledWith('some/node/some/key', 'some-content');
+        });
+
+        it('should not add node prefix if corresponding option set', function () {
+            var cacheStorage = mkStorage_();
+            var cache = createCache_({
+                storage: cacheStorage,
+                prefix: 'some/node'
+            });
+
+            cache.putFile('some/key', 'some-content', { nodePrefix: false });
+
+            expect(cacheStorage.fileCache.put).to.be.calledWith('some/key', 'some-content');
         });
     });
 

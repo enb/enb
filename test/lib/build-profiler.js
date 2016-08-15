@@ -22,24 +22,24 @@ describe('BuildProfiler', function () {
         });
 
         it('should set target with specified start time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100500 } };
+            var expected = { 'some-bundle/some-target': { startTime: 100500, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 100500);
+            profiler.setStartTime('some-bundle/some-target', 'tech', 100500);
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
         it('should reset target with specified start time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100501 } };
+            var expected = { 'some-bundle/some-target': { startTime: 100501, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 100500);
-            profiler.setStartTime('some-bundle/some-target', 100501);
+            profiler.setStartTime('some-bundle/some-target', 'tech', 100500);
+            profiler.setStartTime('some-bundle/some-target', 'tech', 100501);
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
         it('should set current time (Date.now())', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 0 } };
+            var expected = { 'some-bundle/some-target': { startTime: 0, techName: undefined } };
 
             profiler.setStartTime('some-bundle/some-target');
 
@@ -62,9 +62,9 @@ describe('BuildProfiler', function () {
         });
 
         it('should set specified end time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100500, endTime: 100501 } };
+            var expected = { 'some-bundle/some-target': { startTime: 100500, endTime: 100501, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 100500); // need to initialize benchmark object
+            profiler.setStartTime('some-bundle/some-target', 'tech', 100500); // need to initialize benchmark object
             profiler.setEndTime('some-bundle/some-target', 100501);
 
             expect(buildTimes).to.be.deep.equal(expected);
@@ -178,6 +178,41 @@ describe('BuildProfiler', function () {
                     selfTime: 6,
                     totalTime: 9,
                     watingTime: 3
+                }
+            };
+
+            profiler.calculateBuildTimes(buildGraph(graph));
+
+            expect(buildTimes).to.be.deep.equal(expected);
+        });
+
+        it('should calculate time for each target if deps end before target run', function () {
+            buildTimes = {
+                'some-bundle/some-target': {
+                    startTime: 100500,
+                    endTime: 100505
+                },
+                'another-bundle/another-target': {
+                    startTime: 100506,
+                    endTime: 100510
+                }
+            };
+            profiler = new BuildProfiler(buildTimes);
+
+            var expected = {
+                'some-bundle/some-target': {
+                    startTime: 100500,
+                    endTime: 100505,
+                    selfTime: 5,
+                    totalTime: 5,
+                    watingTime: 0
+                },
+                'another-bundle/another-target': {
+                    startTime: 100506,
+                    endTime: 100510,
+                    selfTime:4,
+                    totalTime: 4,
+                    watingTime: 0
                 }
             };
 

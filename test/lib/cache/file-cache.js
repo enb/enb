@@ -68,7 +68,10 @@ describe('shared-resources/file-cache', function () {
 
             return get_({ mtime: 1, key: 'some/path', tmpDir: '/tmp/dir' })
                 .then(function () {
-                    expect(vowFs.read).to.be.calledWith(path.join('/tmp/dir', 'file-cache', 'some_path'));
+                    expect(vowFs.read).to.be.calledWith(
+                        path.join('/tmp/dir', 'file-cache', 'some_path'),
+                        { encoding: 'utf8' }
+                    );
                 });
         });
 

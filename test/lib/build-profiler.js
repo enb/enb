@@ -102,14 +102,22 @@ describe('BuildProfiler', function () {
                     endTime: 100501,
                     selfTime: 1,
                     totalTime: 1,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100500,
+                        endTime: 100501
+                    }]
                 },
                 'bundle/target': {
                     startTime: 100500,
                     endTime: 100503,
                     selfTime: 2,
                     totalTime: 3,
-                    watingTime: 1
+                    watingTime: 1,
+                    timeline: [{
+                        startTime: 100501,
+                        endTime: 100503
+                    }]
                 }
             };
 
@@ -137,14 +145,28 @@ describe('BuildProfiler', function () {
                     endTime: 100504,
                     selfTime: 1,
                     totalTime: 1,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100503,
+                        endTime: 100504
+                    }]
                 },
                 'bundle/target': {
                     startTime: 100500,
                     endTime: 100506,
                     selfTime: 5,
                     totalTime: 6,
-                    watingTime: 1
+                    watingTime: 1,
+                    timeline: [
+                        {
+                            startTime: 100500,
+                            endTime: 100503
+                        },
+                        {
+                            startTime: 100504,
+                            endTime: 100506
+                        }
+                    ]
                 }
             };
 
@@ -171,14 +193,22 @@ describe('BuildProfiler', function () {
                     endTime: 100504,
                     selfTime: 4,
                     totalTime: 4,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100500,
+                        endTime: 100504
+                    }]
                 },
                 'bundle/target': {
                     startTime: 100501,
                     endTime: 100510,
                     selfTime: 6,
                     totalTime: 9,
-                    watingTime: 3
+                    watingTime: 3,
+                    timeline: [{
+                        startTime: 100504,
+                        endTime: 100510
+                    }]
                 }
             };
 
@@ -206,14 +236,22 @@ describe('BuildProfiler', function () {
                     endTime: 100505,
                     selfTime: 5,
                     totalTime: 5,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100500,
+                        endTime: 100505
+                    }]
                 },
                 'bundle/target': {
                     startTime: 100506,
                     endTime: 100510,
                     selfTime:4,
                     totalTime: 4,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100506,
+                        endTime: 100510
+                    }]
                 }
             };
 
@@ -245,14 +283,22 @@ describe('BuildProfiler', function () {
                     endTime: 100504,
                     selfTime: 4,
                     totalTime: 4,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100500,
+                        endTime: 100504
+                    }]
                 },
                 'some-bundle/parallel-target-2': {
                     startTime: 100501,
                     endTime: 100503,
                     selfTime: 2,
                     totalTime: 2,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 100501,
+                        endTime: 100503
+                    }]
                 }
             };
 
@@ -294,28 +340,58 @@ describe('BuildProfiler', function () {
                     endTime: 100,
                     totalTime: 100,
                     selfTime: 70,
-                    watingTime: 30
+                    watingTime: 30,
+                    timeline: [
+                        {
+                            startTime: 0,
+                            endTime: 10
+                        },
+                        {
+                            startTime: 20,
+                            endTime: 30
+                        },
+                        {
+                            startTime: 40,
+                            endTime: 50
+                        },
+                        {
+                            startTime: 60,
+                            endTime: 100
+                        }
+                    ]
                 },
                 'bundle/dep-1': {
                     startTime: 10,
                     endTime: 20,
                     selfTime: 10,
                     totalTime: 10,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 10,
+                        endTime: 20
+                    }]
                 },
                 'bundle/dep-2': {
                     startTime: 30,
                     endTime: 40,
                     selfTime: 10,
                     totalTime: 10,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 30,
+                        endTime: 40
+                    }]
                 },
                 'bundle/dep-3': {
                     startTime: 50,
                     endTime: 60,
                     selfTime: 10,
                     totalTime: 10,
-                    watingTime: 0
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 50,
+                        endTime: 60
+                    }]
                 }
             };
 

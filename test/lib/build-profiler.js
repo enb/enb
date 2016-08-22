@@ -259,5 +259,68 @@ describe('BuildProfiler', function () {
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
+
+        it('should calculate time target which waiting targets with breaks', function () {
+            graph = {
+                'bundle/target': { deps: ['bundle/dep-1', 'bundle/dep-2', 'bundle/dep-3'] },
+                'bundle/dep-1': { deps: [] },
+                'bundle/dep-2': { deps: [] },
+                'bundle/dep-3': { deps: [] }
+            };
+            buildTimes = {
+                'bundle/target': {
+                    startTime: 0,
+                    endTime: 100
+                },
+                'bundle/dep-1': {
+                    startTime: 10,
+                    endTime: 20
+                },
+                'bundle/dep-2': {
+                    startTime: 30,
+                    endTime: 40
+                },
+                'bundle/dep-3': {
+                    startTime: 50,
+                    endTime: 60
+                }
+            };
+            profiler = new BuildProfiler(buildTimes);
+
+            var expected = {
+                'bundle/target': {
+                    startTime: 0,
+                    endTime: 100,
+                    totalTime: 100,
+                    selfTime: 70,
+                    watingTime: 30
+                },
+                'bundle/dep-1': {
+                    startTime: 10,
+                    endTime: 20,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0
+                },
+                'bundle/dep-2': {
+                    startTime: 30,
+                    endTime: 40,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0
+                },
+                'bundle/dep-3': {
+                    startTime: 50,
+                    endTime: 60,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0
+                }
+            };
+
+            profiler.calculateBuildTimes(buildGraph(graph));
+
+            expect(buildTimes).to.be.deep.equal(expected);
+        });
     });
 });

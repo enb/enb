@@ -4,16 +4,6 @@ describe('BuildProfiler', function () {
     var buildGraph;
     var buildTimes;
     var profiler;
-    var graph = {
-        'some-bundle/some-target': {
-            deps: []
-        },
-        'another-bundle/another-target': {
-            deps: [
-                'some-bundle/some-target'
-            ]
-        }
-    };
 
     describe('setStartTime', function () {
         beforeEach(function () {
@@ -22,26 +12,26 @@ describe('BuildProfiler', function () {
         });
 
         it('should set target with specified start time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100500, techName: 'tech' } };
+            var expected = { 'bundle/target': { startTime: 100500, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 'tech', 100500);
+            profiler.setStartTime('bundle/target', 'tech', 100500);
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
         it('should reset target with specified start time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100501, techName: 'tech' } };
+            var expected = { 'bundle/target': { startTime: 100501, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 'tech', 100500);
-            profiler.setStartTime('some-bundle/some-target', 'tech', 100501);
+            profiler.setStartTime('bundle/target', 'tech', 100500);
+            profiler.setStartTime('bundle/target', 'tech', 100501);
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
         it('should set current time (Date.now())', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 0, techName: undefined } };
+            var expected = { 'bundle/target': { startTime: 0, techName: undefined } };
 
-            profiler.setStartTime('some-bundle/some-target');
+            profiler.setStartTime('bundle/target');
 
             expect(buildTimes).not.to.be.deep.equal(expected);
         });
@@ -62,16 +52,27 @@ describe('BuildProfiler', function () {
         });
 
         it('should set specified end time', function () {
-            var expected = { 'some-bundle/some-target': { startTime: 100500, endTime: 100501, techName: 'tech' } };
+            var expected = { 'bundle/target': { startTime: 100500, endTime: 100501, techName: 'tech' } };
 
-            profiler.setStartTime('some-bundle/some-target', 'tech', 100500); // need to initialize benchmark object
-            profiler.setEndTime('some-bundle/some-target', 100501);
+            profiler.setStartTime('bundle/target', 'tech', 100500); // need to initialize benchmark object
+            profiler.setEndTime('bundle/target', 100501);
 
             expect(buildTimes).to.be.deep.equal(expected);
         });
     });
 
     describe('calculateBuildTimes', function () {
+        var graph = {
+            'bundle/dep': {
+                deps: []
+            },
+            'bundle/target': {
+                deps: [
+                    'bundle/dep'
+                ]
+            }
+        };
+
         beforeEach(function () {
             buildGraph = function (graph) {
                 return {
@@ -85,25 +86,25 @@ describe('BuildProfiler', function () {
 
         it('should calculate time for each target if parallel run targets', function () {
             buildTimes = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100501
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100500,
                     endTime: 100503
                 }
             };
             profiler = new BuildProfiler(buildTimes);
             var expected = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100501,
                     selfTime: 1,
                     totalTime: 1,
                     watingTime: 0
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100500,
                     endTime: 100503,
                     selfTime: 2,
@@ -119,11 +120,11 @@ describe('BuildProfiler', function () {
 
         it('should calculate time for each target if parent target run deps after some time  ', function () {
             buildTimes = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100503,
                     endTime: 100504
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100500,
                     endTime: 100506
                 }
@@ -131,14 +132,14 @@ describe('BuildProfiler', function () {
             profiler = new BuildProfiler(buildTimes);
 
             var expected = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100503,
                     endTime: 100504,
                     selfTime: 1,
                     totalTime: 1,
                     watingTime: 0
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100500,
                     endTime: 100506,
                     selfTime: 5,
@@ -153,11 +154,11 @@ describe('BuildProfiler', function () {
 
         it('should calculate time for each target if deps run before target', function () {
             buildTimes = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100504
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100501,
                     endTime: 100510
                 }
@@ -165,14 +166,14 @@ describe('BuildProfiler', function () {
             profiler = new BuildProfiler(buildTimes);
 
             var expected = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100504,
                     selfTime: 4,
                     totalTime: 4,
                     watingTime: 0
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100501,
                     endTime: 100510,
                     selfTime: 6,
@@ -188,11 +189,11 @@ describe('BuildProfiler', function () {
 
         it('should calculate time for each target if deps end before target run', function () {
             buildTimes = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100505
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100506,
                     endTime: 100510
                 }
@@ -200,14 +201,14 @@ describe('BuildProfiler', function () {
             profiler = new BuildProfiler(buildTimes);
 
             var expected = {
-                'some-bundle/some-target': {
+                'bundle/dep': {
                     startTime: 100500,
                     endTime: 100505,
                     selfTime: 5,
                     totalTime: 5,
                     watingTime: 0
                 },
-                'another-bundle/another-target': {
+                'bundle/target': {
                     startTime: 100506,
                     endTime: 100510,
                     selfTime:4,

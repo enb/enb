@@ -400,4 +400,208 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
     });
+
+    describe('calculateTechMetrics', function () {
+        beforeEach(function () {
+            profiler = new BuildProfiler({});
+        });
+
+        it('should return empty metrics', function () {
+            var buildTimes = {};
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([]);
+        });
+
+        it('should calculate metrics for target', function () {
+            var buildTimes = {
+                'target.css': {
+                    techName: 'css',
+                    startTime: 10,
+                    endTime: 20,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 10,
+                        endTime: 20
+                    }]
+                }
+            };
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([
+                {
+                    tech: 'css',
+                    callNumber: 1,
+                    buildTime: 10,
+                    percentile95: 10,
+                    buildTimePercent: 100
+                }
+            ]);
+        });
+
+        it('should aggregate times by tech', function () {
+            var buildTimes = {
+                'bundle-1/target.css': {
+                    techName: 'css',
+                    startTime: 0,
+                    endTime: 10,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 0,
+                        endTime: 10
+                    }]
+                },
+                'bundle-2/target.css': {
+                    techName: 'css',
+                    startTime: 10,
+                    endTime: 20,
+                    selfTime: 10,
+                    totalTime: 10,
+                    watingTime: 0,
+                    timeline: [{
+                        startTime: 10,
+                        endTime: 20
+                    }]
+                }
+            };
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([
+                {
+                    tech: 'css',
+                    callNumber: 2,
+                    buildTime: 20,
+                    percentile95: 10,
+                    buildTimePercent: 100
+                }
+            ]);
+        });
+
+        it('should calculate real tech time', function () {
+            var targetTimes = {
+                techName: 'css',
+                startTime: 0,
+                endTime: 10,
+                selfTime: 10,
+                totalTime: 10,
+                watingTime: 0,
+                timeline: [{
+                    startTime: 0,
+                    endTime: 10
+                }]
+            };
+            var buildTimes = {
+                'bundle-1/target.css': targetTimes,
+                'bundle-2/target.css': targetTimes
+            };
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([
+                {
+                    tech: 'css',
+                    callNumber: 2,
+                    buildTime: 10,
+                    percentile95: 10,
+                    buildTimePercent: 100
+                }
+            ]);
+        });
+
+        it('should ignore wait time', function () {
+            var buildTimes = {
+                'bundle-1/target.css': {
+                    techName: 'css',
+                    startTime: 0,
+                    endTime: 100,
+                    selfTime: 50,
+                    totalTime: 100,
+                    watingTime: 50,
+                    timeline: [{
+                        startTime: 50,
+                        endTime: 100
+                    }]
+                },
+                'bundle-2/target.css': {
+                    techName: 'css',
+                    startTime: 150,
+                    endTime: 200,
+                    selfTime: 30,
+                    totalTime: 50,
+                    watingTime: 20,
+                    timeline: [{
+                        startTime: 170,
+                        endTime: 200
+                    }]
+                }
+            };
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([
+                {
+                    tech: 'css',
+                    callNumber: 2,
+                    buildTime: 80,
+                    percentile95: 50,
+                    buildTimePercent: 100
+                }
+            ]);
+        });
+
+        it('should calculate metrics for different techs', function () {
+            var buildTimes = {
+                'bundle-1/target.js': {
+                    techName: 'js',
+                    startTime: 0,
+                    endTime: 100,
+                    selfTime: 50,
+                    totalTime: 100,
+                    watingTime: 50,
+                    timeline: [{
+                        startTime: 50,
+                        endTime: 100
+                    }]
+                },
+                'bundle-2/target.css': {
+                    techName: 'css',
+                    startTime: 150,
+                    endTime: 200,
+                    selfTime: 30,
+                    totalTime: 50,
+                    watingTime: 20,
+                    timeline: [{
+                        startTime: 170,
+                        endTime: 200
+                    }]
+                }
+            };
+
+            var metrics = profiler.calculateTechMetrics(buildTimes);
+
+            expect(metrics).to.be.deep.equal([
+                {
+                    tech: 'js',
+                    callNumber: 1,
+                    buildTime: 50,
+                    percentile95: 50,
+                    buildTimePercent: 62.5
+                },
+                {
+                    tech: 'css',
+                    callNumber: 1,
+                    buildTime: 30,
+                    percentile95: 30,
+                    buildTimePercent: 37.5
+                }
+            ]);
+        });
+    });
 });

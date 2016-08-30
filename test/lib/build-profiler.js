@@ -437,7 +437,8 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 1,
                     buildTime: 10,
-                    buildTimePercent: 100
+                    buildTimePercent: 100,
+                    buildTimes: [10]
                 }
             ]);
         });
@@ -477,7 +478,8 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 20,
-                    buildTimePercent: 100
+                    buildTimePercent: 100,
+                    buildTimes: [10, 10]
                 }
             ]);
         });
@@ -507,7 +509,8 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 10,
-                    buildTimePercent: 100
+                    buildTimePercent: 100,
+                    buildTimes: [10, 10]
                 }
             ]);
         });
@@ -547,7 +550,8 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 80,
-                    buildTimePercent: 100
+                    buildTimePercent: 100,
+                    buildTimes: [50, 30]
                 }
             ]);
         });
@@ -587,13 +591,15 @@ describe('BuildProfiler', function () {
                     tech: 'js',
                     callNumber: 1,
                     buildTime: 50,
-                    buildTimePercent: 62.5
+                    buildTimePercent: 62.5,
+                    buildTimes: [50]
                 },
                 {
                     tech: 'css',
                     callNumber: 1,
                     buildTime: 30,
-                    buildTimePercent: 37.5
+                    buildTimePercent: 37.5,
+                    buildTimes: [30]
                 }
             ]);
         });

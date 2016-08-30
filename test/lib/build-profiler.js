@@ -437,7 +437,6 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 1,
                     buildTime: 10,
-                    percentile95: 10,
                     buildTimePercent: 100
                 }
             ]);
@@ -478,7 +477,6 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 20,
-                    percentile95: 10,
                     buildTimePercent: 100
                 }
             ]);
@@ -509,7 +507,6 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 10,
-                    percentile95: 10,
                     buildTimePercent: 100
                 }
             ]);
@@ -550,7 +547,6 @@ describe('BuildProfiler', function () {
                     tech: 'css',
                     callNumber: 2,
                     buildTime: 80,
-                    percentile95: 50,
                     buildTimePercent: 100
                 }
             ]);
@@ -591,14 +587,12 @@ describe('BuildProfiler', function () {
                     tech: 'js',
                     callNumber: 1,
                     buildTime: 50,
-                    percentile95: 50,
                     buildTimePercent: 62.5
                 },
                 {
                     tech: 'css',
                     callNumber: 1,
                     buildTime: 30,
-                    percentile95: 30,
                     buildTimePercent: 37.5
                 }
             ]);

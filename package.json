@@ -57,6 +57,7 @@
     "percentile": "1.1.0",
     "pretty-ms": "2.1.0",
     "puml-link": "0.0.1",
+    "rangem": "1.0.0",
     "resolve": "1.1.7",
     "serve-favicon": "2.3.0",
     "serve-static": "1.11.1",

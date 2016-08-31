@@ -1,6 +1,86 @@
 История изменений
 =================
 
+1.4.0
+-----
+
+### Profiler
+
+Добавлен `profiler` для таргетов и технологий (@blond, @timofey-em [#476], [#482], [#490], [#500], [#502]).
+
+[#476]: https://github.com/enb/enb/pull/476
+[#482]: https://github.com/enb/enb/pull/482
+[#490]: https://github.com/enb/enb/pull/490
+[#500]: https://github.com/enb/enb/pull/500
+[#502]: https://github.com/enb/enb/pull/502
+
+#### CLI
+
+Чтобы получить информацию о времени работы технологий используйте опцию `--profiler`.
+
+```shell
+$ enb make --profiler
+```
+
+<img src="https://cloud.githubusercontent.com/assets/2225579/18131620/334ba3da-6f9c-11e6-9baf-66bc42c3cdae.png" width="500">
+
+Чтобы получить подробную информацию о времени работы каждого таргета используйте опцию `--profiler` со значением `targets`.
+
+```shell
+$ enb make --profiler=targets
+```
+
+<img src="https://cloud.githubusercontent.com/assets/2225579/18131631/39d1fb5a-6f9c-11e6-888f-5c3f01062d8d.png" width="600">
+
+Чтобы получить процентили для времени работы технологий используйте опцию `--profiler-percentiles`.
+
+```shell
+$ enb make --profiler-percentiles=50,70,95
+```
+
+<img src="https://cloud.githubusercontent.com/assets/2225579/18131679/630b14de-6f9c-11e6-89b9-1efeb8fa1699.png" width="350">
+
+#### API
+
+В режиме профилирования `enb.make()` возвращает объект со следующими полями:
+
+* `techMetrics` — содержит результаты профилирования технологий (аналог `$ enb make --profiler`)
+* `buildTimes` — содержит информацию о времени для каждого таргета (аналог `$ enb make --profiler=targets`)
+
+```js
+var enb = require('enb');
+
+enb.make({ profiler: true })
+    .then(function(data) {
+        console.log(data.techMetrics);
+        console.log(data.buildTimes);
+    });
+```
+
+### Исправления ошибок
+
+* Исправлено кэширование для технологии `file-copy` (@loyd [#484]).
+
+[#484]: https://github.com/enb/enb/pull/484
+
+### Зависимости
+
+* Модуль `glob@7.0.3` обновлен до версии `7.0.6`.
+* Модуль `inherit@2.2.3` обновлен до версии `2.2.5`.
+* Модуль `lodash@3.10.1` обновлен до версии `4.15.0` (@blond, @greenkeeperio-bot [#453], [#499]).
+* Модуль `vow-fs@0.3.5` обновлен до версии `0.3.6`.
+* Модуль `serve-static@1.10.2` обновлен до версии `1.11.1`.
+
+[#453]: https://github.com/enb/enb/pull/453
+[#499]: https://github.com/enb/enb/pull/499
+
+### Commits
+
+* [[`ea271f0`](https://github.com/enb/enb/commit/ea271f0)] - chore(package): use caret ranges for dev dependencies (@blond)
+* [[`91e0ddc`](https://github.com/enb/enb/commit/91e0ddc)] - Object -> Function (@Yeti-or)
+* [[`d5b5435`](https://github.com/enb/enb/commit/d5b5435)] - Убрал ссылку на конфигуратор (@h4)
+* [[`fcd75a0`](https://github.com/enb/enb/commit/fcd75a0)] - Rename in docs enb/lib/server/server-middleware -> enb/lib/server/middleware (@adinvadim)
+
 1.3.0
 -----
 

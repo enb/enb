@@ -6,13 +6,15 @@
 
 ### Profiler
 
-Добавлен `profiler` для таргетов и технологий (@blond, @timofey-em [#476], [#482], [#490], [#500], [#502]).
+Добавлен `profiler` для таргетов и технологий (@blond, @timofey-em [#476], [#482], [#490], [#500], [#502], [#505], [#506]).
 
 [#476]: https://github.com/enb/enb/pull/476
 [#482]: https://github.com/enb/enb/pull/482
 [#490]: https://github.com/enb/enb/pull/490
 [#500]: https://github.com/enb/enb/pull/500
 [#502]: https://github.com/enb/enb/pull/502
+[#505]: https://github.com/enb/enb/pull/505
+[#506]: https://github.com/enb/enb/pull/506
 
 #### CLI
 
@@ -22,7 +24,7 @@
 $ enb make --profiler
 ```
 
-<img src="https://cloud.githubusercontent.com/assets/2225579/18131620/334ba3da-6f9c-11e6-9baf-66bc42c3cdae.png" width="500">
+<img src="https://cloud.githubusercontent.com/assets/2225579/18178860/b5d4e2f2-7088-11e6-9981-228ba56bb9d9.png" width="500">
 
 Чтобы получить подробную информацию о времени работы каждого таргета используйте опцию `--profiler` со значением `targets`.
 
@@ -30,15 +32,15 @@ $ enb make --profiler
 $ enb make --profiler=targets
 ```
 
-<img src="https://cloud.githubusercontent.com/assets/2225579/18131631/39d1fb5a-6f9c-11e6-888f-5c3f01062d8d.png" width="600">
+<img src="https://cloud.githubusercontent.com/assets/2225579/18178884/c8c00932-7088-11e6-83e8-86dffbdcff87.png" width="600">
 
 Чтобы получить процентили для времени работы технологий используйте опцию `--profiler-percentiles`.
 
 ```shell
-$ enb make --profiler-percentiles=50,70,95
+$ enb make --profiler-percentiles=25,50,95
 ```
 
-<img src="https://cloud.githubusercontent.com/assets/2225579/18131679/630b14de-6f9c-11e6-89b9-1efeb8fa1699.png" width="350">
+<img src="https://cloud.githubusercontent.com/assets/2225579/18178913/e14bf7fe-7088-11e6-96c1-0887ff9d0101.png" width="350">
 
 #### API
 

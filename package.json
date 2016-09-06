@@ -52,7 +52,7 @@
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.9.0",
     "glob": "7.0.6",
-    "inherit": "2.2.5",
+    "inherit": "2.2.6",
     "lodash": "4.15.0",
     "percentile": "1.1.0",
     "pretty-ms": "2.1.0",

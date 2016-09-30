@@ -51,7 +51,7 @@
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.9.0",
-    "glob": "7.0.6",
+    "glob": "7.1.0",
     "inherit": "2.2.6",
     "lodash": "4.16.2",
     "percentile": "1.1.0",

@@ -159,7 +159,7 @@ describe('make/init', function () {
 
         it('should return rejected promise if config function threw error', function () {
             var config = sinon.stub();
-            config.throws('test_error');
+            config.throws(new Error('test_error'));
 
             return expect(init_({ config: config }))
                 .to.be.rejectedWith('test_error');

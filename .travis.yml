@@ -7,6 +7,7 @@ matrix:
     - node_js: "0.10"
     - node_js: "0.12"
     - node_js: "4"
+    - node_js: "6"
       env: COVERALLS=1
 
 after_success:

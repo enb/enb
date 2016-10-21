@@ -4,9 +4,11 @@ var ModeConfig = require('../../../lib/config/mode-config');
 var BaseTech = require('../../../lib/tech/base-tech');
 
 describe('config/node-config', function () {
+    var nodePath = path.join('path', 'to', 'node');
+
     describe('constructor', function () {
         it('should call parent constructor', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._chains).to.be.instanceOf(Array)
                 .and.to.be.empty;
@@ -21,14 +23,14 @@ describe('config/node-config', function () {
 
         it('should set project root path', function () {
             var rootPath = path.join('root', 'path');
-            var nodeConfig = new NodeConfig(null, rootPath);
+            var nodeConfig = new NodeConfig(nodePath, rootPath);
 
             expect(nodeConfig._root).to.be.equal(rootPath);
         });
 
         it('should set project config', function () {
             var projectConfig = { testConfigField: 'test_config_val' };
-            var nodeConfig = new NodeConfig(null, null, projectConfig);
+            var nodeConfig = new NodeConfig(nodePath, null, projectConfig);
 
             expect(nodeConfig._projectConfig).to.be.equal(projectConfig);
         });
@@ -42,40 +44,40 @@ describe('config/node-config', function () {
         });
 
         it('should create container for targets', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._targets).to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
         it('should create container for targets that may be cleaned', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._cleanTargets).to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
         it('shoud create container for techs', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._techs).to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
         it('should define property for languages container', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig).to.have.property('_languages');
         });
 
         it('should not create languages container', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._languages).to.be.null;
         });
 
         it('should create containter for modes', function () {
-            var nodeConfig = new NodeConfig();
+            var nodeConfig = new NodeConfig(nodePath);
 
             expect(nodeConfig._modes).to.be.instanceOf(Object)
                 .and.to.be.empty;
@@ -87,7 +89,7 @@ describe('config/node-config', function () {
         var testMode = 'test_mode';
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
         });
 
         it('should create mode config for a mode', function () {
@@ -144,7 +146,7 @@ describe('config/node-config', function () {
         var languages = [ru, en];
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
         });
 
         it('should set languages for node', function () {
@@ -167,7 +169,7 @@ describe('config/node-config', function () {
         var languages = [en, ru];
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
         });
 
         it('should return languages if they were set previously', function () {
@@ -218,7 +220,7 @@ describe('config/node-config', function () {
         var languages = []; // setting languages because _processTarget will crash without it
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
             nodeConfig.setLanguages(languages);
         });
 
@@ -266,7 +268,7 @@ describe('config/node-config', function () {
         var languages = []; // setting languages because _processTarget will crash without it
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
             nodeConfig.setLanguages(languages);
         });
 
@@ -368,7 +370,7 @@ describe('config/node-config', function () {
         var nodeConfig;
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
             nodeConfig.setLanguages(languages);
         });
 
@@ -400,7 +402,7 @@ describe('config/node-config', function () {
         var nodeConfig;
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
             nodeConfig.setLanguages(languages);
         });
 
@@ -437,7 +439,7 @@ describe('config/node-config', function () {
         var nodeConfig;
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
         });
 
         it('should add tech passed as array containing tech class', function () {
@@ -513,7 +515,7 @@ describe('config/node-config', function () {
         var ThirdTech = function (params) { this.third = params; };
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
         });
 
         it('should add multiple techs passed as tech class with params', function () {
@@ -597,7 +599,7 @@ describe('config/node-config', function () {
         var languages = ['ru', 'en'];
 
         beforeEach(function () {
-            nodeConfig = new NodeConfig();
+            nodeConfig = new NodeConfig(nodePath);
             nodeConfig.setLanguages(languages);
         });
 

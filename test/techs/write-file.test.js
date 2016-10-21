@@ -1,14 +1,19 @@
-var FS = require('fs'),
-    mockFS = require('mock-fs'),
-    MockNode = require('mock-enb/lib/mock-node'),
-    WriteFileTech = require('../../techs/write-file');
+var proxyquire = require('proxyquire').noCallThru();
+var fs = require('fs');
+var mockFs = require('mock-fs');
+var MockNode = proxyquire('mock-enb/lib/mock-node', {
+    enb: require('../../lib/api'),
+    'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
+    'enb/lib/cache/cache': require('../../lib/cache/cache')
+});
+var WriteFileTech = require('../../techs/write-file');
 
 describe('techs/write-file', function () {
     var bundle;
 
     beforeEach(function () {
-        mockFS({
-            bundle: mockFS.directory({
+        mockFs({
+            bundle: mockFs.directory({
                 mode: 0755
             })
         });
@@ -17,7 +22,7 @@ describe('techs/write-file', function () {
     });
 
     afterEach(function () {
-        mockFS.restore();
+        mockFs.restore();
     });
 
     it('should write target file to file system', function () {
@@ -27,7 +32,7 @@ describe('techs/write-file', function () {
             })
             .should.be.fulfilled
             .then(function () {
-                FS.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
+                fs.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
             });
     });
 });

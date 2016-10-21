@@ -1,5 +1,6 @@
 var path = require('path');
 var vow = require('vow');
+var mockFs = require('mock-fs');
 var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');
 var Cache = require('../../../lib/cache/cache');
@@ -12,6 +13,8 @@ describe('node/targets', function () {
     var logger;
 
     beforeEach(function () {
+        mockFs({});
+
         var nodePath = path.join('path', 'to', 'node');
         var projectDir = path.join('path', 'to', 'project');
 
@@ -28,6 +31,10 @@ describe('node/targets', function () {
         node.setTargetsToBuild(['node.js']);
         node.setTechs([tech]);
         node.setLogger(logger);
+    });
+
+    afterEach(function () {
+        mockFs.restore();
     });
 
     describe('methods require registered target before test', function () {

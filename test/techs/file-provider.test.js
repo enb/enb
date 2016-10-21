@@ -1,6 +1,11 @@
-var mockFS = require('mock-fs'),
-    MockNode = require('mock-enb/lib/mock-node'),
-    FileProviderTech = require('../../techs/file-provider');
+var proxyquire = require('proxyquire').noCallThru();
+var mockFs = require('mock-fs');
+var MockNode = proxyquire('mock-enb/lib/mock-node', {
+    enb: require('../../lib/api'),
+    'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
+    'enb/lib/cache/cache': require('../../lib/cache/cache')
+});
+var FileProviderTech = require('../../techs/file-provider');
 
 describe('techs/file-provider', function () {
     var bundle,
@@ -8,7 +13,7 @@ describe('techs/file-provider', function () {
         rejectSpy;
 
     beforeEach(function () {
-        mockFS({
+        mockFs({
             bundle: {
                 'file.txt': 'I\'m here'
             },
@@ -21,7 +26,7 @@ describe('techs/file-provider', function () {
     });
 
     afterEach(function () {
-        mockFS.restore();
+        mockFs.restore();
     });
 
     it('should prodive file to target', function () {

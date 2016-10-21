@@ -3,11 +3,16 @@ var fs = require('fs');
 var inherit = require('inherit');
 var mockFs = require('mock-fs');
 var deasync = require('deasync');
+var proxyquire = require('proxyquire').noCallThru();
 var loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync;
 var framework = require('../../lib/build-flow');
 var BaseTech = require('../../lib/tech/base-tech');
 var FileList = require('../../lib/file-list');
-var MockNode = require('mock-enb/lib/mock-node');
+var MockNode = proxyquire('mock-enb/lib/mock-node', {
+    enb: require('../../lib/api'),
+    'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
+    'enb/lib/cache/cache': require('../../lib/cache/cache')
+});
 var EOL = require('os').EOL;
 
 describe('build-flow', function () {

@@ -199,16 +199,6 @@ describe('cache/cache', function () {
     });
 
     describe('cacheFileInfo', function () {
-        it('should set info about file by cache key', function () {
-            var cache = createCache_();
-
-            sandbox.stub(cache, 'set');
-
-            cache.cacheFileInfo('cache_key');
-
-            expect(cache.set).to.be.calledWith('cache_key');
-        });
-
         it('should cache info about file', function () {
             mockFs({
                 '/path/to/test_file.js': mockFs.file({

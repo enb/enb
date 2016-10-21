@@ -1,4 +1,5 @@
 var fs = require('fs');
+// var process = require('process');
 var mockFs = require('mock-fs');
 var vow = require('vow');
 var path = require('path');
@@ -103,7 +104,9 @@ describe('node/target files utils', function () {
             var regexp = new RegExp('_tmp_\\d{13,14}\\w{6,7}_' + 'test_target\\.js');
 
             return node.createTmpFileForTarget('test_target.js').then(function (filename) {
-                expect(filename).to.match(regexp);
+                var relPath = path.relative(nodeFullPath, filename);
+
+                expect(relPath).to.match(regexp);
             });
         });
     });

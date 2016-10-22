@@ -1,4 +1,6 @@
 var fs = require('fs');
+var vow = require('vow');
+var vfs = require('vow-fs');
 var mockFs = require('mock-fs');
 var MakePlatform = require('../../../lib/make');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -82,6 +84,7 @@ describe('make/constructor-destructor', function () {
                 sandbox.stub(ProjectConfig.prototype);
 
                 sandbox.stub(fs, 'existsSync').returns(true);
+                sandbox.stub(vfs, 'makeDir').returns(vow.resolve());
 
                 makePlatform.init('path/to/project', null, function () {});
                 makePlatform.initNode('path/to/node');

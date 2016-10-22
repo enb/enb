@@ -1,6 +1,7 @@
 var mockFs = require('mock-fs');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
+var FileCache = require('../../../lib/cache/file-cache');
 
 describe('cache/cache', function () {
     var sandbox = sinon.sandbox.create();
@@ -18,6 +19,15 @@ describe('cache/cache', function () {
             cache.get();
 
             expect(cacheStorage.get).to.be.called;
+        });
+
+        it('should set file cache', function () {
+            var fileCache = sinon.createStubInstance(FileCache);
+            var cache = createCache_({ fileCache: fileCache });
+
+            cache.getFile();
+
+            expect(fileCache.get).to.be.called;
         });
 
         it('should set prefix', function () {
@@ -41,6 +51,15 @@ describe('cache/cache', function () {
             cache.destruct();
 
             expect(function () { cache.get(); }).to.throw();
+        });
+
+        it('should delete reference to file cache', function () {
+            var fileCache = sinon.createStubInstance(FileCache);
+            var cache = createCache_({ fileCache: fileCache });
+
+            cache.destruct();
+
+            expect(function () { cache.getFile(); }).to.throw();
         });
     });
 
@@ -78,6 +97,40 @@ describe('cache/cache', function () {
             cache.set('testKey', 'test_data');
 
             expect(cacheStorage.set).to.be.calledWith('testPrefix', 'testKey', 'test_data');
+        });
+    });
+
+    describe('getFile', function () {
+        it('should query data by cache prefix and file info',  function () {
+            var fileCache = sinon.createStubInstance(FileCache);
+            var cache = createCache_({
+                fileCache: fileCache,
+                prefix: 'testPrefix'
+            });
+
+            cache.getFile('path/to/file', { mtime: 1 });
+
+            expect(fileCache.get).to.be.calledWith('path/to/file', {
+                __prefix__: 'testPrefix',
+                mtime: 1
+            });
+        });
+    });
+
+    describe('putFile', function () {
+        it('should put file by cache prefix and file info', function () {
+            var fileCache = sinon.createStubInstance(FileCache);
+            var cache = createCache_({
+                fileCache: fileCache,
+                prefix: 'testPrefix'
+            });
+
+            cache.putFile('path/to/file', 'contents', { mtime: 1 });
+
+            expect(fileCache.put).to.be.calledWith('path/to/file', 'contents', {
+                __prefix__: 'testPrefix',
+                mtime: 1
+            });
         });
     });
 
@@ -305,6 +358,7 @@ describe('cache/cache', function () {
 
         return new Cache(
             params.storage || sinon.createStubInstance(CacheStorage),
+            params.fileCache || sinon.createStubInstance(FileCache),
             params.prefix || 'default_prefix'
         );
     }

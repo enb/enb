@@ -11,6 +11,7 @@ var NodeConfig = require('../../../lib/config/node-config');
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');
+var FileCache = require('../../../lib/cache/file-cache');
 
 describe('make/buildTargets', function () {
     var makePlatform;
@@ -44,12 +45,14 @@ describe('make/buildTargets', function () {
 
     it('should create cache', function () {
         var cacheStorage = sinon.createStubInstance(CacheStorage);
+        var fileCache = sinon.createStubInstance(FileCache);
         var projectName = path.basename(projectPath);
 
         makePlatform.setCacheStorage(cacheStorage);
+        makePlatform.setFileCache(fileCache);
         makePlatform.buildTargets(['path/to/node']);
 
-        expect(Cache.prototype.__constructor).to.be.calledWith(cacheStorage, projectName);
+        expect(Cache.prototype.__constructor).to.be.calledWith(cacheStorage, fileCache, projectName);
     });
 
     it('should return rejected promise if required target does not match any available node', function () {

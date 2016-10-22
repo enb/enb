@@ -5,11 +5,13 @@ var clearRequire = require('clear-require');
 var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
+var FileCache = require('../../../lib/cache/file-cache');
 
 describe('make/cache', function () {
     var sandbox = sinon.sandbox.create();
     var makePlatform;
     var cacheStorage;
+    var fileCache;
 
     beforeEach(function () {
         sandbox.stub(fs, 'existsSync');
@@ -21,9 +23,11 @@ describe('make/cache', function () {
             .returns(true);
 
         cacheStorage = sinon.createStubInstance(CacheStorage);
+        fileCache = sinon.createStubInstance(FileCache);
 
         makePlatform = new MakePlatform();
         makePlatform.setCacheStorage(cacheStorage);
+        makePlatform.setFileCache(fileCache);
     });
 
     afterEach(function () {

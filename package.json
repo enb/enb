@@ -40,7 +40,7 @@
     "Marat Dulin <mdevils@yandex.ru>"
   ],
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 4"
   },
   "dependencies": {
     "chalk": "1.1.3",

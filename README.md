@@ -386,63 +386,30 @@ module.exports = function(config) {
 Суть в том, что можно забыть о пересборке проекта, о других портах для статики и т.п. Можно просто отправлять в `ENB`
 запросы на сборку тогда, когда это необходимо. То есть, когда вы открываете в браузере свой проект.
 
-Для этого можно воспользоваться `express`-совместимым `middleware`. Его возвращает метод `createMiddleware` модуля
-`lib/server/server-middleware`.
+Для этого можно воспользоваться `express`-совместимым `middleware`. Его
+возвращает модуль `enb/lib/server/middleware/enb`.
 
 ```javascript
 /**
  * @param {Object} options
- * @param {String} options.cdir Корневая директория проекта.
- * @param {Boolean} options.noLog Не логгировать в консоль процесс сборки.
+ * @param {String} [options.root=process.cwd()] - Корневая директория проекта.
+ * @param {String} [options.mode='development'] - Режим сборки
+ * @param {Boolean} [options.log=true] - Логгировать в консоль процесс сборки.
  * @returns {Function}
  */
-module.exports.createMiddleware = function(options) { /* ... */ };
+module.exports = function(options) { /* ... */ };
 ```
 
 Пример использования:
 
 ```javascript
 app
-    .use(require('enb/lib/server/middleware').createMiddleware())
+    .use(require('enb/lib/server/middleware/enb')({
+        root: '/path/to/root',
+        log: false
+    }))
     .get('/', function (req, res) {
         /* ... */
-    });
-```
-
-Сборка по требованию
-====================
-
-Помимо упрощения сборки статики в `dev`-режиме с помощью `ENB` в `express`-приложениях,
-можно собирать по требованию различные ресурсы, например, шаблоны.
-
-Если `nodejs` приложению в процессе работы требуется собирать шаблоны или локализацию (или что-нибудь еще),
-то можно воспользоваться методом `createBuilder` модуля `lib/server/server-middleware`.
-
-```javascript
-/**
- * @param {Object} options
- * @param {String} options.cdir Корневая директория проекта.
- * @param {Boolean} options.noLog Не логгировать в консоль процесс сборки.
- * @returns {Function}
- */
-module.exports.createBuilder = function(options) { /* ... */ };
-```
-
-Пример использования:
-
-```javascript
-var clearRequire = require('clear-require');
-var enbBuilder = require('enb/lib/server/server-middleware').createBuilder();
-app
-    .get('/', function (req, res, next) {
-        var bemhtmlFilePath = 'pages/index/index.bemhtml.js';
-        enbBuilder(bemhtmlFilePath).then(function() {
-            var bemhtmlAbsFilePath = process.process.cwd() + '/' + bemhtmlFilePath;
-            clearRequire(bemhtmlAbsFilePath);
-            var bemhtml = require(bemhtmlAbsFilePath);
-            res.end(bemhtml.BEMHTML.apply({block: 'b-page', content: 'Hello World'}));
-            next();
-        }, next);
     });
 ```
 

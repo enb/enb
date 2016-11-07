@@ -53,7 +53,7 @@
     "enb-source-map": "1.9.0",
     "glob": "7.1.1",
     "inherit": "2.2.6",
-    "lodash": "4.16.4",
+    "lodash": "4.16.6",
     "percentile": "1.1.0",
     "pretty-ms": "2.1.0",
     "puml-link": "0.0.1",

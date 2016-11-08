@@ -73,6 +73,16 @@ ENB работает гораздо быстрее, чем bem-tools. Приче
 ./node_modules/.bin/enb make --graph
 ```
 
+Сборка всех страниц проекта с включённым профайлером (считает время работы таргетов и технологий):
+```
+./node_modules/.bin/enb make --profiler
+```
+
+Сборка всех страниц проекта и запись данных о сборке (результаты профайлера) в файл:
+```
+./node_modules/.bin/enb make --build-info-file="build-info.json"
+```
+
 Сборка конкретной страницы проекта:
 ```
 ./node_modules/.bin/enb make pages/index

@@ -62,7 +62,7 @@
     "serve-favicon": "2.3.2",
     "serve-static": "1.11.1",
     "stack-trace": "0.0.9",
-    "vow": "0.4.13",
+    "vow": "0.4.14",
     "vow-fs": "0.3.6",
     "vow-node": "0.3.0",
     "worker-farm": "1.3.1"

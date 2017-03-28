@@ -114,10 +114,12 @@ describe('node/require sources', function () {
 
         it('should reject target if exception occured in tech', function () {
             var rejectTarget = sinon.spy(node, 'rejectTarget');
-            tech.build.throws(new Error('exception'));
+            var error = new Error('exception');
+
+            tech.build.throws(error);
 
             return node.requireSources(['?.js']).fail(function () {
-                expect(rejectTarget).to.be.calledWith('node.js', new Error('exception'));
+                expect(rejectTarget).to.be.calledWith('node.js', error);
             });
         });
 
@@ -131,11 +133,12 @@ describe('node/require sources', function () {
 
         it('should reject target if tech build finished unsuccessfully', function () {
             var rejectTarget = sinon.spy(node, 'rejectTarget');
+            var error = new Error('reject');
 
-            tech.build.returns(vow.reject(new Error('reject')));
+            tech.build.returns(vow.reject(error));
 
             return node.requireSources(['?.js']).fail(function () {
-                expect(rejectTarget).to.be.calledWith('node.js', new Error('reject'));
+                expect(rejectTarget).to.be.calledWith('node.js', error);
             });
         });
 

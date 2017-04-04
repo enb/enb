@@ -96,6 +96,21 @@ describe('make/init', function () {
                     expect(nodeConfig.getModeConfig).to.be.calledWith('development');
                 });
             });
+
+            it('should return promise on init call that resolves after all mode calls', function () {
+                var resolved = false;
+
+                ProjectConfig.prototype.getModeConfig.returns({
+                    exec: function () {
+                        return vow.delay('ok', 50).then(function () { resolved = true; });
+                    }
+                });
+
+                makePlatform = new MakePlatform();
+                return makePlatform.init('/path/to/project', 'mode', function () {}).then(function () {
+                    resolved.should.be.true;
+                });
+            });
         });
 
         it('should create project config', function () {

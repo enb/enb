@@ -987,3 +987,8 @@ var jobQueue = this.node.getSharedResources().jobQueue;
 // Выполнить таску в отдельном процессе, возвращается промис с результатом
 return jobQueue.push(require.resolve('./path/to/processor'), arg1, arg2);
 ```
+
+Лицензия
+--------
+
+© 2013 YANDEX LLC. Код лицензирован [Mozilla Public License 2.0](LICENSE.txt).

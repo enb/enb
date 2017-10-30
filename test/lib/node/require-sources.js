@@ -127,7 +127,7 @@ describe('node/require sources', function () {
             tech.build.throws(new Error('exception_tech_error'));
 
             return node.requireSources(['?.js']).fail(function (error) {
-                expect(error).to.be.deep.equal(new Error('exception_tech_error'));
+                expect(error.message).to.be.equal('exception_tech_error');
             });
         });
 
@@ -146,7 +146,7 @@ describe('node/require sources', function () {
             tech.build.returns(vow.reject(new Error('reject')));
 
             return node.requireSources(['?.js']).fail(function (error) {
-                expect(error).to.be.deep.equal(new Error('reject'));
+                expect(error.message).to.be.equal('reject');
             });
         });
     });

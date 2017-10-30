@@ -751,7 +751,7 @@ describe('build-flow', function () {
                     var logger = bundle.getLogger();
                     var messages = logger._messages;
 
-                    messages.should.be.contains({
+                    messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated.',
                         scope: path.join('bundle', 'bundle.ext'),
                         action: '[deprecated]'
@@ -773,7 +773,7 @@ describe('build-flow', function () {
                     var logger = bundle.getLogger();
                     var messages = logger._messages;
 
-                    messages.should.be.contains({
+                    messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
                             'Install package new-package and use tech new-package/techs/name instead.',
                         scope: path.join('bundle', 'bundle.ext'),
@@ -796,7 +796,7 @@ describe('build-flow', function () {
                     var logger = bundle.getLogger();
                     var messages = logger._messages;
 
-                    messages.should.be.contains({
+                    messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
                             'Install package new-package and use tech new-package/techs/new-tech instead.',
                         scope: path.join('bundle', 'bundle.ext'),
@@ -819,7 +819,7 @@ describe('build-flow', function () {
                     var logger = bundle.getLogger();
                     var messages = logger._messages;
 
-                    messages.should.be.contains({
+                    messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
                             'Install package new-package and use tech new-package/techs/new-tech instead. ' +
                             'The Description.',
@@ -1529,7 +1529,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
-                        actual.should.be.empty;
+                        actual.should.be.equal(0);
                     });
             });
 
@@ -1552,7 +1552,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
-                        actual.should.be.empty;
+                        actual.should.be.equal(0);
                     });
             });
 
@@ -1575,7 +1575,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
-                        actual.should.be.empty;
+                        actual.should.be.equal(0);
                     });
             });
         });

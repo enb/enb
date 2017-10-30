@@ -448,7 +448,7 @@ describe('config/node-config', function () {
 
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new TechClass());
+            expect(nodeConfig.getTechs()).to.deep.contain(new TechClass());
         });
 
         it('should add tech passed as tech class with params', function () {
@@ -458,7 +458,7 @@ describe('config/node-config', function () {
 
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new TechClass(techParams));
+            expect(nodeConfig.getTechs()).to.deep.contain(new TechClass(techParams));
         });
 
         it('should process tech params when adding tech as tech class and params', function () {
@@ -484,8 +484,8 @@ describe('config/node-config', function () {
             nodeConfig.setLanguages(languages);
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(new TechClass(ruTechParams))
-                .and.to.contain(new TechClass(enTechParams));
+            expect(nodeConfig.getTechs()).to.deep.contain(new TechClass(ruTechParams))
+                .and.to.deep.contain(new TechClass(enTechParams));
         });
 
         it('should add tech passed as tech class', function () {
@@ -493,7 +493,7 @@ describe('config/node-config', function () {
 
             nodeConfig.addTech(TechClass);
 
-            expect(nodeConfig.getTechs()).to.contain(new TechClass());
+            expect(nodeConfig.getTechs()).to.deep.contain(new TechClass());
         });
 
         it('should add already instantiated tech', function () {
@@ -501,7 +501,7 @@ describe('config/node-config', function () {
 
             nodeConfig.addTech(tech);
 
-            expect(nodeConfig.getTechs()).to.contain(tech);
+            expect(nodeConfig.getTechs()).to.deep.contain(tech);
         });
 
         it('should support method chaining pattern', function () {
@@ -529,8 +529,8 @@ describe('config/node-config', function () {
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(new FirstTechClass(firstTechParams))
-                .and.to.contain(new SecondTechClass(secondTechParams));
+            expect(nodeConfig.getTechs()).to.deep.contain(new FirstTechClass(firstTechParams))
+                .and.to.deep.contain(new SecondTechClass(secondTechParams));
         });
 
         it('should process tech params for all techs when adding tech as tech class and params', function () {
@@ -557,8 +557,8 @@ describe('config/node-config', function () {
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(new FirstTechClass())
-                .and.to.contain(new SecondTechClass());
+            expect(nodeConfig.getTechs()).to.deep.contain(new FirstTechClass())
+                .and.to.deep.contain(new SecondTechClass());
         });
 
         it('should add multiple instantiated techs', function () {
@@ -568,8 +568,8 @@ describe('config/node-config', function () {
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(firstTech)
-                .and.to.contain(secondTech);
+            expect(nodeConfig.getTechs()).to.deep.contain(firstTech)
+                .and.to.deep.contain(secondTech);
         });
 
         it('should add multiple techs declared in all supported ways', function () {
@@ -582,9 +582,9 @@ describe('config/node-config', function () {
 
             nodeConfig.addTechs(techs);
 
-            expect(nodeConfig.getTechs()).to.contain(firstTech)
-                .and.to.contain(new SecondTechClass())
-                .and.to.contain(new ThirdTechClass(thirdTechParams));
+            expect(nodeConfig.getTechs()).to.deep.contain(firstTech)
+                .and.to.deep.contain(new SecondTechClass())
+                .and.to.deep.contain(new ThirdTechClass(thirdTechParams));
         });
 
         it('should support method chaining pattern', function () {
@@ -623,8 +623,8 @@ describe('config/node-config', function () {
             var expectedEnOptions = { foo: 'bar', lang: 'en' };
             var result = nodeConfig._processTechOptions(options);
 
-            expect(result).to.contain(expectedEnOptions)
-                .and.to.contain(expectedRuOptions);
+            expect(result).to.deep.contain(expectedEnOptions)
+                .and.to.deep.contain(expectedRuOptions);
         });
 
         it('should not process any directives different from {lang}', function () {
@@ -632,7 +632,7 @@ describe('config/node-config', function () {
             var expectedResult = { foo: 'bar', custom: '{custom}' };
             var result = nodeConfig._processTechOptions(options);
 
-            expect(result).to.contain(expectedResult);
+            expect(result).to.deep.contain(expectedResult);
         });
     });
 });

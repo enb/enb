@@ -1,6 +1,7 @@
-var vowFs = require('vow-fs');
 var path = require('path');
-var clearRequire = require('clear-require');
+
+var vowFs = require('vow-fs');
+var fileEval = require('file-eval');
 
 describe('fs/async-fs', function () {
     var previousLimit;
@@ -12,7 +13,6 @@ describe('fs/async-fs', function () {
     });
 
     beforeEach(function () {
-        clearRequire(asyncFsPath);
         sandbox.stub(vowFs);
     });
 
@@ -26,13 +26,13 @@ describe('fs/async-fs', function () {
     });
 
     it('should return vowFs as it\'s result', function () {
-        var asyncFs = require(asyncFsPath);
+        var asyncFs = fileEval.sync(asyncFsPath);
 
         expect(asyncFs).to.be.equal(vowFs);
     });
 
     it('should not set file limit if it was not defined in process.env', function () {
-        require(asyncFsPath);
+        fileEval.sync(asyncFsPath);
 
         sinon.assert.notCalled(vowFs.options);
     });
@@ -40,7 +40,7 @@ describe('fs/async-fs', function () {
     it('should set file limit to vow-fs if it was defined in process.env', function () {
         process.env.ENB_FILE_LIMIT = 1;
 
-        require(asyncFsPath);
+        fileEval.sync(asyncFsPath);
         sinon.assert.calledWith(vowFs.options, {
             openFileLimit: parseInt(process.env.ENB_FILE_LIMIT, 10)
         });

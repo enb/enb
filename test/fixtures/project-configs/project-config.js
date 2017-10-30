@@ -1,5 +1,3 @@
-var testFunc = function (param) {
-    testFunc.lastCallParam = param;
+module.exports = function (projectConfig) {
+    projectConfig.___xxx___ = true;
 };
-
-module.exports = testFunc;

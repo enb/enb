@@ -1,5 +1,4 @@
 var vm = require('vm');
-var clearRequire = require('clear-require');
 var Logger = require('../../../lib/logger');
 
 describe('deprecate', function () {
@@ -7,8 +6,6 @@ describe('deprecate', function () {
     var deprecatePath = require.resolve('../../../lib/utils/deprecate.js');
 
     beforeEach (function () {
-        // dropping cache because need to have uninitialized deprecate before each test
-        clearRequire(deprecatePath);
         deprecate = require(deprecatePath);
         sinon.sandbox.stub(Logger.prototype);
     });
@@ -32,8 +29,8 @@ describe('deprecate', function () {
         });
 
         it('should print correct filename for delayed messages', function () {
-            var contents = 'var deprecate = require(path); deprecate({ module: "test_module" });';
-            var context = vm.createContext({ require: require, path: deprecatePath });
+            var contents = 'var deprecate = require(deprecatePath); deprecate({ module: "test_module" });';
+            var context = vm.createContext({ require: require, deprecatePath: deprecatePath });
 
             vm.runInContext(contents, context, '/test_module.js');
             deprecate.initialize();

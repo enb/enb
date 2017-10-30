@@ -672,21 +672,10 @@ describe('config/project-config', function () {
             expect(projectConfig.getIncludedConfigFilenames()).to.contain(expectedPath);
         });
 
-        it('should drop require cache for config file before including it', function () {
-            var expectedModule = { foo: 'bar' };
-            require.cache[configPath] = expectedModule;
-
-            projectConfig.includeConfig(configPath);
-
-            expect(require.cache[configPath]).to.exist
-                .and.to.be.not.equal(expectedModule);
-        });
-
         it('should require config file and execute it passing self', function () {
             projectConfig.includeConfig(configPath);
 
-            expect(require(configPath).lastCallParam).to.exist
-                .and.to.be.equal(projectConfig);
+            expect(projectConfig.___xxx___).to.be.true;
         });
 
         it('should add included config filename to included config filenames', function () {

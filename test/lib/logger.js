@@ -17,20 +17,29 @@ var REGEX = {
 describe('logger', function () {
     var logger;
     var consoleLogSpy;
+    var consoleWarnSpy;
+    var consoleErrorSpy;
     var message;
 
     before(function () {
-        consoleLogSpy = sinon.spy(console, 'log'); // spying at console.log because logger built on top of it
+        // spying at console methods because logger built on top of it
+        consoleLogSpy = sinon.spy(console, 'log');
+        consoleWarnSpy = sinon.spy(console, 'warn');
+        consoleErrorSpy = sinon.spy(console, 'error');
         logger = new Logger();
         message = 'test_message';
     });
 
     beforeEach(function () {
         consoleLogSpy.reset();
+        consoleWarnSpy.reset();
+        consoleErrorSpy.reset();
     });
 
     after(function () {
         consoleLogSpy.restore();
+        consoleWarnSpy.restore();
+        consoleErrorSpy.restore();
     });
 
     describe('constructor', function () {
@@ -212,19 +221,19 @@ describe('logger', function () {
 
             disabledWarningsLogger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.not.called;
+            expect(consoleWarnSpy).to.be.not.called;
         });
 
         it('should log message', function () {
             logger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(message);
+            expect(consoleWarnSpy).to.be.calledWithMatch(message);
         });
 
         it('should log target', function () {
             logger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(target);
+            expect(consoleWarnSpy).to.be.calledWithMatch(target);
         });
 
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
@@ -234,13 +243,13 @@ describe('logger', function () {
 
             loggerWithScope.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(expectedScope);
+            expect(consoleWarnSpy).to.be.calledWithMatch(expectedScope);
         });
 
         it('should log action', function () {
             logger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(action);
+            expect(consoleWarnSpy).to.be.calledWithMatch(action);
         });
 
         it('should colorize action with yellow color', function () {
@@ -248,7 +257,7 @@ describe('logger', function () {
 
             logger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(colorizedAction);
+            expect(consoleWarnSpy).to.be.calledWithMatch(colorizedAction);
         });
 
         it('should wrap action into []', function () {
@@ -256,7 +265,7 @@ describe('logger', function () {
 
             logger.logWarningAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(formattedAction);
+            expect(consoleWarnSpy).to.be.calledWithMatch(formattedAction);
         });
     });
 
@@ -283,7 +292,7 @@ describe('logger', function () {
             disabledWarningsLogger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage,
                 description);
 
-            expect(consoleLogSpy).to.be.not.called;
+            expect(consoleWarnSpy).to.be.not.called;
         });
 
         it('should add \'deprecated\' action to log message', function () {
@@ -291,31 +300,31 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated();
 
-            expect(consoleLogSpy).to.be.calledWithMatch(deprecated);
+            expect(consoleWarnSpy).to.be.calledWithMatch(deprecated);
         });
 
         it('should log target', function () {
             logger.logTechIsDeprecated(target);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(target);
+            expect(consoleWarnSpy).to.be.calledWithMatch(target);
         });
 
         it('should log deprecated tech', function () {
             logger.logTechIsDeprecated(null, deprecatedTech);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(deprecatedTech);
+            expect(consoleWarnSpy).to.be.calledWithMatch(deprecatedTech);
         });
 
         it('should log this package name', function () {
             logger.logTechIsDeprecated(null, null, thisPackage);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(thisPackage);
+            expect(consoleWarnSpy).to.be.calledWithMatch(thisPackage);
         });
 
         it ('should log new tech and new package name together', function () {
             logger.logTechIsDeprecated(null, null, null, newTech, newPackage);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newTech)
+            expect(consoleWarnSpy).to.be.calledWithMatch(newTech)
                 .and.to.be.calledWithMatch(newPackage);
         });
 
@@ -323,14 +332,14 @@ describe('logger', function () {
             'Use tech %new_tech_path% instead.\'', function () {
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, thisPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(REGEX.deprecatedTech.samePackagesMessage);
+            expect(consoleWarnSpy).to.be.calledWithMatch(REGEX.deprecatedTech.samePackagesMessage);
         });
 
         it('should format deprecated tech message for different packages as \'Tech %old_tech_path% is deprecated. ' +
             'Install package %new_package_name% and use tech %new_tech_path% instead.\'', function () {
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(REGEX.deprecatedTech.differentPackagesMessage);
+            expect(consoleWarnSpy).to.be.calledWithMatch(REGEX.deprecatedTech.differentPackagesMessage);
         });
 
         it('should log old tech path in format %this_package%/techs/%deprecated_tech%', function () {
@@ -338,7 +347,7 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(oldTechPath);
+            expect(consoleWarnSpy).to.be.calledWithMatch(oldTechPath);
         });
 
         it('should make old tech path bold', function () {
@@ -346,13 +355,13 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(colorizedOldTechPath);
+            expect(consoleWarnSpy).to.be.calledWithMatch(colorizedOldTechPath);
         });
 
         it('should log new package name', function () {
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newPackage);
+            expect(consoleWarnSpy).to.be.calledWithMatch(newPackage);
         });
 
         it('should make new package name bold', function () {
@@ -360,7 +369,7 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(boldNewPackageName);
+            expect(consoleWarnSpy).to.be.calledWithMatch(boldNewPackageName);
         });
 
         it('should log new tech path in format %new_package%/techs/%new_tech%', function () {
@@ -368,7 +377,7 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newTechPath);
+            expect(consoleWarnSpy).to.be.calledWithMatch(newTechPath);
         });
 
         it('should make new tech path bold', function () {
@@ -376,13 +385,13 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newTechPathBold);
+            expect(consoleWarnSpy).to.be.calledWithMatch(newTechPathBold);
         });
 
         it('should log description', function () {
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(description);
+            expect(consoleWarnSpy).to.be.calledWithMatch(description);
         });
 
         it('should add description to the end of log message', function () {
@@ -390,7 +399,7 @@ describe('logger', function () {
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(regex);
+            expect(consoleWarnSpy).to.be.calledWithMatch(regex);
         });
     });
 
@@ -417,7 +426,7 @@ describe('logger', function () {
             disabledWarningsLogger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption,
                 description);
 
-            expect(consoleLogSpy).to.not.be.called;
+            expect(consoleWarnSpy).to.not.be.called;
         });
 
         it('should add \'deprecated\' action to log message', function () {
@@ -425,65 +434,65 @@ describe('logger', function () {
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(deprecated);
+            expect(consoleWarnSpy).to.be.calledWithMatch(deprecated);
         });
 
         it('should log target', function () {
             logger.logOptionIsDeprecated(target);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(target);
+            expect(consoleWarnSpy).to.be.calledWithMatch(target);
         });
 
         it('should log package', function () {
             logger.logOptionIsDeprecated(null, thisPackage);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(thisPackage);
+            expect(consoleWarnSpy).to.be.calledWithMatch(thisPackage);
         });
 
         it('should log tech', function () {
             logger.logOptionIsDeprecated(null, null, tech);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(tech);
+            expect(consoleWarnSpy).to.be.calledWithMatch(tech);
         });
 
         it('should log deprecated option', function () {
             logger.logOptionIsDeprecated(null, null, null, deprecatedOption);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(deprecatedOption);
+            expect(consoleWarnSpy).to.be.calledWithMatch(deprecatedOption);
         });
 
         it('should make deprecated option bold', function () {
             var deprecatedOptionBold = colors.bold(deprecatedOption);
             logger.logOptionIsDeprecated(null, null, null, deprecatedOption);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(deprecatedOptionBold);
+            expect(consoleWarnSpy).to.be.calledWithMatch(deprecatedOptionBold);
         });
 
         it('should log new option', function () {
             logger.logOptionIsDeprecated(null, null, null, null, newOption);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newOption);
+            expect(consoleWarnSpy).to.be.calledWithMatch(newOption);
         });
 
         it('should make new option bold', function () {
             var newOptionBold = colors.bold(newOption);
             logger.logOptionIsDeprecated(null, null, null, null, newOption);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(newOptionBold);
+            expect(consoleWarnSpy).to.be.calledWithMatch(newOptionBold);
         });
 
         it('should format deprecated option message as \'Option %deprecated_option% of %tech_path% is deprecated.\' ' +
             'when new option is not available', function () {
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, null, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(REGEX.deprecatedOption.newOptionUnavailable);
+            expect(consoleWarnSpy).to.be.calledWithMatch(REGEX.deprecatedOption.newOptionUnavailable);
         });
 
         it('should format deprecated option message as \'Option %deprecated_option% of %tech_path% is deprecated. ' +
             'Use option %new_option% instead.\' when new option is not available', function () {
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(REGEX.deprecatedOption.newOptionAvailable);
+            expect(consoleWarnSpy).to.be.calledWithMatch(REGEX.deprecatedOption.newOptionAvailable);
         });
 
         it('should log tech path in format \'%package_name%/techs/%tech_name%\'', function () {
@@ -491,7 +500,7 @@ describe('logger', function () {
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(techPath);
+            expect(consoleWarnSpy).to.be.calledWithMatch(techPath);
         });
 
         it('should make tech path bold', function () {
@@ -499,13 +508,13 @@ describe('logger', function () {
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(boldTechPath);
+            expect(consoleWarnSpy).to.be.calledWithMatch(boldTechPath);
         });
 
         it('should log description', function () {
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(description);
+            expect(consoleWarnSpy).to.be.calledWithMatch(description);
         });
 
         it('should add description to the end of the message', function () {
@@ -513,7 +522,7 @@ describe('logger', function () {
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(regex);
+            expect(consoleWarnSpy).to.be.calledWithMatch(regex);
         });
     });
 
@@ -531,7 +540,7 @@ describe('logger', function () {
         it('should log action', function () {
             logger.logErrorAction(action);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(action);
+            expect(consoleErrorSpy).to.be.calledWithMatch(action);
         });
 
         it('should colorize action in red color', function () {
@@ -539,7 +548,7 @@ describe('logger', function () {
 
             logger.logErrorAction(action);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(colorizedAction);
+            expect(consoleErrorSpy).to.be.calledWithMatch(colorizedAction);
         });
 
         it('should wrap action into []', function () {
@@ -547,13 +556,13 @@ describe('logger', function () {
 
             logger.logErrorAction(action);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(formattedAction);
+            expect(consoleErrorSpy).to.be.calledWithMatch(formattedAction);
         });
 
         it('should log target', function () {
             logger.logErrorAction(null, target);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(target);
+            expect(consoleErrorSpy).to.be.calledWithMatch(target);
         });
 
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
@@ -563,13 +572,13 @@ describe('logger', function () {
 
             loggerWithScope.logErrorAction(action, target, message);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(expectedScope);
+            expect(consoleErrorSpy).to.be.calledWithMatch(expectedScope);
         });
 
         it('should log additional info', function () {
             logger.logErrorAction(null, null, additionalInfo);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(additionalInfo);
+            expect(consoleErrorSpy).to.be.calledWithMatch(additionalInfo);
         });
 
         it('should colorize addition info in grey color', function () {
@@ -577,7 +586,7 @@ describe('logger', function () {
 
             logger.logErrorAction(null, null, additionalInfo);
 
-            expect(consoleLogSpy).to.be.calledWithMatch(colorizedAdditionalInfo);
+            expect(consoleErrorSpy).to.be.calledWithMatch(colorizedAdditionalInfo);
         });
     });
 

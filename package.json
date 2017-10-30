@@ -90,5 +90,10 @@
     "check-style": "jscs lib test",
     "coverage": "istanbul cover _mocha -- -R dot test/lib",
     "coveralls": "npm i coveralls && istanbul cover _mocha -- -R dot test/lib --report lcovonly && cat ./coverage/lcov.info | coveralls"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "clear-require"
+    ]
   }
 }

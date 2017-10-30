@@ -1,8 +1,9 @@
 var fs = require('fs');
 var path = require('path');
+
 var mockFs = require('mock-fs');
-var clearRequire = require('clear-require');
 var _ = require('lodash');
+
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
 
@@ -179,6 +180,5 @@ function setup(cacheStorage, makePlatform, settings) {
         'package.json': '{ "version": "' + settings.currentENBVersion + '" }'
     });
 
-    clearRequire('../../../package.json');
     makePlatform.init('/path/to/project', settings.currentMakePlatformMode);
 }

@@ -46,6 +46,7 @@
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.10.0",
+    "file-eval": "github:node-eval/file-eval#60cb8ef16df528a6472961e4f36400068b962f37",
     "glob": "7.1.1",
     "inherit": "2.2.6",
     "lodash": "4.17.4",
@@ -72,7 +73,6 @@
     "mocha": "^3.0.2",
     "mock-enb": "^0.3.2",
     "mock-fs": "^4.2.0",
-    "mock-require": "^2.0.0",
     "proxyquire": "^1.7.9",
     "sinon": "^2.1.0",
     "sinon-chai": "^2.9.0"

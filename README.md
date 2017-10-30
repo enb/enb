@@ -1,7 +1,26 @@
 ENB
 ===
 
-[![NPM version](http://img.shields.io/npm/v/enb.svg?style=flat)](http://www.npmjs.org/package/enb) [![Build Status](http://img.shields.io/travis/enb/enb/master.svg?style=flat&label=tests)](https://travis-ci.org/enb/enb) [![Build status](http://img.shields.io/appveyor/ci/blond/enb.svg?style=flat&label=windows)](https://ci.appveyor.com/project/blond/enb) [![Coverage Status](https://img.shields.io/coveralls/enb/enb.svg?style=flat)](https://coveralls.io/r/enb/enb?branch=master) [![Dependency Status](http://img.shields.io/david/enb/enb.svg?style=flat)](https://david-dm.org/enb/enb)
+[![NPM Status][npm-img]][npm]
+[![Travis Status][test-img]][travis]
+[![Windows Status][appveyor-img]][appveyor]
+[![Coverage Status][coveralls-img]][coveralls]
+[![Dependency Status][david-img]][david]
+
+[npm]:           http://www.npmjs.org/package/enb
+[npm-img]:       https://img.shields.io/npm/v/enb.svg
+
+[travis]:        https://travis-ci.org/enb/enb
+[test-img]:      https://img.shields.io/travis/enb/enb/master.svg?label=tests
+
+[appveyor]:      https://ci.appveyor.com/project/blond/enb
+[appveyor-img]:  http://img.shields.io/appveyor/ci/blond/enb/master.svg?label=windows
+
+[coveralls]:     https://coveralls.io/r/enb/enb?branch=master
+[coveralls-img]: https://img.shields.io/coveralls/enb/enb/master.svg
+
+[david]:         https://david-dm.org/enb/enb
+[david-img]:     https://img.shields.io/david/enb/enb/master.svg
 
 Сборщик проектов. С помощью ENB можно собрать любой проект, который строится на модели node / target.
 

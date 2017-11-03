@@ -60,7 +60,7 @@ describe('deprecate', function () {
                 deprecate({ module: 'deprecated_module' });
 
                 Logger.prototype.logWarningAction
-                    .should.be.calledWithMatch(sinon.match.any, /([/.]|([A-Z]:))\S+\(\d+.\d+\)/, sinon.match.any);
+                    .should.be.calledWithMatch(sinon.match.any, /([/.]|([A-Z]:))\S+:\d+.:\d+/, sinon.match.any);
             });
 
             it('should print deprecated module name', function () {

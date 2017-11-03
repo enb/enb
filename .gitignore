@@ -2,6 +2,7 @@ coverage
 node_modules
 docs
 .idea
+.nyc_output
 test/fixtures/sample-project/page/*
 !test/fixtures/sample-project/page/page.bemjson.js
 !test/fixtures/sample-project/page/blocks/page/*

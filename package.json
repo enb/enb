@@ -66,13 +66,14 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.0",
     "deasync": "^0.1.7",
     "eslint": "^4.10.0",
     "eslint-config-pedant": "^1.0.0",
-    "istanbul": "^0.4.3",
     "mocha": "^4.0.1",
     "mock-enb": "^0.3.2",
     "mock-fs": "^4.2.0",
+    "nyc": "^11.3.0",
     "proxyquire": "^1.7.9",
     "sinon": "^4.0.2",
     "sinon-chai": "^2.9.0"
@@ -87,8 +88,8 @@
     "unit-test": "mocha test/lib",
     "tech-test": "mocha test/techs",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
-    "coverage": "istanbul cover _mocha -- -R dot test/lib",
-    "coveralls": "npm i coveralls && istanbul cover _mocha -- -R dot test/lib --report lcovonly && cat ./coverage/lcov.info | coveralls"
+    "coverage": "nyc npm run unit-test",
+    "coveralls": "npm run coverage && nyc report --reporter=text-lcov | coveralls"
   },
   "greenkeeper": {
     "ignore": [

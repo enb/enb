@@ -14,4 +14,5 @@ matrix:
       env: COVERALLS=1
 
 after_success:
+  - if [ "x$COVERALLS" = "x1" ]; then npm run coverage; fi
   - if [ "x$COVERALLS" = "x1" ]; then npm run coveralls; fi

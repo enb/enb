@@ -89,7 +89,7 @@
     "tech-test": "mocha test/techs",
     "build-sample-proj": "node ./bin/enb make -n --graph --dir test/fixtures/sample-project",
     "coverage": "nyc npm run unit-test",
-    "coveralls": "npm run coverage && nyc report --reporter=text-lcov | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "greenkeeper": {
     "ignore": [

@@ -185,7 +185,7 @@ describe('build-flow', function () {
             var Tech = flow
                 .name('name')
                 .target('target', target)
-                .saver(function (target, str) {
+                .saver(function (targetPath, str) {
                     return fs.writeFileSync(filename, str);
                 })
                 .builder(function () {
@@ -569,8 +569,8 @@ describe('build-flow', function () {
             var actual;
             var SafeTech = Tech.buildFlow()
                 .saver(function () {})
-                .builder(function (files) {
-                    actual = files;
+                .builder(function (sourceFiles) {
+                    actual = sourceFiles;
                 })
                 .createTech();
 
@@ -1301,10 +1301,10 @@ describe('build-flow', function () {
         });
 
         describe('super', function () {
-            var BaseTech, Tech, bundle;
+            var MyBaseTech, Tech, bundle;
             beforeEach(function () {
                 bundle = new MockNode('bundle');
-                BaseTech = flow
+                MyBaseTech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .createTech();
@@ -1312,7 +1312,7 @@ describe('build-flow', function () {
 
             describe('builder', function () {
                 beforeEach(function () {
-                    Tech = BaseTech.buildFlow()
+                    Tech = MyBaseTech.buildFlow()
                         .builder(function () { return '42'; })
                         .createTech();
                 });
@@ -1353,7 +1353,7 @@ describe('build-flow', function () {
                     return this.hello();
                 }
                 beforeEach(function () {
-                    Tech = BaseTech.buildFlow()
+                    Tech = MyBaseTech.buildFlow()
                         .builder(function () { return 'Definitely not forty two.'; })
                         .methods({
                             hello: function () { return 42; }
@@ -1406,7 +1406,7 @@ describe('build-flow', function () {
                     return this.__self.hello();
                 }
                 beforeEach(function () {
-                    Tech = BaseTech.buildFlow()
+                    Tech = MyBaseTech.buildFlow()
                         .builder(function () { return 'Definitely not forty two.'; })
                         .staticMethods({
                             hello: function () { return 42; }
@@ -1585,7 +1585,6 @@ describe('build-flow', function () {
         var bundle;
         var helper;
         var target;
-        var targetFilename;
         var blocksDirname;
         var blockFilename;
         var blockDirname;
@@ -1615,7 +1614,6 @@ describe('build-flow', function () {
 
             bundle = new MockNode('bundle');
             fileList = new FileList();
-            targetFilename = bundle.resolvePath(target);
             helper = {
                 change: function (target) {
                     var filename = _getFilename(target);

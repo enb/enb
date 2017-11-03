@@ -14,7 +14,7 @@ describe('techs/write-file', function () {
     beforeEach(function () {
         mockFs({
             bundle: mockFs.directory({
-                mode: 0755
+                mode: 0755 // eslint-disable-line no-octal
             })
         });
 

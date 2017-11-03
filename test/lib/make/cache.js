@@ -149,6 +149,9 @@ describe('make/cache', function () {
  * Setup below configures cacheStorage in a way that makePlatform will not call cacheStorage.drop().
  * In each test checking cacheStorage.drop() is being called one of this conditions is being switched and
  * make platform behavior checked.
+ * @param {Object} cacheStorage
+ * @param {Object} makePlatform
+ * @param {Object} settings
  */
 function setup(cacheStorage, makePlatform, settings) {
     settings = settings || {};

@@ -1,10 +1,11 @@
 version: "{build}"
 
+branches:
+  only:
+    - master
+
 environment:
   nodejs_version: "6"
-
-matrix:
-  fast_finish: true
 
 install:
   - ps: Install-Product node $env:nodejs_version

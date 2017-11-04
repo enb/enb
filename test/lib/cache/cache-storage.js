@@ -1,9 +1,11 @@
 'use strict'
 
-const vow = require('vow');
 const fs = require('fs');
 const path = require('path');
+
+const vow = require('vow');
 const mockFs = require('mock-fs');
+
 const CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('cache/cache-storage', () => {

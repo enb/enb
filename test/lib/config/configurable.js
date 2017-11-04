@@ -1,6 +1,7 @@
 'use strict'
 
 const vow = require('vow');
+
 const Configurable = require('../../../lib/config/configurable');
 
 describe('config/configurable', () => {

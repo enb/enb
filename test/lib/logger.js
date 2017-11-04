@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path');
+
 const Logger = require('../../lib/logger');
 const colors = require('../../lib/ui/colorize');
 

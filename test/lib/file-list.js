@@ -1,7 +1,9 @@
 'use strict'
 
 const path = require('path');
+
 const mockFs = require('mock-fs');
+
 const FileList = require('../../lib/file-list');
 
 require('chai')

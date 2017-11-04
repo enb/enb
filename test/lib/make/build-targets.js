@@ -2,9 +2,11 @@
 
 const fs = require('fs');
 const path = require('path');
+
 const vow = require('vow');
 const vowFs = require('vow-fs');
 const mockFs = require('mock-fs');
+
 const MakePlatform = require('../../../lib/make');
 const Node = require('../../../lib/node/node');
 const ProjectConfig = require('../../../lib/config/project-config');

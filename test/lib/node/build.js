@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path');
+
 const vow = require('vow');
 const nodeFactory = require('../../../lib/node');
 const MakePlatform = require('../../../lib/make');

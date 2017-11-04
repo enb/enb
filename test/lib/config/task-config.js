@@ -3,10 +3,12 @@
 const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
+const EOL = require('os').EOL;
+
 const vow = require('vow');
+
 const TaskConfig = require('../../../lib/config/task-config');
 const MakePlatform = require('../../../lib/make');
-const EOL = require('os').EOL;
 
 describe('config/task-config', () => {
     const sandbox = sinon.sandbox.create();

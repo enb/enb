@@ -2,6 +2,7 @@
 
 const path = require('path');
 const vm = require('vm');
+
 const Logger = require('../../../lib/logger');
 
 describe('deprecate', () => {

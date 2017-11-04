@@ -1,7 +1,9 @@
 'use strict'
 
 const path = require('path');
+
 const mockFs = require('mock-fs');
+
 const ProjectConfig = require('../../../lib/config/project-config');
 const NodeConfig = require('../../../lib/config/node-config');
 const NodeMaskConfig = require('../../../lib/config/node-mask-config');

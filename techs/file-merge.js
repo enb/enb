@@ -23,10 +23,10 @@
  * ```
  */
 const vow = require('vow');
+const File = require('enb-source-map/lib/file');
 
 const enb = require('../lib/api');
 const vfs = enb.asyncFs;
-const File = require('enb-source-map/lib/file');
 
 module.exports = enb.buildFlow.create()
     .name('file-merge')

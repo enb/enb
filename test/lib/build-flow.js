@@ -2,20 +2,22 @@
 
 const path = require('path');
 const fs = require('fs');
+const EOL = require('os').EOL;
+
 const inherit = require('inherit');
 const mockFs = require('mock-fs');
 const deasync = require('deasync');
 const proxyquire = require('proxyquire').noCallThru();
 const loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync;
-const framework = require('../../lib/build-flow');
-const BaseTech = require('../../lib/tech/base-tech');
-const FileList = require('../../lib/file-list');
 const MockNode = proxyquire('mock-enb/lib/mock-node', {
     enb: require('../../lib/api'),
     'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
     'enb/lib/cache/cache': require('../../lib/cache/cache')
 });
-const EOL = require('os').EOL;
+
+const framework = require('../../lib/build-flow');
+const BaseTech = require('../../lib/tech/base-tech');
+const FileList = require('../../lib/file-list');
 
 describe('build-flow', () => {
     let flow;

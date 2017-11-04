@@ -1,6 +1,7 @@
 'use strict'
 
 const mockFs = require('mock-fs');
+
 const Cache = require('../../../lib/cache/cache');
 const CacheStorage = require('../../../lib/cache/cache-storage');
 

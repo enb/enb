@@ -1,10 +1,12 @@
 'use strict'
 
 const fs = require('fs');
+const path = require('path');
+
 const vow = require('vow');
 const vowFs = require('vow-fs');
 const mockFs = require('mock-fs');
-const path = require('path');
+
 const MakePlatform = require('../../../lib/make');
 const NodeConfig = require('../../../lib/config/node-config');
 const Node = require('../../../lib/node/node');

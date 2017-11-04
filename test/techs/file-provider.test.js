@@ -7,6 +7,7 @@ const MockNode = proxyquire('mock-enb/lib/mock-node', {
     'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
     'enb/lib/cache/cache': require('../../lib/cache/cache')
 });
+
 const FileProviderTech = require('../../techs/file-provider');
 
 describe('techs/file-provider', () => {

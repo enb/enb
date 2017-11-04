@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path');
+
 const NodeConfig = require('../../../lib/config/node-config');
 const ModeConfig = require('../../../lib/config/mode-config');
 const BaseTech = require('../../../lib/tech/base-tech');

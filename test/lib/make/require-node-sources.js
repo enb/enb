@@ -1,23 +1,27 @@
-var fs = require('fs');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var MakePlatform = require('../../../lib/make');
-var Node = require('../../../lib/node/node');
-var NodeConfig = require('../../../lib/config/node-config');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var Logger = require('../../../lib/logger');
+'use strict'
 
-describe('make/requireNodeSources', function () {
-    var makePlatform;
-    var sandbox;
+const fs = require('fs');
 
-    before(function () {
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+
+const MakePlatform = require('../../../lib/make');
+const Node = require('../../../lib/node/node');
+const NodeConfig = require('../../../lib/config/node-config');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const Logger = require('../../../lib/logger');
+
+describe('make/requireNodeSources', () => {
+    let makePlatform;
+    let sandbox;
+
+    before(() => {
         sandbox = sinon.sandbox.create();
     });
 
-    beforeEach(function (done) {
+    beforeEach(done => {
         mockFs({});
 
         sandbox.stub(ProjectConfig.prototype);
@@ -27,48 +31,48 @@ describe('make/requireNodeSources', function () {
         sandbox.stub(vowFs, 'makeDir').returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
+        makePlatform.init('/path/to/project', 'mode', () => {}).then(done);
         makePlatform.setLogger(sinon.createStubInstance(Logger));
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
         sandbox.restore();
     });
 
-    it('should return promise', function () {
-        var result = makePlatform.requireNodeSources('path/to/node');
+    it('should return promise', () => {
+        const result = makePlatform.requireNodeSources('path/to/node');
 
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
-    it('should init required node', function () {
-        var initNode = sinon.spy(makePlatform, 'initNode');
+    it('should init required node', () => {
+        const initNode = sinon.spy(makePlatform, 'initNode');
 
         makePlatform.requireNodeSources('path/to/node');
 
         expect(initNode).to.be.calledWith('path/to/node');
     });
 
-    it('should require sources from initialized node', function () {
+    it('should require sources from initialized node', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.requireNodeSources('path/to/node').then(function () {
+        return makePlatform.requireNodeSources('path/to/node').then(() => {
             expect(Node.prototype.requireSources).to.be.called;
         });
     });
 
-    it('should pass required targets to node when require sources from it', function () {
+    it('should pass required targets to node when require sources from it', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(function () {
+        return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(() => {
             expect(Node.prototype.requireSources).to.be.calledWith(['?.js']);
         });
     });
 });
 
 function setup (settings) {
-    var defaults = { nodePath: 'default/path' };
+    const defaults = { nodePath: 'default/path' };
 
     settings = Object.assign({}, defaults, settings);
 

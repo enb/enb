@@ -1,38 +1,42 @@
-var proxyquire = require('proxyquire').noCallThru();
-var fs = require('fs');
-var mockFs = require('mock-fs');
-var MockNode = proxyquire('mock-enb/lib/mock-node', {
+'use strict';
+
+const fs = require('fs');
+
+const proxyquire = require('proxyquire').noCallThru();
+const mockFs = require('mock-fs');
+const MockNode = proxyquire('mock-enb/lib/mock-node', {
     enb: require('../../lib/api'),
     'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
     'enb/lib/cache/cache': require('../../lib/cache/cache')
 });
-var WriteFileTech = require('../../techs/write-file');
 
-describe('techs/write-file', function () {
-    var bundle;
+const WriteFileTech = require('../../techs/write-file');
 
-    beforeEach(function () {
+describe('techs/write-file', () => {
+    let bundle;
+
+    beforeEach(() => {
         mockFs({
             bundle: mockFs.directory({
-                mode: 0755 // eslint-disable-line no-octal
+                mode: 0o755
             })
         });
 
         bundle = new MockNode('bundle');
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
     });
 
-    it('should write target file to file system', function () {
+    it('should write target file to file system', () => {
         return bundle.runTech(WriteFileTech, {
-                target: '?.txt',
-                content: 'I\'m here'
-            })
-            .should.be.fulfilled
-            .then(function () {
-                fs.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
-            });
+            target: '?.txt',
+            content: 'I\'m here'
+        })
+        .should.be.fulfilled
+        .then(() => {
+            fs.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
+        });
     });
 });

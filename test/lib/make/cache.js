@@ -1,17 +1,19 @@
-var fs = require('fs');
-var path = require('path');
+'use strict'
 
-var mockFs = require('mock-fs');
+const fs = require('fs');
+const path = require('path');
 
-var MakePlatform = require('../../../lib/make');
-var CacheStorage = require('../../../lib/cache/cache-storage');
+const mockFs = require('mock-fs');
 
-describe('make/cache', function () {
-    var sandbox = sinon.sandbox.create();
-    var makePlatform;
-    var cacheStorage;
+const MakePlatform = require('../../../lib/make');
+const CacheStorage = require('../../../lib/cache/cache-storage');
 
-    beforeEach(function () {
+describe('make/cache', () => {
+    const sandbox = sinon.sandbox.create();
+    let makePlatform;
+    let cacheStorage;
+
+    beforeEach(() => {
         sandbox.stub(fs, 'existsSync');
         fs.existsSync
             .withArgs(path.normalize('/path/to/project/.enb'))
@@ -26,19 +28,19 @@ describe('make/cache', function () {
         makePlatform.setCacheStorage(cacheStorage);
     });
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
         mockFs.restore();
     });
 
-    describe('loadCache', function () {
-        it('should load data from cache storage', function () {
+    describe('loadCache', () => {
+        it('should load data from cache storage', () => {
             makePlatform.loadCache();
 
             expect(cacheStorage.load).to.be.called;
         });
 
-        it('should not drop cache if current cache attrs same with saved cache attrs', function () {
+        it('should not drop cache if current cache attrs same with saved cache attrs', () => {
             setup(cacheStorage, makePlatform);
 
             makePlatform.loadCache();
@@ -46,7 +48,7 @@ describe('make/cache', function () {
             expect(cacheStorage.drop).to.be.not.called;
         });
 
-        it('should drop cache if cached mode is not equal current mode', function () {
+        it('should drop cache if cached mode is not equal current mode', () => {
             setup(cacheStorage, makePlatform, {
                 currentMakePlatformMode: 'current_mode',
                 cachedMakePlatformMode: 'cached_mode'
@@ -57,7 +59,7 @@ describe('make/cache', function () {
             expect(cacheStorage.drop).to.be.called;
         });
 
-        it('should drop cache if cached enb version differs from current enb version', function () {
+        it('should drop cache if cached enb version differs from current enb version', () => {
             setup(cacheStorage, makePlatform, {
                 currentENBVersion: 'current_ver',
                 cachedENBVersion: 'saved_ver'
@@ -68,7 +70,7 @@ describe('make/cache', function () {
             expect(cacheStorage.drop).to.be.called;
         });
 
-        it('should drop cache if any makefile has mtime different from cached mtime for this file', function () {
+        it('should drop cache if any makefile has mtime different from cached mtime for this file', () => {
             setup(cacheStorage, makePlatform, {
                 currentMakeFileMtime: new Date(1),
                 cachedMakeFileMtime: new Date(2)
@@ -80,8 +82,8 @@ describe('make/cache', function () {
         });
     });
 
-    describe('saveCache', function () {
-        it('should save mode', function () {
+    describe('saveCache', () => {
+        it('should save mode', () => {
             setup(cacheStorage, makePlatform, {
                 currentMakePlatformMode: 'current_mode'
             });
@@ -91,7 +93,7 @@ describe('make/cache', function () {
             expect(cacheStorage.set).to.be.calledWith(':make', 'mode', 'current_mode');
         });
 
-        it('should save enb version', function () {
+        it('should save enb version', () => {
             setup(cacheStorage, makePlatform, {
                 currentENBVersion: 'test_ver'
             });
@@ -101,8 +103,8 @@ describe('make/cache', function () {
             expect(cacheStorage.set).to.be.calledWith(':make', 'version', 'test_ver');
         });
 
-        it('should save makefile mtimes', function () {
-            var expectedMakefiles = {};
+        it('should save makefile mtimes', () => {
+            const expectedMakefiles = {};
             expectedMakefiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
 
             setup(cacheStorage, makePlatform, {
@@ -115,7 +117,7 @@ describe('make/cache', function () {
                 .to.be.calledWith(':make', 'makefiles', expectedMakefiles);
         });
 
-        it('should write cached data to disk', function () {
+        it('should write cached data to disk', () => {
             makePlatform.saveCache();
 
             expect(cacheStorage.save).to.be.called;
@@ -123,16 +125,16 @@ describe('make/cache', function () {
     });
 
     // skipped tests for cache attrs saving becausame with tests in saveCached with saveCache
-    describe('saveCacheAsync', function () {
-        it('should write cached data to disk', function () {
+    describe('saveCacheAsync', () => {
+        it('should write cached data to disk', () => {
             makePlatform.saveCacheAsync();
 
             expect(cacheStorage.saveAsync).to.be.called;
         });
     });
 
-    describe('dropCache', function () {
-        it('should drop cache', function () {
+    describe('dropCache', () => {
+        it('should drop cache', () => {
             makePlatform.dropCache();
 
             expect(cacheStorage.drop).to.be.called;
@@ -153,7 +155,7 @@ describe('make/cache', function () {
  * @param {Object} settings
  */
 function setup(cacheStorage, makePlatform, settings) {
-    var defaults = {
+    const defaults = {
         currentENBVersion: 'defaultENBVersion',
         cachedENBVersion: 'defaultENBVersion',
         currentMakePlatformMode: 'defaultMakePlatformMode',
@@ -164,7 +166,7 @@ function setup(cacheStorage, makePlatform, settings) {
 
     settings = Object.assign({}, defaults, settings);
 
-    var makeFiles = {};
+    const makeFiles = {};
     makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.cachedMakeFileMtime.valueOf();
 
     cacheStorage.get.withArgs(':make', 'version').returns(settings.cachedENBVersion);
@@ -179,7 +181,7 @@ function setup(cacheStorage, makePlatform, settings) {
                 })
             }
         },
-        'package.json': '{ "version": "' + settings.currentENBVersion + '" }'
+        'package.json': `{ "version": "${settings.currentENBVersion}" }`
     });
 
     makePlatform.init('/path/to/project', settings.currentMakePlatformMode);

@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * file-copy
  * =========
@@ -20,16 +22,17 @@
  * } ]);
  * ```
  */
-var inherit = require('inherit'),
-    enb = require('../lib/api'),
-    vfs = enb.asyncFs;
+const inherit = require('inherit');
+
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'file-copy';
     },
 
-    configure: function () {
+    configure() {
         this._source = this.getOption('sourceTarget');
         if (!this._source) {
             this._source = this.getRequiredOption('source');
@@ -43,21 +46,19 @@ module.exports = inherit(enb.BaseTech, {
         }
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function () {
-        var _this = this;
-        var node = this.node;
-        var target = node.unmaskTargetName(this._target);
-        var cache = node.getNodeCache(target);
-        var targetPath = node.resolvePath(target);
-        var sourceNode = this._sourceNode;
-        var source;
-        var sourcePath;
-        var requirements = {};
-        var requireSources;
+    build() {
+        const _this = this;
+        const node = this.node;
+        const target = node.unmaskTargetName(this._target);
+        const cache = node.getNodeCache(target);
+        const targetPath = node.resolvePath(target);
+        const sourceNode = this._sourceNode
+        const requirements = {};
+        let source, sourcePath, requireSources;
 
         if (sourceNode) {
             source = node.unmaskNodeTargetName(sourceNode, this._source);
@@ -70,16 +71,16 @@ module.exports = inherit(enb.BaseTech, {
             requireSources = node.requireSources([source]);
         }
 
-        return requireSources.then(function () {
+        return requireSources.then(() => {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {
-                return vfs.read(sourcePath, 'utf8').then(function (data) {
-                    return vfs.write(targetPath, data, 'utf8').then(function () {
+                return vfs.read(sourcePath, 'utf8').then(data => {
+                    return vfs.write(targetPath, data, 'utf8').then(() => {
                         cache.cacheFileInfo('source-file', sourcePath);
                         cache.cacheFileInfo('target-file', targetPath);
                         _this.node.resolveTarget(target);
-                    });
+                    })
                 });
             } else {
                 _this.node.isValidTarget(target);

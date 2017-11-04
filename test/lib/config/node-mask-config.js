@@ -1,20 +1,22 @@
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
+'use strict'
 
-describe('config/node-mask-config', function () {
-    var nodeMaskConfig;
-    var mask = /\w*bundles/g;
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
 
-    beforeEach(function () {
+describe('config/node-mask-config', () => {
+    let nodeMaskConfig;
+    const mask = /\w*bundles/g;
+
+    beforeEach(() => {
         nodeMaskConfig = new NodeMaskConfig(mask);
     });
 
-    describe('constructor', function () {
-        it('should call parent constructor', function () {
+    describe('constructor', () => {
+        it('should call parent constructor', () => {
             expect(nodeMaskConfig._chains).to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
-        it('should set mask', function () {
+        it('should set mask', () => {
             expect(nodeMaskConfig.getMask()).to.be.equal(mask);
         });
     });

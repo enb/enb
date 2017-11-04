@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * write-file
  * =============
@@ -40,8 +42,9 @@
  * } ]);
  * ```
  */
-var enb = require('../lib/api'),
-    vfs = enb.asyncFs;
+const enb = require('../lib/api');
+
+const vfs = enb.asyncFs;
 
 module.exports = enb.buildFlow.create()
     .name('write-file')

@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * symlink
  * =======
@@ -19,36 +21,37 @@
  * } ]);
  * ```
  */
- var inherit = require('inherit'),
-     enb = require('../lib/api'),
-     vfs = enb.asyncFs;
+const inherit = require('inherit');
+
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'symlink';
     },
 
-    configure: function () {
+    configure() {
         this._symlinkTarget = this.getRequiredOption('symlinkTarget');
         this._fileTarget = this.getRequiredOption('fileTarget');
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._symlinkTarget)];
     },
 
-    build: function () {
-        var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
-        var symlinkTargetPath = this.node.resolvePath(symlinkTarget);
-        var fileTarget = this.node.unmaskTargetName(this._fileTarget);
-        var _this = this;
+    build() {
+        const symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
+        const symlinkTargetPath = this.node.resolvePath(symlinkTarget);
+        const fileTarget = this.node.unmaskTargetName(this._fileTarget);
+        const _this = this;
         function createSymlink() {
-            return vfs.symLink(fileTarget, symlinkTargetPath).then(function () {
+            return vfs.symLink(fileTarget, symlinkTargetPath).then(() => {
                 _this.node.resolveTarget(symlinkTarget);
             });
         }
-        return this.node.requireSources([fileTarget]).then(function () {
-            return vfs.exists(symlinkTargetPath).then(function (exists) {
+        return this.node.requireSources([fileTarget]).then(() => {
+            return vfs.exists(symlinkTargetPath).then(exists => {
                 if (exists) {
                     return vfs.remove(symlinkTargetPath).then(createSymlink);
                 } else {

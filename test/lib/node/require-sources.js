@@ -1,18 +1,22 @@
-var vow = require('vow');
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
-var Logger = require('../../../lib/logger');
+'use strict';
 
-describe('node/require sources', function () {
-    var nodePath = path.join('path', 'to', 'node');
-    var makePlatform;
-    var node;
+const vow = require('vow');
 
-    beforeEach(function () {
-        var projectDir = path.join('path', 'to', 'project');
+const path = require('path');
+
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
+const Logger = require('../../../lib/logger');
+
+describe('node/require sources', () => {
+    const nodePath = path.join('path', 'to', 'node');
+    let makePlatform;
+    let node;
+
+    beforeEach(() => {
+        const projectDir = path.join('path', 'to', 'project');
 
         makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
@@ -22,33 +26,33 @@ describe('node/require sources', function () {
         node.setLogger(sinon.createStubInstance(Logger));
     });
 
-    describe('requireNodeSources', function () {
-        var sourcesByNodes = {};
+    describe('requireNodeSources', () => {
+        const sourcesByNodes = {};
 
-        beforeEach(function () {
+        beforeEach(() => {
             sourcesByNodes[nodePath] = ['?.js'];
         });
 
-        it('should return promise', function () {
-            var result = node.requireNodeSources(sourcesByNodes);
+        it('should return promise', () => {
+            const result = node.requireNodeSources(sourcesByNodes);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
 
-        it('should require sources for node path passed in sourcesByNode', function () {
-            return node.requireNodeSources(sourcesByNodes).then(function () {
+        it('should require sources for node path passed in sourcesByNode', () => {
+            return node.requireNodeSources(sourcesByNodes).then(() => {
                 expect(makePlatform.requireNodeSources).to.be.calledWith(nodePath, sinon.match.any);
             });
         });
 
-        it('should require sources requested by node', function () {
-            return node.requireNodeSources(sourcesByNodes).then(function () {
+        it('should require sources requested by node', () => {
+            return node.requireNodeSources(sourcesByNodes).then(() => {
                 expect(makePlatform.requireNodeSources).to.be.calledWith(sinon.match.any, ['?.js']);
             });
         });
 
-        it('should pass to promise results produced by required node', function () {
-            return node.requireNodeSources(sourcesByNodes).then(function (results) {
+        it('should pass to promise results produced by required node', () => {
+            return node.requireNodeSources(sourcesByNodes).then(results => {
                 expect(results).to.have.property(nodePath);
                 expect(results[nodePath]).to.be.instanceOf(Array)
                     .and.to.have.length(1);
@@ -57,95 +61,93 @@ describe('node/require sources', function () {
         });
     });
 
-    describe('requireSources', function () {
-        var tech;
+    describe('requireSources', () => {
+        let tech;
 
-        beforeEach(function () {
+        beforeEach(() => {
             tech = new sinon.createStubInstance(BaseTech);
             tech.getTargets.returns(['node.js']);
             node.setTargetsToBuild(['node.js']);
             node.setTechs([tech]);
         });
 
-        it('should return promise', function () {
+        it('should return promise', () => {
             expect(node.requireSources(['?.js'])).to.be.instanceOf(vow.Promise);
         });
 
-        it('should register targets before start requiring sources', function () {
+        it('should register targets before start requiring sources', () => {
             node.resolveTarget('node.js');
 
-            return node.requireSources(['?.js']).then(function () {
+            return node.requireSources(['?.js']).then(() => {
                 expect(node.hasRegisteredTarget('node.js')).to.be.true;
             });
         });
 
-        it('should reject require sources if no one of registered techs can build required target', function () {
-            return expect(node.requireSources(['?.css']))
-                .to.be.rejectedWith('There is no tech for target ' + path.join(nodePath, 'node.css') + '.');
-        });
+        it('should reject require sources if no one of registered techs can build required target', () => expect(node.requireSources(['?.css']))
+            .to.be.rejectedWith(`There is no tech for target ${path.join(nodePath, 'node.css')}.`));
 
-        it('should start building required target if build was not already started', function () {
+        it('should start building required target if build was not already started', () => {
             node.resolveTarget('node.js');
 
-            return node.requireSources(['?.js']).then(function () {
+            return node.requireSources(['?.js']).then(() => {
                 expect(tech.build).to.be.called;
             });
         });
 
-        it('should not start building required target if build already started', function () {
+        it('should not start building required target if build already started', () => {
             node.resolveTarget('node.js');
 
-            return node.requireSources(['?.js']).then(function () {
+            return node.requireSources(['?.js']).then(() => {
                 tech.build.reset();
-                return node.requireSources(['?.js']).then(function () {
+                return node.requireSources(['?.js']).then(() => {
                     expect(tech.build).to.be.not.called;
                 });
             });
         });
 
-        it('should not start building required target if tech already started', function () {
+        it('should not start building required target if tech already started', () => {
             tech.__started = true;
             node.resolveTarget('node.js');
 
-            return node.requireSources(['?.js']).then(function () {
+            return node.requireSources(['?.js']).then(() => {
                 expect(tech.build).to.be.not.called;
             });
         });
 
-        it('should reject target if exception occured in tech', function () {
-            var rejectTarget = sinon.spy(node, 'rejectTarget');
-            var error = new Error('exception');
+        it('should reject target if exception occured in tech', () => {
+            const rejectTarget = sinon.spy(node, 'rejectTarget');
+            const error = new Error('exception');
 
             tech.build.throws(error);
 
-            return node.requireSources(['?.js']).fail(function () {
+            return node.requireSources(['?.js']).fail(() => {
                 expect(rejectTarget).to.be.calledWith('node.js', error);
             });
         });
 
-        it('should pass exception error to fail handler of source require promise', function () {
+        it('should pass exception error to fail handler of source require promise', () => {
             tech.build.throws(new Error('exception_tech_error'));
 
-            return node.requireSources(['?.js']).fail(function (error) {
+            return node.requireSources(['?.js']).fail(error => {
                 expect(error.message).to.be.equal('exception_tech_error');
             });
         });
 
-        it('should reject target if tech build finished unsuccessfully', function () {
-            var rejectTarget = sinon.spy(node, 'rejectTarget');
-            var error = new Error('reject');
+        it('should reject target if tech build finished unsuccessfully', () => {
+            const rejectTarget = sinon.spy(node, 'rejectTarget');
+            const error = new Error('reject');
 
             tech.build.returns(vow.reject(error));
 
-            return node.requireSources(['?.js']).fail(function () {
+            return node.requireSources(['?.js']).fail(() => {
                 expect(rejectTarget).to.be.calledWith('node.js', error);
             });
         });
 
-        it('should pass build fail error to fail handler of source require promise', function () {
+        it('should pass build fail error to fail handler of source require promise', () => {
             tech.build.returns(vow.reject(new Error('reject')));
 
-            return node.requireSources(['?.js']).fail(function (error) {
+            return node.requireSources(['?.js']).fail(error => {
                 expect(error.message).to.be.equal('reject');
             });
         });

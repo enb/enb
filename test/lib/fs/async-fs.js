@@ -1,43 +1,45 @@
-var path = require('path');
+'use strict'
 
-var vowFs = require('vow-fs');
-var fileEval = require('file-eval');
+const path = require('path');
 
-describe('fs/async-fs', function () {
-    var previousLimit;
-    var asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
-    var sandbox = sinon.sandbox.create();
+const vowFs = require('vow-fs');
+const fileEval = require('file-eval');
 
-    before(function () {
+describe('fs/async-fs', () => {
+    let previousLimit;
+    const asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
+    const sandbox = sinon.sandbox.create();
+
+    before(() => {
         previousLimit = process.env.ENB_FILE_LIMIT;
     });
 
-    beforeEach(function () {
+    beforeEach(() => {
         sandbox.stub(vowFs);
     });
 
-    afterEach(function () {
+    afterEach(() => {
         delete process.env.ENB_FILE_LIMIT;
         sandbox.restore();
     });
 
-    after(function () {
+    after(() => {
         previousLimit && (process.env.ENB_FILE_LIMIT = previousLimit);
     });
 
-    it('should return vowFs as it\'s result', function () {
-        var asyncFs = fileEval.sync(asyncFsPath);
+    it('should return vowFs as it\'s result', () => {
+        const asyncFs = fileEval.sync(asyncFsPath);
 
         expect(asyncFs).to.be.equal(vowFs);
     });
 
-    it('should not set file limit if it was not defined in process.env', function () {
+    it('should not set file limit if it was not defined in process.env', () => {
         fileEval.sync(asyncFsPath);
 
         sinon.assert.notCalled(vowFs.options);
     });
 
-    it('should set file limit to vow-fs if it was defined in process.env', function () {
+    it('should set file limit to vow-fs if it was defined in process.env', () => {
         process.env.ENB_FILE_LIMIT = 1;
 
         fileEval.sync(asyncFsPath);

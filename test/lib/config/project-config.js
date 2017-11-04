@@ -1,78 +1,82 @@
-var path = require('path');
-var mockFs = require('mock-fs');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var TaskConfig = require('../../../lib/config/task-config');
-var ModeConfig = require('../../../lib/config/mode-config');
-var ModuleConfig = require('../../../lib/config/module-config');
+'use strict'
 
-describe('config/project-config', function () {
-    var projectRoot = path.resolve(__dirname);
-    var projectConfig;
+const path = require('path');
 
-    beforeEach(function () {
+const mockFs = require('mock-fs');
+
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const TaskConfig = require('../../../lib/config/task-config');
+const ModeConfig = require('../../../lib/config/mode-config');
+const ModuleConfig = require('../../../lib/config/module-config');
+
+describe('config/project-config', () => {
+    const projectRoot = path.resolve(__dirname);
+    let projectConfig;
+
+    beforeEach(() => {
         projectConfig =  new ProjectConfig(projectRoot);
     });
 
-    describe('constructor', function () {
-        it('should set root path', function () {
+    describe('constructor', () => {
+        it('should set root path', () => {
             expect(projectConfig.getRootPath()).to.be.equal(projectRoot);
         });
 
-        it('should create container for node configs', function () {
+        it('should create container for node configs', () => {
             expect(projectConfig.getNodeConfigs()).to.exist
                 .and.to.be.instanceOf(Object)
                 .and.to.be.empty;
         });
 
-        it('should create container for tasks', function () {
+        it('should create container for tasks', () => {
             expect(projectConfig.getTaskConfigs()).to.exist
                 .and.to.be.instanceOf(Object)
                 .and.to.be.empty;
         });
 
-        it('shoud create container for node mask configs', function () {
+        it('shoud create container for node mask configs', () => {
             expect(projectConfig.getNodeMaskConfigs()).to.exist
                 .and.to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
-        it('should define property for languages container', function () {
+        it('should define property for languages container', () => {
             expect(projectConfig).to.have.property('_languages');
         });
 
-        it('should not create container for languages', function () {
+        it('should not create container for languages', () => {
             expect(projectConfig.getLanguages()).to.be.null;
         });
 
-        it('should create container for level naming schemes', function () {
+        it('should create container for level naming schemes', () => {
             expect(projectConfig.getLevelNamingSchemes()).to.exist
                 .and.to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
 
-        it('should create container for registering modules', function () {
+        it('should create container for registering modules', () => {
             expect(projectConfig._modules).to.exist
                 .and.to.be.instanceOf(Object)
                 .and.to.be.empty;
         });
 
-        it('should create container for mode configs', function () {
+        it('should create container for mode configs', () => {
             expect(projectConfig.getModeConfigs()).to.exist
                 .and.to.be.instanceOf(Object)
                 .and.to.be.empty;
         });
 
-        it('should define container for environment variables', function () {
+        it('should define container for environment variables', () => {
             expect(projectConfig.getEnvValues()).to.exist
                 .and.to.be.instanceOf(Object);
         });
 
-        it('should copy process environment variables to self environment variables container', function () {
-            var expectedEnvVariables = {};
+        it('should copy process environment variables to self environment variables container', () => {
+            const expectedEnvVariables = {};
 
-            Object.keys(process.env).forEach(function (key) {
+            Object.keys(process.env).forEach(key => {
                 expectedEnvVariables[key] = process.env[key];
             });
 
@@ -80,90 +84,90 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('getLanguages', function () {
-        it('should return previously set languages', function () {
-            var languages = ['en', 'ru'];
+    describe('getLanguages', () => {
+        it('should return previously set languages', () => {
+            const languages = ['en', 'ru'];
 
             projectConfig.setLanguages(languages);
 
             expect(projectConfig.getLanguages()).to.be.deep.equal(languages);
         });
 
-        it('should return null if no languages were set', function () {
+        it('should return null if no languages were set', () => {
             expect(projectConfig.getLanguages()).to.be.null;
         });
     });
 
-    describe('setLanguages', function () {
-        it('should set languages', function () {
-            var languages = ['en', 'ru'];
+    describe('setLanguages', () => {
+        it('should set languages', () => {
+            const languages = ['en', 'ru'];
 
             projectConfig.setLanguages(languages);
 
             expect(projectConfig.getLanguages()).to.be.deep.equal(languages);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.setLanguages();
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.setLanguages();
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('getRootPath', function () {
-        it('should return root path', function () {
+    describe('getRootPath', () => {
+        it('should return root path', () => {
             expect(projectConfig.getRootPath()).to.be.equal(projectRoot);
         });
     });
 
-    describe('resolvePath', function () {
-        it('should return root path if no path to resolve provided', function () {
+    describe('resolvePath', () => {
+        it('should return root path if no path to resolve provided', () => {
             expect(projectConfig.resolvePath()).to.be.equal(projectRoot);
         });
 
-        it('should resolve source path passed as string', function () {
-            var sourcePath = 'path/to/level';
-            var expectedResolvedPath = path.resolve(projectRoot, sourcePath);
-            var result = projectConfig.resolvePath(sourcePath);
+        it('should resolve source path passed as string', () => {
+            const sourcePath = 'path/to/level';
+            const expectedResolvedPath = path.resolve(projectRoot, sourcePath);
+            const result = projectConfig.resolvePath(sourcePath);
 
             expect(result).to.be.equal(expectedResolvedPath);
         });
 
-        it('should resolve path passed as object with property path', function () {
-            var sourcePath = { path: 'path/to/level' };
-            var expectedResolvedPath = { path: path.resolve(projectRoot, sourcePath.path) };
-            var result = projectConfig.resolvePath(sourcePath);
+        it('should resolve path passed as object with property path', () => {
+            const sourcePath = { path: 'path/to/level' };
+            const expectedResolvedPath = { path: path.resolve(projectRoot, sourcePath.path) };
+            const result = projectConfig.resolvePath(sourcePath);
 
             expect(result).to.be.deep.equal(expectedResolvedPath);
         });
     });
 
-    describe('node', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+    describe('node', () => {
+        const nodePath = 'path/to/node';
+        const configurator = () => {};
 
-        it('should add node config to node configs', function () {
+        it('should add node config to node configs', () => {
             projectConfig.node(nodePath, configurator);
 
             expect(projectConfig.getNodeConfig(nodePath)).to.exist;
         });
 
-        it('should add node config to node configs as NodeConfig instance', function () {
+        it('should add node config to node configs as NodeConfig instance', () => {
             projectConfig.node(nodePath, configurator);
 
             expect(projectConfig.getNodeConfig(nodePath)).to.be.instanceOf(NodeConfig);
         });
 
-        it('should add configurator to node config', function () {
+        it('should add configurator to node config', () => {
             projectConfig.node(nodePath, configurator);
 
             expect(projectConfig.getNodeConfig(nodePath)._chains).to.contain(configurator);
         });
 
-        it('should not create new node config if adding multiple configurators for same node path', function () {
-            var anotherConfigurator = function () {};
-            var firstNodeConfig;
-            var secondNodeConfig;
+        it('should not create new node config if adding multiple configurators for same node path', () => {
+            const anotherConfigurator = () => {};
+            let firstNodeConfig;
+            let secondNodeConfig;
 
             projectConfig.node(nodePath, configurator);
             firstNodeConfig = projectConfig.getNodeConfig(nodePath);
@@ -173,42 +177,42 @@ describe('config/project-config', function () {
             expect(firstNodeConfig).to.be.equal(secondNodeConfig);
         });
 
-        it('should remove leading path separator from node path', function () {
-            var modifiedNodePath = path.sep + nodePath;
+        it('should remove leading path separator from node path', () => {
+            const modifiedNodePath = path.sep + nodePath;
 
             projectConfig.node(modifiedNodePath, configurator);
 
             expect(projectConfig.getNodeConfigs()).to.have.property(nodePath);
         });
 
-        it('should remove trailing path separator from node path', function () {
-            var modifiedNodePath = nodePath + path.sep;
+        it('should remove trailing path separator from node path', () => {
+            const modifiedNodePath = nodePath + path.sep;
 
             projectConfig.node(modifiedNodePath, configurator);
 
             expect(projectConfig.getNodeConfigs()).to.have.property(nodePath);
         });
 
-        it('should remove leading and trailing path separators from node path', function () {
-            var modifiedNodePath = path.sep + nodePath + path.sep;
+        it('should remove leading and trailing path separators from node path', () => {
+            const modifiedNodePath = path.sep + nodePath + path.sep;
 
             projectConfig.node(modifiedNodePath, configurator);
 
             expect(projectConfig.getNodeConfigs()).to.have.property(nodePath);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.node(nodePath, configurator);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.node(nodePath, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('nodes', function () {
-        var configurator = function () {};
+    describe('nodes', () => {
+        const configurator = () => {};
 
-        beforeEach(function () {
-            var config = {};
+        beforeEach(() => {
+            const config = {};
 
             config[projectRoot] = {
                 blocks: {},
@@ -218,12 +222,12 @@ describe('config/project-config', function () {
             mockFs(config);
         });
 
-        afterEach(function () {
+        afterEach(() => {
             mockFs.restore();
         });
 
-        it('should add configurator to node configs', function () {
-            var nodePath = 'path/to/node';
+        it('should add configurator to node configs', () => {
+            const nodePath = 'path/to/node';
 
             projectConfig.nodes(nodePath, configurator);
 
@@ -231,9 +235,9 @@ describe('config/project-config', function () {
                 .and.to.be.instanceOf(NodeConfig);
         });
 
-        it('should add node configs for multiple paths passed as relative paths', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
+        it('should add node configs for multiple paths passed as relative paths', () => {
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
 
             projectConfig.nodes(nodePath, anotherNodePath, configurator);
 
@@ -243,10 +247,10 @@ describe('config/project-config', function () {
                 .and.to.be.instanceOf(NodeConfig);
         });
 
-        it('should add node configs for multiple paths passed as array of relative paths', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
-            var paths = [nodePath, anotherNodePath];
+        it('should add node configs for multiple paths passed as array of relative paths', () => {
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
+            const paths = [nodePath, anotherNodePath];
 
             projectConfig.nodes(paths, configurator);
 
@@ -257,10 +261,10 @@ describe('config/project-config', function () {
         });
 
         it('should add node configs for multiple paths passed as shell mask, adding node configs as relative paths ' +
-            'after resolving shell mask', function () {
-            var nodeMask = '/*';
-            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
-            var pageNodePath = 'page';
+            'after resolving shell mask', () => {
+            const nodeMask = '/*';
+            const blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
+            const pageNodePath = 'page';
 
             projectConfig.nodes(nodeMask, configurator);
 
@@ -271,52 +275,52 @@ describe('config/project-config', function () {
         });
 
         it('should add node configs for multiple paths passed in mixed manner: as relative path, array of relative ' +
-            'paths and shell mask', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
-            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
-            var pageNodePath = 'page';
-            var nodeMask = '/*';
-            var pathsArray = [anotherNodePath];
-            var expectedPath = [nodePath, anotherNodePath, blocksNodePath, pageNodePath];
+            'paths and shell mask', () => {
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
+            const blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
+            const pageNodePath = 'page';
+            const nodeMask = '/*';
+            const pathsArray = [anotherNodePath];
+            const expectedPath = [nodePath, anotherNodePath, blocksNodePath, pageNodePath];
 
             projectConfig.nodes(nodePath, pathsArray, nodeMask, configurator);
 
-            expectedPath.forEach(function (expectedPath) {
+            expectedPath.forEach(expectedPath => {
                 expect(projectConfig.getNodeConfig(expectedPath)).to.exist
                     .and.to.be.instanceOf(NodeConfig);
             });
         });
 
-        it('should support method chaining pattern', function () {
-            var nodePath = 'path/to/node';
+        it('should support method chaining pattern', () => {
+            const nodePath = 'path/to/node';
 
-            var result = projectConfig.nodes(nodePath, configurator);
+            const result = projectConfig.nodes(nodePath, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('nodeMask', function () {
-        var mask = /\w*bundles/g;
-        var configurator = function () {};
+    describe('nodeMask', () => {
+        const mask = /\w*bundles/g;
+        const configurator = () => {};
 
-        it('should add node mask config', function () {
+        it('should add node mask config', () => {
             projectConfig.nodeMask(mask, configurator);
 
             expect(projectConfig.getNodeMaskConfigs()).to.have.length(1);
             expect(projectConfig.getNodeMaskConfigs()[0]).to.be.instanceOf(NodeMaskConfig);
         });
 
-        it('should add configurator to created node mask config', function () {
+        it('should add configurator to created node mask config', () => {
             projectConfig.nodeMask(mask, configurator);
 
             expect(projectConfig.getNodeMaskConfigs()[0]._chains).to.contain(configurator);
         });
 
-        it('should create different node mask configs for same masks', function () {
-            var anotherConfigurator = function () {};
-            var expectedConfigsAmount = 2;
+        it('should create different node mask configs for same masks', () => {
+            const anotherConfigurator = () => {};
+            const expectedConfigsAmount = 2;
 
             projectConfig.nodeMask(mask, configurator);
             projectConfig.nodeMask(mask, anotherConfigurator);
@@ -324,34 +328,34 @@ describe('config/project-config', function () {
             expect(projectConfig.getNodeMaskConfigs()).to.have.length(expectedConfigsAmount);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.nodeMask(mask, configurator);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.nodeMask(mask, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('task', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+    describe('task', () => {
+        const taskName = 'test_task';
+        const configurator = () => {};
 
-        it('should add task config', function () {
+        it('should add task config', () => {
             projectConfig.task(taskName, configurator);
 
             expect(projectConfig.getTaskConfig(taskName)).to.exist
                 .and.to.be.instanceOf(TaskConfig);
         });
 
-        it('should add configurator to created task config', function () {
+        it('should add configurator to created task config', () => {
             projectConfig.task(taskName, configurator);
 
             expect(projectConfig.getTaskConfig(taskName)._chains).to.contain(configurator);
         });
 
-        it('should not create new task config if adding multiple configurators for same task name', function () {
-            var firstTaskConfig;
-            var secondTaskConfig;
-            var anotherConfigurator = function () {};
+        it('should not create new task config if adding multiple configurators for same task name', () => {
+            let firstTaskConfig;
+            let secondTaskConfig;
+            const anotherConfigurator = () => {};
 
             projectConfig.task(taskName, configurator);
             firstTaskConfig = projectConfig.getTaskConfig(taskName);
@@ -361,34 +365,34 @@ describe('config/project-config', function () {
             expect(firstTaskConfig).to.be.equal(secondTaskConfig);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.task(taskName, configurator);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.task(taskName, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('mode', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+    describe('mode', () => {
+        const modeName = 'test_mode';
+        const configurator = () => {};
 
-        it('should add mode config', function () {
+        it('should add mode config', () => {
             projectConfig.mode(modeName, configurator);
 
             expect(projectConfig.getModeConfig(modeName)).to.exist
                 .and.to.be.instanceOf(ModeConfig);
         });
 
-        it('should add configurator to created mode config', function () {
+        it('should add configurator to created mode config', () => {
             projectConfig.mode(modeName, configurator);
 
             expect(projectConfig.getModeConfig(modeName)._chains).to.contain(configurator);
         });
 
-        it('should not create new mode config if adding multiple configurators for same mode name', function () {
-            var firstModeConfig;
-            var secondModeConfig;
-            var anotherConfigurator = function () {};
+        it('should not create new mode config if adding multiple configurators for same mode name', () => {
+            let firstModeConfig;
+            let secondModeConfig;
+            const anotherConfigurator = () => {};
 
             projectConfig.mode(modeName, configurator);
             firstModeConfig = projectConfig.getModeConfig(modeName);
@@ -398,31 +402,31 @@ describe('config/project-config', function () {
             expect(firstModeConfig).to.be.equal(secondModeConfig);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.mode(modeName, configurator);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.mode(modeName, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('registerModule', function () {
-        var moduleName = 'test_module';
-        var moduleConfig;
+    describe('registerModule', () => {
+        const moduleName = 'test_module';
+        let moduleConfig;
 
-        beforeEach(function () {
+        beforeEach(() => {
             moduleConfig = new ModuleConfig();
         });
 
-        it('should register module', function () {
+        it('should register module', () => {
             projectConfig.registerModule(moduleName, moduleConfig);
 
             expect(projectConfig.module(moduleName)).to.be.equal(moduleConfig);
         });
 
-        it('should not allow registering multiple modules for same name', function () {
-            var anotherModuleConfig = new ModuleConfig();
-            var expectedExcMessage = 'Module "' + moduleName + '" is already registered';
-            var func = function () {
+        it('should not allow registering multiple modules for same name', () => {
+            const anotherModuleConfig = new ModuleConfig();
+            const expectedExcMessage = `Module "${moduleName}" is already registered`;
+            const func = () => {
                 projectConfig.registerModule(moduleName, moduleConfig);
                 projectConfig.registerModule(moduleName, anotherModuleConfig);
             };
@@ -430,9 +434,9 @@ describe('config/project-config', function () {
             expect(func).to.throw(expectedExcMessage);
         });
 
-        it('should allow registering same module for different names', function () {
-            var anotherModuleName = 'another_test_module';
-            var func = function () {
+        it('should allow registering same module for different names', () => {
+            const anotherModuleName = 'another_test_module';
+            const func = () => {
                 projectConfig.registerModule(moduleName, moduleConfig);
                 projectConfig.registerModule(anotherModuleName, moduleConfig);
             };
@@ -441,44 +445,44 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('module', function () {
-        var moduleName = 'test_module';
-        var configurator = function () {};
-        var moduleConfig;
+    describe('module', () => {
+        const moduleName = 'test_module';
+        const configurator = () => {};
+        let moduleConfig;
 
-        beforeEach(function () {
+        beforeEach(() => {
             moduleConfig = new ModuleConfig();
             projectConfig.registerModule(moduleName, moduleConfig);
         });
 
-        it('should add configurator to registered module', function () {
+        it('should add configurator to registered module', () => {
             projectConfig.module(moduleName, configurator);
 
             expect(projectConfig.module(moduleName)._chains).to.contain(configurator);
         });
 
-        it('should throw error on attempt to configure non-registered module', function () {
-            var nonRegisteredModuleName = 'non_registered_module';
-            var expectedErrorMessage = 'Module "' + nonRegisteredModuleName + '" is not registered.';
-            var func = function () { projectConfig.module(nonRegisteredModuleName, configurator); };
+        it('should throw error on attempt to configure non-registered module', () => {
+            const nonRegisteredModuleName = 'non_registered_module';
+            const expectedErrorMessage = `Module "${nonRegisteredModuleName}" is not registered.`;
+            const func = () => { projectConfig.module(nonRegisteredModuleName, configurator); };
 
             expect(func).to.throw(expectedErrorMessage);
         });
 
-        it('should return module if configurator is not provided', function () {
+        it('should return module if configurator is not provided', () => {
             expect(projectConfig.module(moduleName)).to.be.equal(moduleConfig);
         });
 
-        it('should return self if configurator provided', function () {
+        it('should return self if configurator provided', () => {
             expect(projectConfig.module(moduleName, configurator)).to.be.equal(projectConfig);
         });
     });
 
-    describe('getTaskConfigs', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+    describe('getTaskConfigs', () => {
+        const taskName = 'test_task';
+        const configurator = () => {};
 
-        it('should return tasks', function () {
+        it('should return tasks', () => {
             projectConfig.task(taskName, configurator);
 
             expect(projectConfig.getTaskConfigs()).to.be.instanceOf(Object)
@@ -486,29 +490,29 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('getTaskConfig', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+    describe('getTaskConfig', () => {
+        const taskName = 'test_task';
+        const configurator = () => {};
 
-        it('should return task config if it was added to project config', function () {
+        it('should return task config if it was added to project config', () => {
             projectConfig.task(taskName, configurator);
 
             expect(projectConfig.getTaskConfig(taskName)).to.exist
                 .and.to.be.instanceOf(TaskConfig);
         });
 
-        it('should return undefined if task config is missing in project config', function () {
-            var missedTaskName = 'missed_task';
+        it('should return undefined if task config is missing in project config', () => {
+            const missedTaskName = 'missed_task';
 
             expect(projectConfig.getTaskConfig(missedTaskName)).to.be.undefined;
         });
     });
 
-    describe('getModeConfigs', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+    describe('getModeConfigs', () => {
+        const modeName = 'test_mode';
+        const configurator = () => {};
 
-        it('should return mode configs', function () {
+        it('should return mode configs', () => {
             projectConfig.mode(modeName, configurator);
 
             expect(projectConfig.getModeConfigs()).to.be.instanceOf(Object)
@@ -516,29 +520,29 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('getModeConfig', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+    describe('getModeConfig', () => {
+        const modeName = 'test_mode';
+        const configurator = () => {};
 
-        it('should return mode config if mode was added to project config', function () {
+        it('should return mode config if mode was added to project config', () => {
             projectConfig.mode(modeName, configurator);
 
             expect(projectConfig.getModeConfig(modeName)).to.exist
                 .and.to.be.instanceOf(ModeConfig);
         });
 
-        it('should return undefined if mode was not added to project config', function () {
-            var missedModeName = 'missed_mode';
+        it('should return undefined if mode was not added to project config', () => {
+            const missedModeName = 'missed_mode';
 
             expect(projectConfig.getModeConfig(missedModeName)).to.be.undefined;
         });
     });
 
-    describe('getNodeConfigs', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+    describe('getNodeConfigs', () => {
+        const nodePath = 'path/to/node';
+        const configurator = () => {};
 
-        it('should return node configs', function () {
+        it('should return node configs', () => {
             projectConfig.node(nodePath, configurator);
 
             expect(projectConfig.getNodeConfigs()).to.be.instanceOf(Object)
@@ -546,29 +550,29 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('getNodeConfig', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+    describe('getNodeConfig', () => {
+        const nodePath = 'path/to/node';
+        const configurator = () => {};
 
-        it('should return node config if it was added to project config', function () {
+        it('should return node config if it was added to project config', () => {
             projectConfig.node(nodePath, configurator);
 
             expect(projectConfig.getNodeConfig(nodePath)).to.exist
                 .and.to.be.instanceOf(NodeConfig);
         });
 
-        it('should return undefined if node config was not added for requested path', function () {
-            var wrongNodePath = 'path/to/missing/node';
+        it('should return undefined if node config was not added for requested path', () => {
+            const wrongNodePath = 'path/to/missing/node';
 
             expect(projectConfig.getNodeConfig(wrongNodePath)).to.be.undefined;
         });
     });
 
-    describe('getNodeMaskConfigs', function () {
-        var mask = /\w*bundles/g;
-        var configurator = function () {};
+    describe('getNodeMaskConfigs', () => {
+        const mask = /\w*bundles/g;
+        const configurator = () => {};
 
-        it('should return all node mask configs if no node path specified', function () {
+        it('should return all node mask configs if no node path specified', () => {
             projectConfig.nodeMask(mask, configurator);
 
             expect(projectConfig.getNodeMaskConfigs()).to.be.instanceOf(Array)
@@ -576,10 +580,10 @@ describe('config/project-config', function () {
             expect(projectConfig.getNodeMaskConfigs()[0]).to.be.instanceOf(NodeMaskConfig);
         });
 
-        it('should return mask config if it\'s mask matches with path', function () {
-            var nodePath = 'path/to/desktop.bundles';
-            var anotherMask = /\w*nodes/g;
-            var result;
+        it('should return mask config if it\'s mask matches with path', () => {
+            const nodePath = 'path/to/desktop.bundles';
+            const anotherMask = /\w*nodes/g;
+            let result;
 
             projectConfig.nodeMask(mask, configurator);
             projectConfig.nodeMask(anotherMask, configurator);
@@ -592,36 +596,36 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('getEnv', function () {
-        it('should return env option if it was set', function () {
-            var optionName = 'option_name';
-            var optionValue = 'option_value';
+    describe('getEnv', () => {
+        it('should return env option if it was set', () => {
+            const optionName = 'option_name';
+            const optionValue = 'option_value';
 
             projectConfig.setEnv(optionName, optionValue);
 
             expect(projectConfig.getEnv(optionName)).to.be.equal(optionValue);
         });
 
-        it('should return undefined if env option was not set', function () {
-            var optionName = 'option_name';
+        it('should return undefined if env option was not set', () => {
+            const optionName = 'option_name';
 
             expect(projectConfig.getEnv(optionName)).to.be.undefined;
         });
     });
 
-    describe('setEnv', function () {
-        it('should set env variable passed as key and value strings', function () {
-            var optionName = 'option_name';
-            var optionValue = 'option_value';
+    describe('setEnv', () => {
+        it('should set env variable passed as key and value strings', () => {
+            const optionName = 'option_name';
+            const optionValue = 'option_value';
 
             projectConfig.setEnv(optionName, optionValue);
 
             expect(projectConfig.getEnv(optionName)).to.be.equal(optionValue);
         });
 
-        it('should set env variable value as undefined if only variable name provided', function () {
-            var optionName = 'option_name';
-            var env;
+        it('should set env variable value as undefined if only variable name provided', () => {
+            const optionName = 'option_name';
+            let env;
 
             projectConfig.setEnv(optionName);
             env = projectConfig.getEnvValues();
@@ -630,28 +634,28 @@ describe('config/project-config', function () {
             expect(env[optionName]).to.be.undefined;
         });
 
-        it('should set env variables passed as env variables hash', function () {
-            var options = {
+        it('should set env variables passed as env variables hash', () => {
+            const options = {
                 foo: 'bar',
                 fizz: 'buzz'
             };
-            var env;
+            let env;
 
             projectConfig.setEnv(options);
             env = projectConfig.getEnvValues();
 
-            Object.keys(options).forEach(function (key) {
+            Object.keys(options).forEach(key => {
                 expect(env).to.have.property(key, options[key]);
             });
         });
     });
 
-    describe('getEnvValues', function () {
-        it('should return env values', function () {
-            var expectedEnv = {};
-            var env;
+    describe('getEnvValues', () => {
+        it('should return env values', () => {
+            const expectedEnv = {};
+            let env;
 
-            Object.keys(process.env).forEach(function (key) {
+            Object.keys(process.env).forEach(key => {
                 expectedEnv[key] = process.env[key];
             });
             env = projectConfig.getEnvValues();
@@ -660,41 +664,41 @@ describe('config/project-config', function () {
         });
     });
 
-    describe('includeConfig', function () {
-        var configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
+    describe('includeConfig', () => {
+        const configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
 
-        it('should resolve config path before using it', function () {
-            var nonResolvedConfigPath = '../../fixtures/project-configs/project-config.js';
-            var expectedPath = configPath;
+        it('should resolve config path before using it', () => {
+            const nonResolvedConfigPath = '../../fixtures/project-configs/project-config.js';
+            const expectedPath = configPath;
 
             projectConfig.includeConfig(nonResolvedConfigPath);
 
             expect(projectConfig.getIncludedConfigFilenames()).to.contain(expectedPath);
         });
 
-        it('should require config file and execute it passing self', function () {
+        it('should require config file and execute it passing self', () => {
             projectConfig.includeConfig(configPath);
 
             expect(projectConfig.___xxx___).to.be.true;
         });
 
-        it('should add included config filename to included config filenames', function () {
+        it('should add included config filename to included config filenames', () => {
             projectConfig.includeConfig(configPath);
 
             expect(projectConfig.getIncludedConfigFilenames()).to.contain(configPath);
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.includeConfig(configPath);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.includeConfig(configPath);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('getIncludedConfigFilenames', function () {
-        var configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
+    describe('getIncludedConfigFilenames', () => {
+        const configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
 
-        it('should return array containing included config filenames if any configs were included', function () {
+        it('should return array containing included config filenames if any configs were included', () => {
             projectConfig.includeConfig(configPath);
 
             expect(projectConfig.getIncludedConfigFilenames()).to.be.instanceOf(Array)
@@ -702,31 +706,31 @@ describe('config/project-config', function () {
                 .and.to.contain(configPath);
         });
 
-        it('should return empty array if no configs were included', function () {
+        it('should return empty array if no configs were included', () => {
             expect(projectConfig.getIncludedConfigFilenames()).to.be.instanceOf(Array)
                 .and.to.be.empty;
         });
     });
 
-    describe('setLevelNamingScheme', function () {
-        var levelPath = 'level/path';
-        var schemeBuilder = function () {};
-        var resolvePathSpy;
+    describe('setLevelNamingScheme', () => {
+        const levelPath = 'level/path';
+        const schemeBuilder = () => {};
+        let resolvePathSpy;
 
-        beforeEach(function () {
+        beforeEach(() => {
             resolvePathSpy = new sinon.spy(projectConfig, 'resolvePath');
         });
 
-        afterEach(function () {
+        afterEach(() => {
             resolvePathSpy.reset();
         });
 
-        after(function () {
+        after(() => {
             resolvePathSpy.restore();
         });
 
-        it('should add level naming scheme to level naming schemes if level path passed as string', function () {
-            var expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
+        it('should add level naming scheme to level naming schemes if level path passed as string', () => {
+            const expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
 
             projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 
@@ -734,8 +738,8 @@ describe('config/project-config', function () {
                 .to.have.property(expectedLevelNamingSchemeName, schemeBuilder);
         });
 
-        it('should add level naming scheme to level naming schemes if level path passed as array', function () {
-            var expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
+        it('should add level naming scheme to level naming schemes if level path passed as array', () => {
+            const expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
 
             projectConfig.setLevelNamingScheme([levelPath], schemeBuilder);
 
@@ -744,44 +748,44 @@ describe('config/project-config', function () {
         });
 
         it('should add multiple level naming schemes to level naming schemes if level paths passed as ' +
-            'array', function () {
-            var anotherLevelPath = 'another/level/path';
-            var paths = [levelPath, anotherLevelPath];
+            'array', () => {
+            const anotherLevelPath = 'another/level/path';
+            const paths = [levelPath, anotherLevelPath];
 
             projectConfig.setLevelNamingScheme(paths, schemeBuilder);
 
-            paths.forEach(function (levelPath) {
+            paths.forEach(levelPath => {
                 expect(projectConfig.getLevelNamingSchemes())
                     .to.have.property(projectConfig.resolvePath(levelPath), schemeBuilder);
             });
         });
 
-        it('should resolve relative level path', function () {
+        it('should resolve relative level path', () => {
             projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 
             expect(resolvePathSpy).to.be.calledWith(levelPath);
         });
 
-        it('should not resolve absolute level path', function () {
-            var absoluteLevelPath = '/' + levelPath;
+        it('should not resolve absolute level path', () => {
+            const absoluteLevelPath = `/${levelPath}`;
 
             projectConfig.setLevelNamingScheme(absoluteLevelPath, schemeBuilder);
 
             expect(resolvePathSpy).to.be.not.called;
         });
 
-        it('should support method chaining pattern', function () {
-            var result = projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
+        it('should support method chaining pattern', () => {
+            const result = projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
-    describe('getLevelNamingSchemes', function () {
-        it('should return level naming schemes', function () {
-            var levelPath = 'level/path';
-            var expectedLevelPath = projectConfig.resolvePath(levelPath);
-            var schemeBuilder = function () {};
+    describe('getLevelNamingSchemes', () => {
+        it('should return level naming schemes', () => {
+            const levelPath = 'level/path';
+            const expectedLevelPath = projectConfig.resolvePath(levelPath);
+            const schemeBuilder = () => {};
 
             projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 

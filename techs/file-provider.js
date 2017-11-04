@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * file-provider
  * =============
@@ -15,34 +17,35 @@
  * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
  * ```
  */
-var inherit = require('inherit'),
-    enb = require('../lib/api'),
-    vfs = enb.asyncFs;
+const inherit = require('inherit');
+
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'file-provider';
     },
 
-    configure: function () {
+    configure() {
         this._target = this.getRequiredOption('target');
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function () {
-        var node = this.node,
-            target = node.unmaskTargetName(this._target),
-            filename = node.resolvePath(target);
+    build() {
+        const node = this.node;
+        const target = node.unmaskTargetName(this._target);
+        const filename = node.resolvePath(target);
 
         return vfs.exists(filename)
-            .then(function (exists) {
+            .then(exists => {
                 if (exists) {
                     node.resolveTarget(target);
                 } else {
-                    node.rejectTarget(target, new Error('file not found: ' + filename));
+                    node.rejectTarget(target, new Error(`file not found: ${filename}`));
                 }
             }, () => {});
     },

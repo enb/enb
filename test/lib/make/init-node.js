@@ -1,25 +1,29 @@
-var fs = require('fs');
-var path = require('path');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var Node = require('../../../lib/node/node');
-var nodeFactory = require('../../../lib/node');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var ModeConfig = require('../../../lib/config/mode-config');
-var Logger = require('../../../lib/logger');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
+'use strict'
 
-describe('make/initNode', function () {
-    var sandbox = sinon.sandbox.create();
-    var makePlatform;
-    var node;
+const fs = require('fs');
+const path = require('path');
 
-    beforeEach(function () {
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+
+const Node = require('../../../lib/node/node');
+const nodeFactory = require('../../../lib/node');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const ModeConfig = require('../../../lib/config/mode-config');
+const Logger = require('../../../lib/logger');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
+
+describe('make/initNode', () => {
+    const sandbox = sinon.sandbox.create();
+    let makePlatform;
+    let node;
+
+    beforeEach(() => {
         mockFs({});
 
         sandbox.stub(vowFs);
@@ -34,33 +38,33 @@ describe('make/initNode', function () {
         vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}, { graph: true });
+        makePlatform.init('/path/to/project', 'mode', () => {}, { graph: true });
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
         sandbox.restore();
     });
 
-    it('should return promise', function () {
+    it('should return promise', () => {
         expect(makePlatform.initNode('path/to/node'))
             .to.be.instanceOf(vow.Promise);
     });
 
-    it('should not start node initialization if it was already started', function () {
+    it('should not start node initialization if it was already started', () => {
         makePlatform.initNode('path/to/node');
         makePlatform.initNode('path/to/node');
 
         expect(nodeFactory.mkNode).to.be.calledOnce;
     });
 
-    it('should get node config from project config', function () {
+    it('should get node config from project config', () => {
         makePlatform.initNode('path/to/node');
 
         expect(ProjectConfig.prototype.getNodeConfig).to.be.calledWith('path/to/node');
     });
 
-    it('should create node', function () {
+    it('should create node', () => {
         makePlatform.buildTargets(); // creates cache in makePlatform
 
         makePlatform.initNode('path/to/node');
@@ -70,9 +74,9 @@ describe('make/initNode', function () {
                 makePlatform.getBuildGraph());
     });
 
-    it('should set node logger as sublogger of own logger', function () {
-        var logger = sinon.createStubInstance(Logger);
-        var expectedLogger = sinon.createStubInstance(Logger);
+    it('should set node logger as sublogger of own logger', () => {
+        const logger = sinon.createStubInstance(Logger);
+        const expectedLogger = sinon.createStubInstance(Logger);
 
         logger.subLogger.withArgs('path/to/node').returns(expectedLogger);
         setup({ nodePath: 'path/to/node' });
@@ -83,153 +87,153 @@ describe('make/initNode', function () {
         expect(node.setLogger).to.be.calledWith(expectedLogger);
     });
 
-    it('should create node dir', function () {
+    it('should create node dir', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.initNode('path/to/node').then(function () {
-            expect(vowFs.makeDir).to.be.calledWith(path.normalize(makePlatform.getDir() + '/path/to/node'));
+        return makePlatform.initNode('path/to/node').then(() => {
+            expect(vowFs.makeDir).to.be.calledWith(path.normalize(`${makePlatform.getDir()}/path/to/node`));
         });
     });
 
-    it('should execute node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should execute node config', () => {
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(nodeConfig.exec)
                 .to.be.called;
         });
     });
 
-    it('should return rejected promise if project config does not have node config for requested node', function () {
+    it('should return rejected promise if project config does not have node config for requested node', () => {
         setup({ nodePath: 'path/to/node' });
 
         return expect(makePlatform.initNode('path/to/another/node')).to.be.rejected;
     });
 
-    it('should execute node mask config and pass it node config as context', function () {
-        var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should execute node mask config and pass it node config as context', () => {
+        const nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
         ProjectConfig.prototype.getNodeMaskConfigs
             .withArgs('path/to/node').returns([nodeMaskConfig]);
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(nodeMaskConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
         });
     });
 
-    it('should execute mode config and pass it node config as context', function () {
-        var modeConfig = sinon.createStubInstance(ModeConfig);
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should execute mode config and pass it node config as context', () => {
+        const modeConfig = sinon.createStubInstance(ModeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getModeConfig
             .withArgs('mode').returns(modeConfig);
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(modeConfig.exec).to.be.calledWith(sinon.match.any, nodeConfig);
         });
     });
 
-    it('should set node languages as node config languages if languages available from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should set node languages as node config languages if languages available from node config', () => {
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getLanguages.returns(['ru']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setLanguages).to.be.calledWith(['ru']);
         });
     });
 
     it('should set node languages as make platform languages if languages are not available from node ' +
-        'config', function () {
+        'config', () => {
         makePlatform.setLanguages(['ru']);
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setLanguages).to.be.calledWith(['ru']);
         });
     });
 
-    it('should set node targets to build as targets to build from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should set node targets to build as targets to build from node config', () => {
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getTargets.returns(['?.js']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setTargetsToBuild).to.be.calledWith(['?.js']);
         });
     });
 
-    it('should set node targets to clean as targets to clean from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+    it('should set node targets to clean as targets to clean from node config', () => {
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getCleanTargets.returns(['?.js']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setTargetsToClean).to.be.calledWith(['?.js']);
         });
     });
 
-    it('should set node techs as techs from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
-        var tech = sinon.createStubInstance(BaseTech);
+    it('should set node techs as techs from node config', () => {
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
+        const tech = sinon.createStubInstance(BaseTech);
 
         nodeConfig.getTechs.returns([tech]);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setTechs).to.be.calledWith([tech]);
         });
     });
 
-    it('should set node build state', function () {
+    it('should set node build state', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.setBuildState).to.be.calledWith({});
         });
     });
 
-    it('should force node to load techs', function () {
+    it('should force node to load techs', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.initNode('path/to/node').then(function () {
+        return makePlatform.initNode('path/to/node').then(() => {
             expect(node.loadTechs).to.be.called;
         });
     });
 });
 
 function setup (params) {
-    var defaults = {
+    const defaults = {
         nodePath: 'default/path',
         nodeConfig: sinon.createStubInstance(NodeConfig),
         nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig)

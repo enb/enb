@@ -1,26 +1,30 @@
-var path = require('path');
-var vow = require('vow');
-var Node = require('../../../lib/node/node');
-var NodeWithGraph = require('../../../lib/node/node-with-graph');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var Logger = require('../../../lib/logger');
-var BaseTech = require('../../../lib/tech/base-tech');
-var BuildGraph = require('../../../lib/ui/build-graph');
+'use strict';
 
-describe('node-with-graph', function () {
-    var sandbox = sinon.sandbox.create();
-    var nodePath = path.join('path', 'to', 'node');
-    var node;
-    var graph;
+const path = require('path');
 
-    beforeEach(function () {
-        var projectDir = path.join('path', 'to', 'project');
+const vow = require('vow');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+const Node = require('../../../lib/node/node');
+const NodeWithGraph = require('../../../lib/node/node-with-graph');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const Logger = require('../../../lib/logger');
+const BaseTech = require('../../../lib/tech/base-tech');
+const BuildGraph = require('../../../lib/ui/build-graph');
+
+describe('node-with-graph', () => {
+    const sandbox = sinon.sandbox.create();
+    const nodePath = path.join('path', 'to', 'node');
+    let node;
+    let graph;
+
+    beforeEach(() => {
+        const projectDir = path.join('path', 'to', 'project');
+
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
-        var cache = sinon.createStubInstance(Cache);
+        const cache = sinon.createStubInstance(Cache);
         cache.subCache.returns(sinon.createStubInstance(Cache));
 
         graph = sinon.createStubInstance(BuildGraph);
@@ -28,12 +32,12 @@ describe('node-with-graph', function () {
         node.setLogger(sinon.createStubInstance(Logger));
     });
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
     });
 
-    describe('resolveTarget', function () {
-        it('should add resolved target to build graph', function () {
+    describe('resolveTarget', () => {
+        it('should add resolved target to build graph', () => {
             sandbox.stub(Node.prototype, 'resolveTarget');
 
             node.resolveTarget('node.js');
@@ -43,9 +47,9 @@ describe('node-with-graph', function () {
         });
     });
 
-    describe('loadTechs', function () {
-        it('should add targets to build graph', function () {
-            var tech = sinon.createStubInstance(BaseTech);
+    describe('loadTechs', () => {
+        it('should add targets to build graph', () => {
+            const tech = sinon.createStubInstance(BaseTech);
             tech.getTargets.returns(['node.js']);
             tech.getName.returns('tech');
             node.setTechs([tech]);
@@ -59,15 +63,15 @@ describe('node-with-graph', function () {
         });
     });
 
-    describe('requireSources', function () {
-        it('should add dependency to build graph', function () {
+    describe('requireSources', () => {
+        it('should add dependency to build graph', () => {
             sandbox.stub(Node.prototype, 'requireSources');
             Node.prototype.requireSources.returns(vow.resolve());
 
             node.setTargetsToBuild(['node.js']);
 
             return node.requireSources(['?.js'], ['target.js'])
-                .then(function () {
+                .then(() => {
                     expect(graph.addDep).to.be.calledWith(
                         path.join(nodePath, 'target.js'),
                         path.join(nodePath, 'node.js')
@@ -77,13 +81,13 @@ describe('node-with-graph', function () {
         });
     });
 
-    describe('requireNodeSources', function () {
-        it('should add dependencies to build graph', function () {
+    describe('requireNodeSources', () => {
+        it('should add dependencies to build graph', () => {
             sandbox.stub(Node.prototype, 'requireNodeSources');
             Node.prototype.requireNodeSources.returns(vow.resolve());
 
             return node.requireNodeSources({ node: ['?.js'] }, ['target.js'])
-                .then(function () {
+                .then(() => {
                     expect(graph.addDep).to.be.calledWith(
                         path.join(nodePath, 'target.js'),
                         path.join('node', 'node.js')

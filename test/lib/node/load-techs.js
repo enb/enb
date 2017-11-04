@@ -1,18 +1,21 @@
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
+'use strict';
 
-describe('node/loadTechs', function () {
-    var node;
-    var tech;
+const path = require('path');
 
-    beforeEach(function () {
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.join('path', 'to', 'project');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+describe('node/loadTechs', () => {
+    let node;
+    let tech;
+
+    beforeEach(() => {
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.join('path', 'to', 'project');
+
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
         tech = sinon.createStubInstance(BaseTech);
@@ -23,7 +26,7 @@ describe('node/loadTechs', function () {
         node.setTechs([tech]);
     });
 
-    it('should init registered techs', function () {
+    it('should init registered techs', () => {
         node.loadTechs();
 
         expect(tech.init).to.be.called;

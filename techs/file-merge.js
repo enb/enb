@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * file-merge
  * ==========
@@ -20,10 +22,11 @@
  * } ]);
  * ```
  */
-var vow = require('vow'),
-    enb = require('../lib/api'),
-    vfs = enb.asyncFs,
-    File = require('enb-source-map/lib/file');
+const vow = require('vow');
+const File = require('enb-source-map/lib/file');
+
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = enb.buildFlow.create()
     .name('file-merge')
@@ -34,30 +37,29 @@ module.exports = enb.buildFlow.create()
     .defineOption('sourcemap', false)
     .useSourceListFilenames('sources')
     .builder(function (sources) {
-        var divider = this._divider;
-        var sourcemap = this._sourcemap;
-        var target = this._target;
-        var node = this.node;
+        const divider = this._divider;
+        const sourcemap = this._sourcemap;
+        const target = this._target;
+        const node = this.node;
 
-        return vow.all(sources.map(function (sourceFilename) {
-            return vfs.read(sourceFilename, 'utf8');
-        })).then(function (results) {
-            if (!sourcemap) {
-                return results.join(divider);
-            }
+        return vow.all(sources.map(sourceFilename => vfs.read(sourceFilename, 'utf8')))
+            .then(results => {
+                if (!sourcemap) {
+                    return results.join(divider);
+                }
 
-            var relFileNames = sources.map(node.relativePath, node);
+                const relFileNames = sources.map(node.relativePath, node);
 
-            return joinWithSourceMaps(relFileNames, results, divider, target);
-        });
+                return joinWithSourceMaps(relFileNames, results, divider, target);
+            });
     })
     .createTech();
 
 ///
 function joinWithSourceMaps(fileNames, contents, divider, target) {
-    var targetFile = new File(target, {sourceMap: true, comment: 'block'});
+    const targetFile = new File(target, {sourceMap: true, comment: 'block'});
 
-    fileNames.forEach(function (file, i) {
+    fileNames.forEach((file, i) => {
         targetFile.writeFileContent(file, contents[i]);
         targetFile.write(divider);
     });

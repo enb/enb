@@ -2,7 +2,6 @@ var fs = require('fs');
 var path = require('path');
 
 var mockFs = require('mock-fs');
-var _ = require('lodash');
 
 var MakePlatform = require('../../../lib/make');
 var CacheStorage = require('../../../lib/cache/cache-storage');
@@ -154,16 +153,16 @@ describe('make/cache', function () {
  * @param {Object} settings
  */
 function setup(cacheStorage, makePlatform, settings) {
-    settings = settings || {};
-
-    _.defaults(settings, {
+    var defaults = {
         currentENBVersion: 'defaultENBVersion',
         cachedENBVersion: 'defaultENBVersion',
         currentMakePlatformMode: 'defaultMakePlatformMode',
         cachedMakePlatformMode: 'defaultMakePlatformMode',
         currentMakeFileMtime: new Date(1),
         cachedMakeFileMtime: new Date(1)
-    });
+    };
+
+    settings = Object.assign({}, defaults, settings);
 
     var makeFiles = {};
     makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.cachedMakeFileMtime.valueOf();

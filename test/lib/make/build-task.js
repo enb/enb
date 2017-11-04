@@ -2,7 +2,6 @@ var fs = require('fs');
 var vow = require('vow');
 var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
-var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var Node = require('../../../lib/node');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -83,12 +82,12 @@ describe('make/buildTask', function () {
 });
 
 function setup(settings) {
-    settings = settings || {};
-
-    _.defaults(settings, {
+    var defaults = {
         taskName: 'default_task',
         task: sinon.createStubInstance(TaskConfig)
-    });
+    };
+
+    settings = Object.assign({}, defaults, settings);
 
     ProjectConfig.prototype.getTaskConfig
         .withArgs(settings.taskName).returns(settings.task);

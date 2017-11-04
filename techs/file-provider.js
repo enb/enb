@@ -16,7 +16,6 @@
  * ```
  */
 var inherit = require('inherit'),
-    _ = require('lodash'),
     enb = require('../lib/api'),
     vfs = enb.asyncFs;
 
@@ -45,8 +44,8 @@ module.exports = inherit(enb.BaseTech, {
                 } else {
                     node.rejectTarget(target, new Error('file not found: ' + filename));
                 }
-            }, _.noop);
+            }, () => {});
     },
 
-    clean: _.noop
+    clean: () => {}
 });

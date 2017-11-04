@@ -3,7 +3,6 @@ var vow = require('vow');
 var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
 var path = require('path');
-var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var NodeConfig = require('../../../lib/config/node-config');
 var Node = require('../../../lib/node/node');
@@ -500,13 +499,13 @@ describe('make/init', function () {
     });
 
     function init_(settings) {
-        settings = settings || {};
-
-        _.defaults(settings, {
+        var defaults = {
             projectPath: '/default/project/path',
             mode: 'default_mode',
             config: function () {}
-        });
+        };
+
+        settings = Object.assign({}, defaults, settings);
 
         return makePlatform.init(
             settings.projectPath,

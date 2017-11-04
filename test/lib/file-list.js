@@ -8,13 +8,13 @@ require('chai')
     .use(require('chai-as-promised'))
     .should();
 
-describe('lib', function () {
-    describe('file-list', function () {
+describe('lib', () => {
+    describe('file-list', () => {
         let fileList;
         let files1;
         let files2;
 
-        beforeEach(function () {
+        beforeEach(() => {
             files1 = [
                 { fullname: '/foo/bar/file1.txt', name: 'file1', suffix: 'txt', mtime: 1437573848385 },
                 { fullname: '/foo/bar/file2.json', name: 'file2', suffix: 'json', mtime: 1437573848385 }
@@ -25,43 +25,43 @@ describe('lib', function () {
             ];
         });
 
-        describe('constructor', function () {
-            beforeEach(function () {
+        describe('constructor', () => {
+            beforeEach(() => {
                 fileList = new FileList();
             });
 
-            it('should be successfully initialized with empty items array', function () {
+            it('should be successfully initialized with empty items array', () => {
                 fileList.items.should.be.instanceOf(Array).and.be.empty;
             });
 
-            it('should be successfully initialized with empty slices array', function () {
+            it('should be successfully initialized with empty slices array', () => {
                 fileList.slices.should.be.instanceOf(Array).and.be.empty;
             });
 
-            it('should be successfully initialized with empty bySuffix object', function () {
+            it('should be successfully initialized with empty bySuffix object', () => {
                 fileList.bySuffix.should.be.instanceOf(Object);
                 Object.keys(fileList.bySuffix).should.be.empty;
             });
         });
 
-        describe('addFiles', function () {
-            beforeEach(function () {
+        describe('addFiles', () => {
+            beforeEach(() => {
                 fileList = new FileList();
                 fileList.addFiles(files1);
                 fileList.addFiles(files2);
             });
 
-            it('should add given files arrays to slices array', function () {
+            it('should add given files arrays to slices array', () => {
                 fileList.slices.should.have.length(2);
                 fileList.slices[0].should.be.deep.equal(files1);
             });
 
-            it('should add each file from files to items array', function () {
+            it('should add each file from files to items array', () => {
                 fileList.items.should.have.length(4);
                 fileList.items.should.be.deep.equal(files1.concat(files2));
             });
 
-            it('should separate files by suffix and fill bySuffix model', function () {
+            it('should separate files by suffix and fill bySuffix model', () => {
                 fileList.bySuffix.txt.should.be.instanceOf(Array).and.have.length(2);
                 fileList.bySuffix.txt[0].should.be.deep.equal(files1[0]);
 
@@ -70,30 +70,30 @@ describe('lib', function () {
             });
         });
 
-        describe('getBySuffix', function () {
-            beforeEach(function () {
+        describe('getBySuffix', () => {
+            beforeEach(() => {
                 fileList = new FileList();
                 fileList.addFiles(files1);
             });
 
-            describe('argument is array', function () {
-                it('should return empty result if given suffixes are set as empty array', function () {
+            describe('argument is array', () => {
+                it('should return empty result if given suffixes are set as empty array', () => {
                     fileList.getBySuffix([]).should.be.instanceOf(Array).and.be.empty;
                 });
 
-                it('should return valid result by given suffix (argument is array with single item)', function () {
+                it('should return valid result by given suffix (argument is array with single item)', () => {
                     fileList.getBySuffix(['txt']).should.be.instanceOf(Array).and.have.length(1);
                     fileList.getBySuffix(['txt'])[0].should.be.deep.equal(files1[0]);
                 });
 
-                it('should return valid result by given suffixes', function () {
+                it('should return valid result by given suffixes', () => {
                     fileList.addFiles(files2);
 
                     fileList.getBySuffix(['txt', 'json']).should.be.instanceOf(Array).and.have.length(3);
                     fileList.getBySuffix(['txt', 'json']).should.be.deep.equal(files1.concat(files2[0]));
                 });
 
-                it('should return valid result for complex suffix', function () {
+                it('should return valid result for complex suffix', () => {
                     const advancedFiles = [
                         {
                             fullname: '/foo1/bar1/file1.bemhtml.js',
@@ -109,30 +109,30 @@ describe('lib', function () {
                 });
             });
 
-            describe('suffix argument is string', function () {
-                it('should return valid result by given suffix', function () {
+            describe('suffix argument is string', () => {
+                it('should return valid result by given suffix', () => {
                     fileList.getBySuffix('txt').should.be.instanceOf(Array).and.have.length(1);
                     fileList.getBySuffix('txt')[0].should.be.deep.equal(files1[0]);
                 });
 
-                it('should return empty result if files were not found by given suffix', function () {
+                it('should return empty result if files were not found by given suffix', () => {
                     fileList.getBySuffix('html').should.be.instanceOf(Array).and.be.empty;
                 });
             });
         });
 
-        describe('getByName', function () {
-            beforeEach(function () {
+        describe('getByName', () => {
+            beforeEach(() => {
                 fileList = new FileList();
                 fileList.addFiles(files1);
             });
 
-            it('should return valid file info objects array by given file name', function () {
+            it('should return valid file info objects array by given file name', () => {
                 fileList.getByName('file1').should.be.instanceOf(Array).and.have.length(1);
                 fileList.getByName('file1')[0].should.be.deep.equal(files1[0]);
             });
 
-            it('should return valid result for files with different fullnames but equal names', function () {
+            it('should return valid result for files with different fullnames but equal names', () => {
                 const advancedFiles = [
                     { fullname: '/foo1/bar1/file1.txt', name: 'file1', suffix: 'txt', mtime: 1437573848385 }
                 ];
@@ -143,12 +143,12 @@ describe('lib', function () {
             });
         });
 
-        describe('getFileInfo', function () {
+        describe('getFileInfo', () => {
             let dirName;
             let fullName;
             let mTime;
 
-            beforeEach(function () {
+            beforeEach(() => {
                 fileList = new FileList();
                 dirName = path.resolve('./foo');
                 fullName = path.resolve('./foo/file1.txt');
@@ -164,31 +164,31 @@ describe('lib', function () {
                 });
             });
 
-            afterEach(function () {
+            afterEach(() => {
                 mockFs.restore();
             });
 
-            it('should return valid file info name', function () {
+            it('should return valid file info name', () => {
                 fileList.getFileInfo(fullName).name.should.equal('file1.txt');
             });
 
-            it('should return valid file info fullname', function () {
+            it('should return valid file info fullname', () => {
                 fileList.getFileInfo(fullName).fullname.should.equal(fullName);
             });
 
-            it('should return valid file info suffix', function () {
+            it('should return valid file info suffix', () => {
                 fileList.getFileInfo(fullName).suffix.should.equal('txt');
             });
 
-            it('should return valid file info mtime', function () {
+            it('should return valid file info mtime', () => {
                 fileList.getFileInfo(fullName).mtime.should.equal(mTime.getTime());
             });
 
-            it('should return "false" isDirectory flag for file', function () {
+            it('should return "false" isDirectory flag for file', () => {
                 fileList.getFileInfo(fullName).isDirectory.should.equal(false);
             });
 
-            it('should return "true" isDirectory flag for directory', function () {
+            it('should return "true" isDirectory flag for directory', () => {
                 fileList.getFileInfo(dirName).isDirectory.should.equal(true);
             });
         });

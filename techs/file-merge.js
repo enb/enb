@@ -42,17 +42,16 @@ module.exports = enb.buildFlow.create()
         const target = this._target;
         const node = this.node;
 
-        return vow.all(sources.map(function (sourceFilename) {
-            return vfs.read(sourceFilename, 'utf8');
-        })).then(function (results) {
-            if (!sourcemap) {
-                return results.join(divider);
-            }
+        return vow.all(sources.map(sourceFilename => vfs.read(sourceFilename, 'utf8')))
+            .then(results => {
+                if (!sourcemap) {
+                    return results.join(divider);
+                }
 
-            const relFileNames = sources.map(node.relativePath, node);
+                const relFileNames = sources.map(node.relativePath, node);
 
-            return joinWithSourceMaps(relFileNames, results, divider, target);
-        });
+                return joinWithSourceMaps(relFileNames, results, divider, target);
+            });
     })
     .createTech();
 
@@ -60,7 +59,7 @@ module.exports = enb.buildFlow.create()
 function joinWithSourceMaps(fileNames, contents, divider, target) {
     const targetFile = new File(target, {sourceMap: true, comment: 'block'});
 
-    fileNames.forEach(function (file, i) {
+    fileNames.forEach((file, i) => {
         targetFile.writeFileContent(file, contents[i]);
         targetFile.write(divider);
     });

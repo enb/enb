@@ -9,11 +9,11 @@ const Node = require('../../../lib/node');
 const ProjectConfig = require('../../../lib/config/project-config');
 const TaskConfig = require('../../../lib/config/task-config');
 
-describe('make/buildTask', function () {
+describe('make/buildTask', () => {
     let makePlatform;
     const sandbox = sinon.sandbox.create();
 
-    beforeEach(function (done) {
+    beforeEach(done => {
         mockFs({});
         sandbox.stub(vowFs);
         sandbox.stub(ProjectConfig.prototype);
@@ -23,28 +23,28 @@ describe('make/buildTask', function () {
         vowFs.makeDir.returns(vow.fulfill()); // prevent temp dir creation on MakePlatform.init()
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
+        makePlatform.init('/path/to/project', 'mode', () => {}).then(done);
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
         sandbox.restore();
     });
 
-    it('should return promise', function () {
+    it('should return promise', () => {
         setup({ taskName: 'test_task' });
 
         expect(makePlatform.buildTask('test_task'))
             .to.be.instanceOf(vow.Promise);
     });
 
-    it('should throw if no task config available in project config for specified task', function () {
+    it('should throw if no task config available in project config for specified task', () => {
         setup({ taskName: 'task_name' });
 
-        expect(function () { makePlatform.buildTask('another_task'); }).to.throw;
+        expect(() => { makePlatform.buildTask('another_task'); }).to.throw;
     });
 
-    it('should pass make platform to task config', function () {
+    it('should pass make platform to task config', () => {
         const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
@@ -56,7 +56,7 @@ describe('make/buildTask', function () {
         expect(taskConfig.setMakePlatform).to.be.calledWith(makePlatform);
     });
 
-    it('should execute task', function () {
+    it('should execute task', () => {
         const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
@@ -64,12 +64,12 @@ describe('make/buildTask', function () {
             task: taskConfig
         });
 
-        return makePlatform.buildTask('test_task').then(function () {
+        return makePlatform.buildTask('test_task').then(() => {
             expect(taskConfig.exec).to.be.called;
         });
     });
 
-    it('should pass args to task config on exec', function () {
+    it('should pass args to task config on exec', () => {
         const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
@@ -77,7 +77,7 @@ describe('make/buildTask', function () {
             task: taskConfig
         });
 
-        return makePlatform.buildTask('test_task', ['foo', 'bar']).then(function () {
+        return makePlatform.buildTask('test_task', ['foo', 'bar']).then(() => {
             expect(taskConfig.exec).to.be.calledWith(['foo', 'bar']);
         });
     });

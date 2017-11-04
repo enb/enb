@@ -10,10 +10,10 @@ const MockNode = proxyquire('mock-enb/lib/mock-node', {
 });
 const WriteFileTech = require('../../techs/write-file');
 
-describe('techs/write-file', function () {
+describe('techs/write-file', () => {
     let bundle;
 
-    beforeEach(function () {
+    beforeEach(() => {
         mockFs({
             bundle: mockFs.directory({
                 mode: 0o755
@@ -23,18 +23,18 @@ describe('techs/write-file', function () {
         bundle = new MockNode('bundle');
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
     });
 
-    it('should write target file to file system', function () {
+    it('should write target file to file system', () => {
         return bundle.runTech(WriteFileTech, {
-                target: '?.txt',
-                content: 'I\'m here'
-            })
-            .should.be.fulfilled
-            .then(function () {
-                fs.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
-            });
+            target: '?.txt',
+            content: 'I\'m here'
+        })
+        .should.be.fulfilled
+        .then(() => {
+            fs.readFileSync('bundle/bundle.txt').toString().should.be.eql('I\'m here');
+        });
     });
 });

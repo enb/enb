@@ -71,16 +71,16 @@ module.exports = inherit(enb.BaseTech, {
             requireSources = node.requireSources([source]);
         }
 
-        return requireSources.then(function () {
+        return requireSources.then(() => {
             if (cache.needRebuildFile('source-file', sourcePath) ||
                 cache.needRebuildFile('target-file', targetPath)
             ) {
-                return vfs.read(sourcePath, 'utf8').then(function (data) {
-                    return vfs.write(targetPath, data, 'utf8').then(function () {
+                return vfs.read(sourcePath, 'utf8').then(data => {
+                    return vfs.write(targetPath, data, 'utf8').then(() => {
                         cache.cacheFileInfo('source-file', sourcePath);
                         cache.cacheFileInfo('target-file', targetPath);
                         _this.node.resolveTarget(target);
-                    });
+                    })
                 });
             } else {
                 _this.node.isValidTarget(target);

@@ -2,18 +2,18 @@
 
 const BuildProfiler = require('../../lib/build-profiler');
 
-describe('BuildProfiler', function () {
+describe('BuildProfiler', () => {
     let buildGraph;
     let buildTimes;
     let profiler;
 
-    describe('setStartTime', function () {
-        beforeEach(function () {
+    describe('setStartTime', () => {
+        beforeEach(() => {
             buildTimes = {};
             profiler = new BuildProfiler(buildTimes);
         });
 
-        it('should set target with specified start time', function () {
+        it('should set target with specified start time', () => {
             const expected = { 'bundle/target': { startTime: 100500, techName: 'tech' } };
 
             profiler.setStartTime('bundle/target', 'tech', 100500);
@@ -21,7 +21,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should reset target with specified start time', function () {
+        it('should reset target with specified start time', () => {
             const expected = { 'bundle/target': { startTime: 100501, techName: 'tech' } };
 
             profiler.setStartTime('bundle/target', 'tech', 100500);
@@ -30,7 +30,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should set current time (Date.now())', function () {
+        it('should set current time (Date.now())', () => {
             const expected = { 'bundle/target': { startTime: 0, techName: undefined } };
 
             profiler.setStartTime('bundle/target');
@@ -39,13 +39,13 @@ describe('BuildProfiler', function () {
         });
     });
 
-    describe('setEndTime', function () {
-        beforeEach(function () {
+    describe('setEndTime', () => {
+        beforeEach(() => {
             buildTimes = {};
             profiler = new BuildProfiler(buildTimes);
         });
 
-        it('shouldn\'t set end time if there is no start time', function () {
+        it('shouldn\'t set end time if there is no start time', () => {
             const expected = {};
 
             profiler.setEndTime('some-bundle', 'some-target');
@@ -53,7 +53,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should set specified end time', function () {
+        it('should set specified end time', () => {
             const expected = { 'bundle/target': { startTime: 100500, endTime: 100501, techName: 'tech' } };
 
             profiler.setStartTime('bundle/target', 'tech', 100500); // need to initialize benchmark object
@@ -63,7 +63,7 @@ describe('BuildProfiler', function () {
         });
     });
 
-    describe('calculateBuildTimes', function () {
+    describe('calculateBuildTimes', () => {
         let graph = {
             'bundle/dep': {
                 deps: []
@@ -75,18 +75,17 @@ describe('BuildProfiler', function () {
             }
         };
 
-        beforeEach(function () {
-            buildGraph = function (graph) {
-                return {
-                    graph,
-                    getDirectDeps(targetName) {
-                        return this.graph[targetName] ? this.graph[targetName].deps : [];
-                    }
-                };
-            };
+        beforeEach(() => {
+            buildGraph = graph => ({
+                graph,
+
+                getDirectDeps(targetName) {
+                    return this.graph[targetName] ? this.graph[targetName].deps : [];
+                }
+            });
         });
 
-        it('should calculate time for each target if parallel run targets', function () {
+        it('should calculate time for each target if parallel run targets', () => {
             buildTimes = {
                 'bundle/dep': {
                     startTime: 100500,
@@ -128,7 +127,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should calculate time for each target if parent target run deps after some time  ', function () {
+        it('should calculate time for each target if parent target run deps after some time  ', () => {
             buildTimes = {
                 'bundle/dep': {
                     startTime: 100503,
@@ -176,7 +175,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should calculate time for each target if deps run before target', function () {
+        it('should calculate time for each target if deps run before target', () => {
             buildTimes = {
                 'bundle/dep': {
                     startTime: 100500,
@@ -219,7 +218,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should calculate time for each target if deps end before target run', function () {
+        it('should calculate time for each target if deps end before target run', () => {
             buildTimes = {
                 'bundle/dep': {
                     startTime: 100500,
@@ -262,7 +261,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should calculate time for each target which are independent of each other', function () {
+        it('should calculate time for each target which are independent of each other', () => {
             graph = {
                 'some-bundle/parallel-target-1': { deps: [] },
                 'some-bundle/parallel-target-2': { deps: [] }
@@ -309,7 +308,7 @@ describe('BuildProfiler', function () {
             expect(buildTimes).to.be.deep.equal(expected);
         });
 
-        it('should calculate time target which waiting targets with breaks', function () {
+        it('should calculate time target which waiting targets with breaks', () => {
             graph = {
                 'bundle/target': { deps: ['bundle/dep-1', 'bundle/dep-2', 'bundle/dep-3'] },
                 'bundle/dep-1': { deps: [] },
@@ -403,12 +402,12 @@ describe('BuildProfiler', function () {
         });
     });
 
-    describe('calculateTechMetrics', function () {
-        beforeEach(function () {
+    describe('calculateTechMetrics', () => {
+        beforeEach(() => {
             profiler = new BuildProfiler({});
         });
 
-        it('should return empty metrics', function () {
+        it('should return empty metrics', () => {
             const buildTimes = [];
 
             const metrics = profiler.calculateTechMetrics(buildTimes);
@@ -416,7 +415,7 @@ describe('BuildProfiler', function () {
             expect(metrics).to.be.deep.equal([]);
         });
 
-        it('should calculate metrics for target', function () {
+        it('should calculate metrics for target', () => {
             const buildTimes = [{
                 target: 'target.css',
                 techName: 'css',
@@ -444,7 +443,7 @@ describe('BuildProfiler', function () {
             ]);
         });
 
-        it('should aggregate times by tech', function () {
+        it('should aggregate times by tech', () => {
             const buildTimes = [
                 {
                     target: 'bundle-1/target.css',
@@ -487,7 +486,7 @@ describe('BuildProfiler', function () {
             ]);
         });
 
-        it('should calculate real tech time', function () {
+        it('should calculate real tech time', () => {
             const targetTimes = {
                 techName: 'css',
                 startTime: 0,
@@ -518,7 +517,7 @@ describe('BuildProfiler', function () {
             ]);
         });
 
-        it('should ignore wait time', function () {
+        it('should ignore wait time', () => {
             const buildTimes = [
                 {
                     target: 'bundle-1/target.css',
@@ -561,7 +560,7 @@ describe('BuildProfiler', function () {
             ]);
         });
 
-        it('should calculate metrics for different techs', function () {
+        it('should calculate metrics for different techs', () => {
             const buildTimes = [
                 {
                     target: 'bundle-1/target.js',

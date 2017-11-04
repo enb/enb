@@ -11,15 +11,15 @@ const ProjectConfig = require('../../../lib/config/project-config');
 const NodeMaskConfig = require('../../../lib/config/node-mask-config');
 const Logger = require('../../../lib/logger');
 
-describe('make/requireNodeSources', function () {
+describe('make/requireNodeSources', () => {
     let makePlatform;
     let sandbox;
 
-    before(function () {
+    before(() => {
         sandbox = sinon.sandbox.create();
     });
 
-    beforeEach(function (done) {
+    beforeEach(done => {
         mockFs({});
 
         sandbox.stub(ProjectConfig.prototype);
@@ -29,22 +29,22 @@ describe('make/requireNodeSources', function () {
         sandbox.stub(vowFs, 'makeDir').returns(vow.fulfill());
 
         makePlatform = new MakePlatform();
-        makePlatform.init('/path/to/project', 'mode', function () {}).then(done);
+        makePlatform.init('/path/to/project', 'mode', () => {}).then(done);
         makePlatform.setLogger(sinon.createStubInstance(Logger));
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
         sandbox.restore();
     });
 
-    it('should return promise', function () {
+    it('should return promise', () => {
         const result = makePlatform.requireNodeSources('path/to/node');
 
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
-    it('should init required node', function () {
+    it('should init required node', () => {
         const initNode = sinon.spy(makePlatform, 'initNode');
 
         makePlatform.requireNodeSources('path/to/node');
@@ -52,18 +52,18 @@ describe('make/requireNodeSources', function () {
         expect(initNode).to.be.calledWith('path/to/node');
     });
 
-    it('should require sources from initialized node', function () {
+    it('should require sources from initialized node', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.requireNodeSources('path/to/node').then(function () {
+        return makePlatform.requireNodeSources('path/to/node').then(() => {
             expect(Node.prototype.requireSources).to.be.called;
         });
     });
 
-    it('should pass required targets to node when require sources from it', function () {
+    it('should pass required targets to node when require sources from it', () => {
         setup({ nodePath: 'path/to/node' });
 
-        return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(function () {
+        return makePlatform.requireNodeSources('path/to/node', ['?.js']).then(() => {
             expect(Node.prototype.requireSources).to.be.calledWith(['?.js']);
         });
     });

@@ -6,22 +6,22 @@ const path = require('path');
 const mockFs = require('mock-fs');
 const CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe('cache/cache-storage', function () {
+describe('cache/cache-storage', () => {
     const sandbox = sinon.sandbox.create();
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
         mockFs.restore();
     });
 
-    describe('constructor', function () {
-        beforeEach(function () {
+    describe('constructor', () => {
+        beforeEach(() => {
             mockFs({});
 
             sandbox.spy(fs, 'existsSync');
         });
 
-        it('should save filename', function () {
+        it('should save filename', () => {
             const storage = createCacheStorage_('/path/to/test_file.json');
 
             storage.load();
@@ -30,8 +30,8 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('load', function () {
-        it('should set data as empty object if cache file does not exist', function () {
+    describe('load', () => {
+        it('should set data as empty object if cache file does not exist', () => {
             mockFs({
                 '/path/to': {
                     'test_file.json': ''
@@ -46,7 +46,7 @@ describe('cache/cache-storage', function () {
             assertStorageData('/path/to/test_file.json', {});
         });
 
-        it('should load cached data', function () {
+        it('should load cached data', () => {
             mockFs({
                 '/path/to': {
                     'test_file.json': '{ "foo": "bar" }'
@@ -61,7 +61,7 @@ describe('cache/cache-storage', function () {
             assertStorageData('/path/to/test_file.json', { foo: 'bar' });
         });
 
-        it('should set data as empty object if exception occured during loading cache file', function () {
+        it('should set data as empty object if exception occured during loading cache file', () => {
             mockFs({
                 '/path/to': {
                     'test_file.json': 'throw new Error();'
@@ -77,8 +77,8 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('save', function () {
-        it('should write data in JSON format', function () {
+    describe('save', () => {
+        it('should write data in JSON format', () => {
             mockFs({
                 '/path/to': {}
             });
@@ -96,15 +96,15 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('saveAsync', function () {
-        it('should return promise', function () {
+    describe('saveAsync', () => {
+        it('should return promise', () => {
             const storage = createCacheStorage_();
             const result = storage.saveAsync();
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
 
-        it('should save data to file asynchronously', function () {
+        it('should save data to file asynchronously', () => {
             mockFs({
                 '/path/to': {}
             });
@@ -113,7 +113,7 @@ describe('cache/cache-storage', function () {
 
             storage.set('testPrefix', 'testKey', 'test_value');
 
-            return storage.saveAsync().then(function () {
+            return storage.saveAsync().then(() => {
                 assertStorageData('/path/to/test_file.json', {
                     testPrefix: {
                         testKey: 'test_value'
@@ -122,7 +122,7 @@ describe('cache/cache-storage', function () {
             });
         });
 
-        it('should write data to stream split in chunks by prefix', function () {
+        it('should write data to stream split in chunks by prefix', () => {
             const writeStream = sinon.createStubInstance(fs.WriteStream);
             const storage = createCacheStorage_('/path/to/test_file.json');
 
@@ -139,7 +139,7 @@ describe('cache/cache-storage', function () {
             }));
         });
 
-        it('should reject promise if error ocured during file write', function () {
+        it('should reject promise if error ocured during file write', () => {
             mockFs({});
 
             const storage = createCacheStorage_('/path/to/test_file.json');
@@ -150,8 +150,8 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('invalidate', function () {
-        it('should remove value by key and prefix', function () {
+    describe('invalidate', () => {
+        it('should remove value by key and prefix', () => {
             const storage = createCacheStorage_();
 
             storage.set('testPrefix', 'testKey', 'test_value');
@@ -163,7 +163,7 @@ describe('cache/cache-storage', function () {
                 .to.be.undefined;
         });
 
-        it('should not delete another data for this prefix', function () {
+        it('should not delete another data for this prefix', () => {
             const storage = createCacheStorage_();
 
             storage.set('testPrefix', 'testKey', 'test_value');
@@ -175,8 +175,8 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('dropPrefix', function () {
-        it('should delete all data for provided prefix', function () {
+    describe('dropPrefix', () => {
+        it('should delete all data for provided prefix', () => {
             const storage = createCacheStorage_();
 
             storage.set('testPrefix', 'testKey', 'test_value');
@@ -189,8 +189,8 @@ describe('cache/cache-storage', function () {
         });
     });
 
-    describe('drop', function () {
-        it('should clear current cache state', function () {
+    describe('drop', () => {
+        it('should clear current cache state', () => {
             const storage = createCacheStorage_();
 
             storage.set('testPrefix', 'testKey', 'test_value');

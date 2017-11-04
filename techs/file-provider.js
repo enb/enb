@@ -41,7 +41,7 @@ module.exports = inherit(enb.BaseTech, {
         const filename = node.resolvePath(target);
 
         return vfs.exists(filename)
-            .then(function (exists) {
+            .then(exists => {
                 if (exists) {
                     node.resolveTarget(target);
                 } else {

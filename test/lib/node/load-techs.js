@@ -6,11 +6,11 @@ const MakePlatform = require('../../../lib/make');
 const Cache = require('../../../lib/cache/cache');
 const BaseTech = require('../../../lib/tech/base-tech');
 
-describe('node/loadTechs', function () {
+describe('node/loadTechs', () => {
     let node;
     let tech;
 
-    beforeEach(function () {
+    beforeEach(() => {
         const nodePath = path.join('path', 'to', 'node');
         const projectDir = path.join('path', 'to', 'project');
 
@@ -25,7 +25,7 @@ describe('node/loadTechs', function () {
         node.setTechs([tech]);
     });
 
-    it('should init registered techs', function () {
+    it('should init registered techs', () => {
         node.loadTechs();
 
         expect(tech.init).to.be.called;

@@ -4,16 +4,16 @@ const mockFs = require('mock-fs');
 const Cache = require('../../../lib/cache/cache');
 const CacheStorage = require('../../../lib/cache/cache-storage');
 
-describe('cache/cache', function () {
+describe('cache/cache', () => {
     const sandbox = sinon.sandbox.create();
 
-    afterEach(function () {
+    afterEach(() => {
         sandbox.restore();
         mockFs.restore();
     });
 
-    describe('constructor', function () {
-        it('should set cache storage', function () {
+    describe('constructor', () => {
+        it('should set cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
 
@@ -22,7 +22,7 @@ describe('cache/cache', function () {
             expect(cacheStorage.get).to.be.called;
         });
 
-        it('should set prefix', function () {
+        it('should set prefix', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -35,19 +35,19 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('destruct', function () {
-        it('should delete reference to cache storage', function () {
+    describe('destruct', () => {
+        it('should delete reference to cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
 
             cache.destruct();
 
-            expect(function () { cache.get(); }).to.throw();
+            expect(() => { cache.get(); }).to.throw();
         });
     });
 
-    describe('get', function () {
-        it('should query data by cache prefix and key',  function () {
+    describe('get', () => {
+        it('should query data by cache prefix and key',  () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -60,8 +60,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('set', function () {
-        it('should set data to cache storage', function () {
+    describe('set', () => {
+        it('should set data to cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
 
@@ -70,7 +70,7 @@ describe('cache/cache', function () {
             expect(cacheStorage.set).to.be.called;
         });
 
-        it('should set value by cache prefix and key', function () {
+        it('should set value by cache prefix and key', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -83,8 +83,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('invalidate', function () {
-        it('should invalidate data in cache storage', function () {
+    describe('invalidate', () => {
+        it('should invalidate data in cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
 
@@ -93,7 +93,7 @@ describe('cache/cache', function () {
             expect(cacheStorage.invalidate).to.be.called;
         });
 
-        it('should invalidate data by cache prefix and key', function () {
+        it('should invalidate data by cache prefix and key', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -106,8 +106,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('drop', function () {
-        it('should drop data by prefix in cache storage', function () {
+    describe('drop', () => {
+        it('should drop data by prefix in cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
 
@@ -116,7 +116,7 @@ describe('cache/cache', function () {
             expect(cacheStorage.dropPrefix).to.be.called;
         });
 
-        it('should drop data by cache prefix and key', function () {
+        it('should drop data by cache prefix and key', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -129,15 +129,15 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('subCache', function () {
-        it('should return cache', function () {
+    describe('subCache', () => {
+        it('should return cache', () => {
             const cache = createCache_();
             const subCache = cache.subCache();
 
             expect(subCache).to.be.instanceOf(Cache);
         });
 
-        it('should pass cache storage to new cache', function () {
+        it('should pass cache storage to new cache', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({ storage: cacheStorage });
             const subCache = cache.subCache();
@@ -147,7 +147,7 @@ describe('cache/cache', function () {
             expect(cacheStorage.get).to.be.called;
         });
 
-        it('should create new cache with additional prefix based on parent cache prefix', function () {
+        it('should create new cache with additional prefix based on parent cache prefix', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             const cache = createCache_({
                 storage: cacheStorage,
@@ -161,8 +161,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('needRebuildFile', function () {
-        it('should return true if no info about file cached', function () {
+    describe('needRebuildFile', () => {
+        it('should return true if no info about file cached', () => {
             const cache = createCache_();
 
             sandbox.stub(cache, 'get');
@@ -171,7 +171,7 @@ describe('cache/cache', function () {
             expect(cache.needRebuildFile('cache_key')).to.be.true;
         });
 
-        it('should return true if cached mtime is not equal current mtime for required file', function () {
+        it('should return true if cached mtime is not equal current mtime for required file', () => {
             mockFs({
                 '/path/to/test_file.js': mockFs.file({
                     mtime: new Date(1)
@@ -185,7 +185,7 @@ describe('cache/cache', function () {
             expect(cache.needRebuildFile('cache_key', '/path/to/test_file.js')).to.be.true;
         });
 
-        it('should return false if cached mtime equal to current mtime for required file', function () {
+        it('should return false if cached mtime equal to current mtime for required file', () => {
             mockFs({
                 '/path/to/test_file.js': mockFs.file({
                     mtime: new Date(1)
@@ -200,8 +200,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('cacheFileInfo', function () {
-        it('should cache info about file', function () {
+    describe('cacheFileInfo', () => {
+        it('should cache info about file', () => {
             mockFs({
                 '/path/to/test_file.js': mockFs.file({
                     mtime: new Date(1)
@@ -223,8 +223,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('needRebuildFileList', function () {
-        it('should return true if no info about file list cached', function () {
+    describe('needRebuildFileList', () => {
+        it('should return true if no info about file list cached', () => {
             const cache = createCache_();
 
             sandbox.stub(cache, 'get');
@@ -233,7 +233,7 @@ describe('cache/cache', function () {
             expect(cache.needRebuildFileList('cache_key')).to.be.true;
         });
 
-        it('should return true if not a file list cached for specific key', function () {
+        it('should return true if not a file list cached for specific key', () => {
             const cache = createCache_();
 
             sandbox.stub(cache, 'get');
@@ -242,7 +242,7 @@ describe('cache/cache', function () {
             expect(cache.needRebuildFileList('cache_key')).to.be.true;
         });
 
-        it('should return true if cached files list length differs from passed files list', function () {
+        it('should return true if cached files list length differs from passed files list', () => {
             const cache = createCache_();
             const fileList = [
                 { fullname: '/path/to/file.js' },
@@ -256,7 +256,7 @@ describe('cache/cache', function () {
         });
 
         it('should return true if file full name in cached file list differs from file full name in ' +
-            'passed file list', function () {
+            'passed file list', () => {
             const cache = createCache_();
             const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
             const cachedFileList = [{ fullname: '/path/to/another_file.js', mtime: 1 }];
@@ -268,7 +268,7 @@ describe('cache/cache', function () {
         });
 
         it('should return true if file mtime in cached file list differs from file mtime in passed file ' +
-            'list', function () {
+            'list', () => {
             const cache = createCache_();
             const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
             const cachedFileList = [{ fullname: '/path/to/file.js', mtime: 2 }];
@@ -279,7 +279,7 @@ describe('cache/cache', function () {
             expect(cache.needRebuildFileList('cache_key', fileList)).to.be.true;
         });
 
-        it('should return false for same file lists', function () {
+        it('should return false for same file lists', () => {
             const cache = createCache_();
             const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
             const cachedFileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
@@ -291,8 +291,8 @@ describe('cache/cache', function () {
         });
     });
 
-    describe('cacheFileList', function () {
-        it('should set file list for sepcific key', function () {
+    describe('cacheFileList', () => {
+        it('should set file list for sepcific key', () => {
             const cache = createCache_();
 
             sinon.stub(cache, 'set');

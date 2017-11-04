@@ -2,9 +2,9 @@
 
 const ModuleConfig = require('../../../lib/config/module-config');
 
-describe('config/module-config', function () {
-    describe('constructor', function () {
-        it('should call parent constructor', function () {
+describe('config/module-config', () => {
+    describe('constructor', () => {
+        it('should call parent constructor', () => {
             const modeConfig = new ModuleConfig();
 
             expect(modeConfig._chains).to.be.instanceOf(Array)
@@ -12,11 +12,11 @@ describe('config/module-config', function () {
         });
     });
 
-    describe('getName', function () {
-        it('should throw error about you need to override getName method', function () {
+    describe('getName', () => {
+        it('should throw error about you need to override getName method', () => {
             const moduleConfig = new ModuleConfig();
 
-            expect(function () { moduleConfig.getName(); }).to.throw('You should override "getName" method of module.');
+            expect(() => { moduleConfig.getName(); }).to.throw('You should override "getName" method of module.');
         });
     });
 });

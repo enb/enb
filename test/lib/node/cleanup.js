@@ -7,11 +7,11 @@ const MakePlatform = require('../../../lib/make');
 const Cache = require('../../../lib/cache/cache');
 const BaseTech = require('../../../lib/tech/base-tech');
 
-describe('node/cleanup', function () {
+describe('node/cleanup', () => {
     let node;
     let tech;
 
-    beforeEach(function () {
+    beforeEach(() => {
         const nodePath = path.join('path', 'to', 'node');
         const projectDir = path.join('path', 'to', 'project');
 
@@ -27,51 +27,51 @@ describe('node/cleanup', function () {
         node.setTechs([tech]);
     });
 
-    describe('cleanTargets', function () {
-        beforeEach(function (done) {
+    describe('cleanTargets', () => {
+        beforeEach(done => {
             // no public method for registering targets available, clean does registering targets inside
-            node.clean().then(function () {
+            node.clean().then(() => {
                 done();
             });
         });
 
-        it('should return promise', function () {
+        it('should return promise', () => {
             const result = node.cleanTargets(['node.js']);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
 
-        it('should throw error if no tech registered for passed target', function () {
-            expect(function () { node.cleanTargets(['node.css']); })
+        it('should throw error if no tech registered for passed target', () => {
+            expect(() => { node.cleanTargets(['node.css']); })
                 .to.throw('There is no tech for target node.css');
         });
 
-        it('should call clean for techs associated with target', function () {
+        it('should call clean for techs associated with target', () => {
             tech.clean.reset(); // reset because clean is being called in constructor
 
-            return node.cleanTargets(['node.js']).then(function  () {
+            return node.cleanTargets(['node.js']).then(() => {
                 expect(tech.clean).to.be.calledOnce;
             });
         });
     });
 
-    describe('clean', function () {
-        it('should return promise', function () {
+    describe('clean', () => {
+        it('should return promise', () => {
             const result = node.clean(['node.js']);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
 
-        it('should register node targets before initiating clean', function () {
-            return node.clean(['node.js']).then(function () {
+        it('should register node targets before initiating clean', () => {
+            return node.clean(['node.js']).then(() => {
                 expect(node.hasRegisteredTarget('node.js')).to.be.true;
             });
         });
 
-        it('should initiate clean for resolved targets', function () {
+        it('should initiate clean for resolved targets', () => {
             const cleanTargets = sinon.spy(node, 'cleanTargets');
 
-            return node.clean(['node.js']).then(function () {
+            return node.clean(['node.js']).then(() => {
                 expect(cleanTargets).to.be.called;
             });
         });

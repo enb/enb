@@ -46,12 +46,12 @@ module.exports = inherit(enb.BaseTech, {
         const fileTarget = this.node.unmaskTargetName(this._fileTarget);
         const _this = this;
         function createSymlink() {
-            return vfs.symLink(fileTarget, symlinkTargetPath).then(function () {
+            return vfs.symLink(fileTarget, symlinkTargetPath).then(() => {
                 _this.node.resolveTarget(symlinkTarget);
             });
         }
-        return this.node.requireSources([fileTarget]).then(function () {
-            return vfs.exists(symlinkTargetPath).then(function (exists) {
+        return this.node.requireSources([fileTarget]).then(() => {
+            return vfs.exists(symlinkTargetPath).then(exists => {
                 if (exists) {
                     return vfs.remove(symlinkTargetPath).then(createSymlink);
                 } else {

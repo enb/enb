@@ -1,5 +1,5 @@
 'use strict'
 
-module.exports = function (projectConfig) {
+module.exports = projectConfig => {
     projectConfig.___xxx___ = true;
 };

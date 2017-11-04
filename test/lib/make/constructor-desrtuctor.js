@@ -11,33 +11,33 @@ const CacheStorage = require('../../../lib/cache/cache-storage');
 const Cache = require('../../../lib/cache/cache');
 const SharedResources = require('../../../lib/shared-resources');
 
-describe('make/constructor-destructor', function () {
+describe('make/constructor-destructor', () => {
     const sandbox = sinon.sandbox.create();
     let makePlatform;
 
-    beforeEach(function () {
+    beforeEach(() => {
         mockFs({});
         makePlatform = new MakePlatform();
     });
 
-    afterEach(function () {
+    afterEach(() => {
         mockFs.restore();
         sandbox.restore();
     });
 
-    describe('constructor', function () {
-        it('should create container for env variables', function () {
+    describe('constructor', () => {
+        it('should create container for env variables', () => {
             expect(makePlatform.getEnv()).to.be.instanceOf(Object)
                 .and.to.be.empty;
         });
 
-        it('should create container for shared resources', function () {
+        it('should create container for shared resources', () => {
             expect(makePlatform.getSharedResources()).to.be.instanceOf(SharedResources);
         });
     });
 
-    describe('destructor', function () {
-        it('should destroy shared resources', function () {
+    describe('destructor', () => {
+        it('should destroy shared resources', () => {
             sandbox.stub(SharedResources.prototype);
 
             makePlatform.destruct();
@@ -45,13 +45,13 @@ describe('make/constructor-destructor', function () {
             expect(SharedResources.prototype.destruct).to.be.called;
         });
 
-        it('should delete reference to project config', function () {
+        it('should delete reference to project config', () => {
             makePlatform.destruct();
 
             expect(makePlatform.getProjectConfig()).to.be.undefined;
         });
 
-        it('should drop cache storage', function () {
+        it('should drop cache storage', () => {
             const cacheStorage = sinon.createStubInstance(CacheStorage);
             makePlatform.setCacheStorage(cacheStorage);
 
@@ -60,7 +60,7 @@ describe('make/constructor-destructor', function () {
             expect(cacheStorage.drop).to.be.called;
         });
 
-        it('should delete reference to cache storage', function () {
+        it('should delete reference to cache storage', () => {
             makePlatform.setCacheStorage(sinon.createStubInstance(CacheStorage));
 
             makePlatform.destruct();
@@ -68,7 +68,7 @@ describe('make/constructor-destructor', function () {
             expect(makePlatform.getCacheStorage()).to.be.undefined;
         });
 
-        it('should destroy cache', function () {
+        it('should destroy cache', () => {
             sandbox.stub(Cache.prototype);
 
             makePlatform.buildTargets(); // creates cache internally
@@ -78,8 +78,8 @@ describe('make/constructor-destructor', function () {
             expect(Cache.prototype.destruct).to.be.called;
         });
 
-        describe('tests require node init', function () {
-            beforeEach(function () {
+        describe('tests require node init', () => {
+            beforeEach(() => {
                 mockFs({});
 
                 sandbox.stub(Node.prototype);
@@ -88,27 +88,27 @@ describe('make/constructor-destructor', function () {
                 sandbox.stub(fs, 'existsSync').returns(true);
                 sandbox.stub(vfs, 'makeDir').returns(vow.resolve());
 
-                makePlatform.init('path/to/project', null, function () {});
+                makePlatform.init('path/to/project', null, () => {});
                 makePlatform.initNode('path/to/node');
             });
 
-            afterEach(function () {
+            afterEach(() => {
                 mockFs.restore();
                 sandbox.restore();
             });
 
-            it('must destroy all nodes', function () {
+            it('must destroy all nodes', () => {
                 makePlatform.destruct();
 
                 expect(Node.prototype.destruct).to.be.called;
             });
 
-            it('should delete level naming schemes', function () {
+            it('should delete level naming schemes', () => {
                 ProjectConfig.prototype.getLevelNamingSchemes.returns({ foo: { bar: 'baz' } });
 
                 makePlatform.destruct();
 
-                expect(function () { makePlatform.getLevelNamingScheme('foo'); })
+                expect(() => { makePlatform.getLevelNamingScheme('foo'); })
                     .to.throw();
             });
         });

@@ -20,7 +20,7 @@ describe('node/path utils', function () {
     describe('resolvePath', function () {
         it('should return absolute path to file in node directory', function () {
             expect(node.resolvePath('test_file.js'))
-                .to.be.equal(path.resolve(projectDir, nodePath) + path.sep + 'test_file.js');
+                .to.be.equal(`${path.resolve(projectDir, nodePath)}${path.sep}test_file.js`);
         });
     });
 

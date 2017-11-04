@@ -83,7 +83,7 @@ describe('logger', function () {
         });
 
         it('should colorize time with grey color by default', function () {
-            const timeWithDash = REGEX.time.toString().replace(/\//g, '') + ' - ';
+            const timeWithDash = `${REGEX.time.toString().replace(/\//g, '')} - `;
             const colorizedTimeWithDash = colors.grey(timeWithDash).replace(/\[/g, '\\[');
 
             logger.log(message);
@@ -129,7 +129,7 @@ describe('logger', function () {
 
         it('should wrap scope into [ ]', function () {
             const scope = 'test_scope';
-            const expectedScope = '[' + colors.blue(scope) + ']';
+            const expectedScope = `[${colors.blue(scope)}]`;
 
             logger.log(message, scope);
 
@@ -199,7 +199,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            const formattedAction = '[' + colors.green(action) + ']';
+            const formattedAction = `[${colors.green(action)}]`;
 
             logger.logAction(action, target, additionalInfo);
 
@@ -263,7 +263,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            const formattedAction = '[' + colors.yellow(action) + ']';
+            const formattedAction = `[${colors.yellow(action)}]`;
 
             logger.logWarningAction(action, target, message);
 
@@ -298,7 +298,7 @@ describe('logger', function () {
         });
 
         it('should add \'deprecated\' action to log message', function () {
-            const deprecated = '[' + colors.yellow('deprecated').replace() + ']';
+            const deprecated = `[${colors.yellow('deprecated').replace()}]`;
 
             logger.logTechIsDeprecated();
 
@@ -345,7 +345,7 @@ describe('logger', function () {
         });
 
         it('should log old tech path in format %this_package%/techs/%deprecated_tech%', function () {
-            const oldTechPath = thisPackage + '/techs/' + deprecatedTech;
+            const oldTechPath = `${thisPackage}/techs/${deprecatedTech}`;
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -353,7 +353,7 @@ describe('logger', function () {
         });
 
         it('should make old tech path bold', function () {
-            const colorizedOldTechPath = colors.bold(thisPackage + '/techs/' + deprecatedTech);
+            const colorizedOldTechPath = colors.bold(`${thisPackage}/techs/${deprecatedTech}`);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -375,7 +375,7 @@ describe('logger', function () {
         });
 
         it('should log new tech path in format %new_package%/techs/%new_tech%', function () {
-            const newTechPath = newPackage + '/techs/' + newTech;
+            const newTechPath = `${newPackage}/techs/${newTech}`;
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -383,7 +383,7 @@ describe('logger', function () {
         });
 
         it('should make new tech path bold', function () {
-            const newTechPathBold = colors.bold(newPackage + '/techs/' + newTech);
+            const newTechPathBold = colors.bold(`${newPackage}/techs/${newTech}`);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -397,7 +397,7 @@ describe('logger', function () {
         });
 
         it('should add description to the end of log message', function () {
-            const regex = new RegExp(description + '$');
+            const regex = new RegExp(`${description}$`);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -432,7 +432,7 @@ describe('logger', function () {
         });
 
         it('should add \'deprecated\' action to log message', function () {
-            const deprecated = '[' + colors.yellow('deprecated').replace() + ']';
+            const deprecated = `[${colors.yellow('deprecated').replace()}]`;
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -498,7 +498,7 @@ describe('logger', function () {
         });
 
         it('should log tech path in format \'%package_name%/techs/%tech_name%\'', function () {
-            const techPath = thisPackage + '/techs/' + tech;
+            const techPath = `${thisPackage}/techs/${tech}`;
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -506,7 +506,7 @@ describe('logger', function () {
         });
 
         it('should make tech path bold', function () {
-            const boldTechPath = colors.bold(thisPackage + '/techs/' + tech);
+            const boldTechPath = colors.bold(`${thisPackage}/techs/${tech}`);
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -520,7 +520,7 @@ describe('logger', function () {
         });
 
         it('should add description to the end of the message', function () {
-            const regex = new RegExp(description + '$');
+            const regex = new RegExp(`${description}$`);
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -554,7 +554,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            const formattedAction = '[' + colors.red(action) + ']';
+            const formattedAction = `[${colors.red(action)}]`;
 
             logger.logErrorAction(action);
 

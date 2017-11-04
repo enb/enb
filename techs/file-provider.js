@@ -45,7 +45,7 @@ module.exports = inherit(enb.BaseTech, {
                 if (exists) {
                     node.resolveTarget(target);
                 } else {
-                    node.rejectTarget(target, new Error('file not found: ' + filename));
+                    node.rejectTarget(target, new Error(`file not found: ${filename}`));
                 }
             }, () => {});
     },

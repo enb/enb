@@ -423,7 +423,7 @@ describe('config/project-config', function () {
 
         it('should not allow registering multiple modules for same name', function () {
             const anotherModuleConfig = new ModuleConfig();
-            const expectedExcMessage = 'Module "' + moduleName + '" is already registered';
+            const expectedExcMessage = `Module "${moduleName}" is already registered`;
             const func = function () {
                 projectConfig.registerModule(moduleName, moduleConfig);
                 projectConfig.registerModule(moduleName, anotherModuleConfig);
@@ -461,7 +461,7 @@ describe('config/project-config', function () {
 
         it('should throw error on attempt to configure non-registered module', function () {
             const nonRegisteredModuleName = 'non_registered_module';
-            const expectedErrorMessage = 'Module "' + nonRegisteredModuleName + '" is not registered.';
+            const expectedErrorMessage = `Module "${nonRegisteredModuleName}" is not registered.`;
             const func = function () { projectConfig.module(nonRegisteredModuleName, configurator); };
 
             expect(func).to.throw(expectedErrorMessage);
@@ -765,7 +765,7 @@ describe('config/project-config', function () {
         });
 
         it('should not resolve absolute level path', function () {
-            const absoluteLevelPath = '/' + levelPath;
+            const absoluteLevelPath = `/${levelPath}`;
 
             projectConfig.setLevelNamingScheme(absoluteLevelPath, schemeBuilder);
 

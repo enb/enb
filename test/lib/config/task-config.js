@@ -47,7 +47,7 @@ describe('config/task-config', function () {
         });
 
         it('should set logger as sublogger from make platform', function () {
-            const expectedSubloggerScope = ':' + taskName;
+            const expectedSubloggerScope = `:${taskName}`;
 
             expect(taskConfig._logger._scope).to.be.equal(expectedSubloggerScope);
         });
@@ -255,7 +255,7 @@ describe('config/task-config', function () {
 
         it('should log command which will be executed', function () {
             const logSpy = new sinon.spy(taskConfig, 'log');
-            const expectedOutput = '$ ' + command;
+            const expectedOutput = `$ ${command}`;
 
             taskConfig.shell(command);
 
@@ -273,7 +273,7 @@ describe('config/task-config', function () {
         });
 
         it('should pass command output to promise', function () {
-            const expectedOutput = 'test' + EOL;
+            const expectedOutput = `test${EOL}`;
 
             return taskConfig.shell(command).then(function (results) {
                 const output = results[0];

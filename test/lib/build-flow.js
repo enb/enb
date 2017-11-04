@@ -164,7 +164,7 @@ describe('build-flow', function () {
                 .name('name')
                 .target('target', target)
                 .wrapper(function (str) {
-                    return '<div>' + str + '</div>';
+                    return `<div>${str}</div>`;
                 })
                 .builder(function () {
                     return 'Hello World!';
@@ -909,12 +909,12 @@ describe('build-flow', function () {
 
             return build(Tech)
                 .should.become([
-                    '/* begin: ' + path1 + ' */',
+                    `/* begin: ${path1} */`,
                     contents1,
-                    '/* end: ' + path1 + ' */',
-                    '/* begin: ' + path2 + ' */',
+                    `/* end: ${path1} */`,
+                    `/* begin: ${path2} */`,
                     contents2,
-                    '/* end: ' + path2 + ' */'
+                    `/* end: ${path2} */`
                 ].join(EOL));
         });
 
@@ -930,8 +930,8 @@ describe('build-flow', function () {
 
             return build(Tech)
                 .should.become([
-                    filename1 + ': ' + contents1,
-                    filename2 + ': ' + contents2
+                    `${filename1}: ${contents1}`,
+                    `${filename2}: ${contents2}`
                 ].join(EOL));
         });
 
@@ -964,8 +964,8 @@ describe('build-flow', function () {
 
             return build(Tech)
                 .should.become([
-                    path.resolve('bundle', 'target-1.ext') + ': ' + contents1,
-                    path.resolve('bundle', 'target-2.ext') + ': ' + contents2
+                    `${path.resolve('bundle', 'target-1.ext')}: ${contents1}`,
+                    `${path.resolve('bundle', 'target-2.ext')}: ${contents2}`
                 ].join(EOL));
         });
 
@@ -1331,7 +1331,7 @@ describe('build-flow', function () {
                 it('should allow to call base builder via __base property', function () {
                     const ChildTech = Tech.buildFlow()
                         .builder(function () {
-                            return '!' + this.__base.apply(this, arguments);
+                            return `!${this.__base.apply(this, arguments)}`;
                         })
                         .createTech();
 
@@ -1343,7 +1343,7 @@ describe('build-flow', function () {
                     const ChildTech = Tech.buildFlow().createTech();
                     const GrandChildTech = ChildTech.buildFlow()
                         .builder(function () {
-                            return '!' + this.__base.apply(this, arguments);
+                            return `!${this.__base.apply(this, arguments)}`;
                         })
                         .createTech();
 
@@ -1379,7 +1379,7 @@ describe('build-flow', function () {
                         .builder(_thisHello)
                         .methods({
                             hello() {
-                                return '!' + this.__base.apply(this, arguments);
+                                return `!${this.__base.apply(this, arguments)}`;
                             }
                         })
                         .createTech();
@@ -1395,7 +1395,7 @@ describe('build-flow', function () {
                     const GrandChildTech = ChildTech.buildFlow()
                         .methods({
                             hello() {
-                                return '!' + this.__base.apply(this, arguments);
+                                return `!${this.__base.apply(this, arguments)}`;
                             }
                         })
                         .createTech();
@@ -1432,7 +1432,7 @@ describe('build-flow', function () {
                         .builder(_staticHello)
                         .staticMethods({
                             hello() {
-                                return '!' + this.__base.apply(this, arguments);
+                                return `!${this.__base.apply(this, arguments)}`;
                             }
                         })
                         .createTech();
@@ -1448,7 +1448,7 @@ describe('build-flow', function () {
                     const GrandChildTech = ChildTech.buildFlow()
                         .staticMethods({
                             hello() {
-                                return '!' + this.__base.apply(this, arguments);
+                                return `!${this.__base.apply(this, arguments)}`;
                             }
                         })
                         .createTech();

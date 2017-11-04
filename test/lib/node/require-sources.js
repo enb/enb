@@ -83,7 +83,7 @@ describe('node/require sources', function () {
 
         it('should reject require sources if no one of registered techs can build required target', function () {
             return expect(node.requireSources(['?.css']))
-                .to.be.rejectedWith('There is no tech for target ' + path.join(nodePath, 'node.css') + '.');
+                .to.be.rejectedWith(`There is no tech for target ${path.join(nodePath, 'node.css')}.`);
         });
 
         it('should start building required target if build was not already started', function () {

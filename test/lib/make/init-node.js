@@ -89,7 +89,7 @@ describe('make/initNode', function () {
         setup({ nodePath: 'path/to/node' });
 
         return makePlatform.initNode('path/to/node').then(function () {
-            expect(vowFs.makeDir).to.be.calledWith(path.normalize(makePlatform.getDir() + '/path/to/node'));
+            expect(vowFs.makeDir).to.be.calledWith(path.normalize(`${makePlatform.getDir()}/path/to/node`));
         });
     });
 

@@ -181,7 +181,7 @@ function setup(cacheStorage, makePlatform, settings) {
                 })
             }
         },
-        'package.json': '{ "version": "' + settings.currentENBVersion + '" }'
+        'package.json': `{ "version": "${settings.currentENBVersion}" }`
     });
 
     makePlatform.init('/path/to/project', settings.currentMakePlatformMode);

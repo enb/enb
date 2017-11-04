@@ -3,7 +3,6 @@ var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
-var _ = require('lodash');
 var Node = require('../../../lib/node/node');
 var nodeFactory = require('../../../lib/node');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -230,11 +229,13 @@ describe('make/initNode', function () {
 });
 
 function setup (params) {
-    _.defaults(params, {
+    var defaults = {
         nodePath: 'default/path',
         nodeConfig: sinon.createStubInstance(NodeConfig),
         nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig)
-    });
+    };
+
+    params = Object.assign({}, defaults, params);
 
     ProjectConfig.prototype.getNodeConfig
         .withArgs(params.nodePath).returns(params.nodeConfig);

@@ -3,7 +3,6 @@ var path = require('path');
 var vow = require('vow');
 var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
-var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var Node = require('../../../lib/node/node');
 var ProjectConfig = require('../../../lib/config/project-config');
@@ -126,12 +125,9 @@ describe('make/buildTargets', function () {
 
 function setup (settings) {
     var nodeConfigs = {};
+    var defaults = { nodePath: 'default/path' };
 
-    settings = settings || {};
-
-    _.defaults(settings, {
-        nodePath: 'default/path'
-    });
+    settings = Object.assign({}, defaults, settings);
 
     nodeConfigs[settings.nodePath] = sinon.createStubInstance(NodeConfig);
 

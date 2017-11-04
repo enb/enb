@@ -2,7 +2,6 @@ var fs = require('fs');
 var vow = require('vow');
 var vowFs = require('vow-fs');
 var mockFs = require('mock-fs');
-var _ = require('lodash');
 var MakePlatform = require('../../../lib/make');
 var Node = require('../../../lib/node/node');
 var NodeConfig = require('../../../lib/config/node-config');
@@ -69,8 +68,9 @@ describe('make/requireNodeSources', function () {
 });
 
 function setup (settings) {
-    settings = settings || {};
-    _.defaults(settings, { nodePath: 'default/path' });
+    var defaults = { nodePath: 'default/path' };
+
+    settings = Object.assign({}, defaults, settings);
 
     ProjectConfig.prototype.getNodeConfig
         .withArgs(settings.nodePath).returns(sinon.createStubInstance(NodeConfig));

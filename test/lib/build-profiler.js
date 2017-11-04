@@ -407,7 +407,7 @@ describe('BuildProfiler', function () {
         });
 
         it('should return empty metrics', function () {
-            var buildTimes = {};
+            var buildTimes = [];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 
@@ -415,20 +415,19 @@ describe('BuildProfiler', function () {
         });
 
         it('should calculate metrics for target', function () {
-            var buildTimes = {
-                'target.css': {
-                    techName: 'css',
+            var buildTimes = [{
+                target: 'target.css',
+                techName: 'css',
+                startTime: 10,
+                endTime: 20,
+                selfTime: 10,
+                totalTime: 10,
+                watingTime: 0,
+                timeline: [{
                     startTime: 10,
-                    endTime: 20,
-                    selfTime: 10,
-                    totalTime: 10,
-                    watingTime: 0,
-                    timeline: [{
-                        startTime: 10,
-                        endTime: 20
-                    }]
-                }
-            };
+                    endTime: 20
+                }]
+            }];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 
@@ -444,8 +443,9 @@ describe('BuildProfiler', function () {
         });
 
         it('should aggregate times by tech', function () {
-            var buildTimes = {
-                'bundle-1/target.css': {
+            var buildTimes = [
+                {
+                    target: 'bundle-1/target.css',
                     techName: 'css',
                     startTime: 0,
                     endTime: 10,
@@ -457,7 +457,8 @@ describe('BuildProfiler', function () {
                         endTime: 10
                     }]
                 },
-                'bundle-2/target.css': {
+                {
+                    target: 'bundle-2/target.css',
                     techName: 'css',
                     startTime: 10,
                     endTime: 20,
@@ -469,7 +470,7 @@ describe('BuildProfiler', function () {
                         endTime: 20
                     }]
                 }
-            };
+            ];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 
@@ -497,10 +498,10 @@ describe('BuildProfiler', function () {
                     endTime: 10
                 }]
             };
-            var buildTimes = {
-                'bundle-1/target.css': targetTimes,
-                'bundle-2/target.css': targetTimes
-            };
+            var buildTimes = [
+                Object.assign({}, targetTimes, { target: 'bundle-1/target.css' }),
+                Object.assign({}, targetTimes, { target: 'bundle-2/target.css' })
+            ];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 
@@ -516,8 +517,9 @@ describe('BuildProfiler', function () {
         });
 
         it('should ignore wait time', function () {
-            var buildTimes = {
-                'bundle-1/target.css': {
+            var buildTimes = [
+                {
+                    target: 'bundle-1/target.css',
                     techName: 'css',
                     startTime: 0,
                     endTime: 100,
@@ -529,7 +531,8 @@ describe('BuildProfiler', function () {
                         endTime: 100
                     }]
                 },
-                'bundle-2/target.css': {
+                {
+                    target: 'bundle-2/target.css',
                     techName: 'css',
                     startTime: 150,
                     endTime: 200,
@@ -541,7 +544,7 @@ describe('BuildProfiler', function () {
                         endTime: 200
                     }]
                 }
-            };
+            ];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 
@@ -557,8 +560,9 @@ describe('BuildProfiler', function () {
         });
 
         it('should calculate metrics for different techs', function () {
-            var buildTimes = {
-                'bundle-1/target.js': {
+            var buildTimes = [
+                {
+                    target: 'bundle-1/target.js',
                     techName: 'js',
                     startTime: 0,
                     endTime: 100,
@@ -570,7 +574,8 @@ describe('BuildProfiler', function () {
                         endTime: 100
                     }]
                 },
-                'bundle-2/target.css': {
+                {
+                    target: 'bundle-2/target.css',
                     techName: 'css',
                     startTime: 150,
                     endTime: 200,
@@ -582,7 +587,7 @@ describe('BuildProfiler', function () {
                         endTime: 200
                     }]
                 }
-            };
+            ];
 
             var metrics = profiler.calculateTechMetrics(buildTimes);
 

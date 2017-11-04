@@ -1301,7 +1301,9 @@ describe('build-flow', function () {
         });
 
         describe('super', function () {
-            var MyBaseTech, Tech, bundle;
+            var MyBaseTech;
+            var Tech;
+            var bundle;
             beforeEach(function () {
                 bundle = new MockNode('bundle');
                 MyBaseTech = flow

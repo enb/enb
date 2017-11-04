@@ -20,10 +20,11 @@
  * } ]);
  * ```
  */
-var vow = require('vow'),
-    enb = require('../lib/api'),
-    vfs = enb.asyncFs,
-    File = require('enb-source-map/lib/file');
+var vow = require('vow');
+
+var enb = require('../lib/api');
+var vfs = enb.asyncFs;
+var File = require('enb-source-map/lib/file');
 
 module.exports = enb.buildFlow.create()
     .name('file-merge')

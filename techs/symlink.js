@@ -19,9 +19,10 @@
  * } ]);
  * ```
  */
- var inherit = require('inherit'),
-     enb = require('../lib/api'),
-     vfs = enb.asyncFs;
+var inherit = require('inherit');
+
+var enb = require('../lib/api');
+var vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
     getName: function () {

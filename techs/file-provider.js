@@ -15,9 +15,10 @@
  * nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
  * ```
  */
-var inherit = require('inherit'),
-    enb = require('../lib/api'),
-    vfs = enb.asyncFs;
+var inherit = require('inherit');
+
+var enb = require('../lib/api');
+var vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
     getName: function () {
@@ -33,9 +34,9 @@ module.exports = inherit(enb.BaseTech, {
     },
 
     build: function () {
-        var node = this.node,
-            target = node.unmaskTargetName(this._target),
-            filename = node.resolvePath(target);
+        var node = this.node;
+        var target = node.unmaskTargetName(this._target);
+        var filename = node.resolvePath(target);
 
         return vfs.exists(filename)
             .then(function (exists) {

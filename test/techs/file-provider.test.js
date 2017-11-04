@@ -8,9 +8,9 @@ var MockNode = proxyquire('mock-enb/lib/mock-node', {
 var FileProviderTech = require('../../techs/file-provider');
 
 describe('techs/file-provider', function () {
-    var bundle,
-        resolveSpy,
-        rejectSpy;
+    var bundle;
+    var resolveSpy;
+    var rejectSpy;
 
     beforeEach(function () {
         mockFs({

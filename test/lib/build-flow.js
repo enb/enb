@@ -705,7 +705,7 @@ describe('build-flow', function () {
         function build(Tech, data) {
             var requires = [];
             var MyMockNode = inherit(MockNode, {
-                requireSources: function (sources) {
+                requireSources(sources) {
                     requires = [].concat(requires, sources);
 
                     return this.__base(sources);
@@ -1160,7 +1160,7 @@ describe('build-flow', function () {
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
-                        hello: function () {
+                        hello() {
                             return expected;
                         }
                     })
@@ -1187,10 +1187,10 @@ describe('build-flow', function () {
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
-                        hello: function () {
+                        hello() {
                             return this.hi();
                         },
-                        hi: function () {
+                        hi() {
                             return expected;
                         }
                     })
@@ -1216,7 +1216,7 @@ describe('build-flow', function () {
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
-                        hello: function () {
+                        hello() {
                             return 'Hello World!';
                         }
                     })
@@ -1227,7 +1227,7 @@ describe('build-flow', function () {
                         actual = this.hello();
                     })
                     .methods({
-                        hello: function () {
+                        hello() {
                             return 'Hi World!';
                         }
                     })
@@ -1248,7 +1248,7 @@ describe('build-flow', function () {
                     .name('name')
                     .target('target', 'file.ext')
                     .staticMethods({
-                        hello: function () {
+                        hello() {
                             return expected;
                         }
                     })
@@ -1274,7 +1274,7 @@ describe('build-flow', function () {
                     .name('name')
                     .target('target', 'file.ext')
                     .staticMethods({
-                        hello: function () {
+                        hello() {
                             return 'Hello World!';
                         }
                     })
@@ -1285,7 +1285,7 @@ describe('build-flow', function () {
                         actual = ChildTech.hello();
                     })
                     .staticMethods({
-                        hello: function () {
+                        hello() {
                             return 'Hi World!';
                         }
                     })
@@ -1358,7 +1358,7 @@ describe('build-flow', function () {
                     Tech = MyBaseTech.buildFlow()
                         .builder(function () { return 'Definitely not forty two.'; })
                         .methods({
-                            hello: function () { return 42; }
+                            hello() { return 42; }
                         })
                         .createTech();
                 });
@@ -1376,7 +1376,7 @@ describe('build-flow', function () {
                     var ChildTech = Tech.buildFlow()
                         .builder(_thisHello)
                         .methods({
-                            hello: function () {
+                            hello() {
                                 return '!' + this.__base.apply(this, arguments);
                             }
                         })
@@ -1392,7 +1392,7 @@ describe('build-flow', function () {
                         .createTech();
                     var GrandChildTech = ChildTech.buildFlow()
                         .methods({
-                            hello: function () {
+                            hello() {
                                 return '!' + this.__base.apply(this, arguments);
                             }
                         })
@@ -1411,7 +1411,7 @@ describe('build-flow', function () {
                     Tech = MyBaseTech.buildFlow()
                         .builder(function () { return 'Definitely not forty two.'; })
                         .staticMethods({
-                            hello: function () { return 42; }
+                            hello() { return 42; }
                         })
                         .createTech();
                 });
@@ -1429,7 +1429,7 @@ describe('build-flow', function () {
                     var ChildTech = Tech.buildFlow()
                         .builder(_staticHello)
                         .staticMethods({
-                            hello: function () {
+                            hello() {
                                 return '!' + this.__base.apply(this, arguments);
                             }
                         })
@@ -1445,7 +1445,7 @@ describe('build-flow', function () {
                         .createTech();
                     var GrandChildTech = ChildTech.buildFlow()
                         .staticMethods({
-                            hello: function () {
+                            hello() {
                                 return '!' + this.__base.apply(this, arguments);
                             }
                         })
@@ -1617,14 +1617,14 @@ describe('build-flow', function () {
             bundle = new MockNode('bundle');
             fileList = new FileList();
             helper = {
-                change: function (target) {
+                change(target) {
                     var filename = _getFilename(target);
 
                     deasync.sleep(10);
 
                     fs.writeFileSync(filename, 'new-value');
                 },
-                fileInfo: function (target) {
+                fileInfo(target) {
                     var filename = _getFilename(target);
                     var basename = path.basename(target);
                     var mtime = fs.statSync(filename).mtime.getTime();
@@ -1636,7 +1636,7 @@ describe('build-flow', function () {
                         suffix: target.split('.').slice(1).join('.')
                     };
                 },
-                dirInfo: function (target) {
+                dirInfo(target) {
                     var dirname = _getFilename(target);
                     var basename = path.basename(target);
                     var stat = fs.statSync(dirname);

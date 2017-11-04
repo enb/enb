@@ -77,7 +77,7 @@ describe('BuildProfiler', function () {
             buildGraph = function (graph) {
                 return {
                     graph: graph,
-                    getDirectDeps: function (targetName) {
+                    getDirectDeps(targetName) {
                         return this.graph[targetName] ? this.graph[targetName].deps : [];
                     }
                 };

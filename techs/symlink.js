@@ -25,20 +25,20 @@ var enb = require('../lib/api');
 var vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'symlink';
     },
 
-    configure: function () {
+    configure() {
         this._symlinkTarget = this.getRequiredOption('symlinkTarget');
         this._fileTarget = this.getRequiredOption('fileTarget');
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._symlinkTarget)];
     },
 
-    build: function () {
+    build() {
         var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
         var symlinkTargetPath = this.node.resolvePath(symlinkTarget);
         var fileTarget = this.node.unmaskTargetName(this._fileTarget);

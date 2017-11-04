@@ -94,7 +94,7 @@ describe('make/init', function () {
                 var resolved = false;
 
                 ProjectConfig.prototype.getModeConfig.returns({
-                    exec: function () {
+                    exec() {
                         return vow.delay('ok', 50).then(function () { resolved = true; });
                     }
                 });
@@ -502,7 +502,7 @@ describe('make/init', function () {
         var defaults = {
             projectPath: '/default/project/path',
             mode: 'default_mode',
-            config: function () {}
+            config() {}
         };
 
         settings = Object.assign({}, defaults, settings);

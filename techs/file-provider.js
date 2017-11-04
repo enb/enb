@@ -21,19 +21,19 @@ var enb = require('../lib/api');
 var vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'file-provider';
     },
 
-    configure: function () {
+    configure() {
         this._target = this.getRequiredOption('target');
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function () {
+    build() {
         var node = this.node;
         var target = node.unmaskTargetName(this._target);
         var filename = node.resolvePath(target);

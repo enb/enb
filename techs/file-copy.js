@@ -26,11 +26,11 @@ var enb = require('../lib/api');
 var vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
-    getName: function () {
+    getName() {
         return 'file-copy';
     },
 
-    configure: function () {
+    configure() {
         this._source = this.getOption('sourceTarget');
         if (!this._source) {
             this._source = this.getRequiredOption('source');
@@ -44,11 +44,11 @@ module.exports = inherit(enb.BaseTech, {
         }
     },
 
-    getTargets: function () {
+    getTargets() {
         return [this.node.unmaskTargetName(this._target)];
     },
 
-    build: function () {
+    build() {
         var _this = this;
         var node = this.node;
         var target = node.unmaskTargetName(this._target);

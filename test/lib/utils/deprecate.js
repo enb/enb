@@ -1,3 +1,4 @@
+var path = require('path');
 var vm = require('vm');
 var Logger = require('../../../lib/logger');
 
@@ -35,8 +36,10 @@ describe('deprecate', function () {
             vm.runInContext(contents, context, '/test_module.js');
             deprecate.initialize();
 
+            var expected = path.normalize('test/lib/utils/deprecate.js');
+
             Logger.prototype.logWarningAction
-                .should.be.calledWithMatch(sinon.match.any, __filename); // locates test file as smth called deprecate
+                .should.be.calledWithMatch(sinon.match.any, expected); // locates test file as smth called deprecate
         });
 
         describe('initialized deprecate', function () {
@@ -60,7 +63,7 @@ describe('deprecate', function () {
                 deprecate({ module: 'deprecated_module' });
 
                 Logger.prototype.logWarningAction
-                    .should.be.calledWithMatch(sinon.match.any, /([/.]|([A-Z]:))\S+\(\d+.\d+\)/, sinon.match.any);
+                    .should.be.calledWithMatch(sinon.match.any, /([/.]|([A-Z]:))\S+:\d+.:\d+/, sinon.match.any);
             });
 
             it('should print deprecated module name', function () {

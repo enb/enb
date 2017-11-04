@@ -47,6 +47,7 @@
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.11.0",
     "file-eval": "github:node-eval/file-eval#60cb8ef16df528a6472961e4f36400068b962f37",
+    "file-suffix": "1.0.1",
     "glob": "7.1.2",
     "inherit": "2.2.6",
     "lodash.flatten": "4.4.0",

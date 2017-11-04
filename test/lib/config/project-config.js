@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var mockFs = require('mock-fs');
 var ProjectConfig = require('../../../lib/config/project-config');

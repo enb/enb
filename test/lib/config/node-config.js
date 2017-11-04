@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var NodeConfig = require('../../../lib/config/node-config');
 var ModeConfig = require('../../../lib/config/mode-config');

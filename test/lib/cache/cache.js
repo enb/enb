@@ -1,3 +1,5 @@
+'use strict'
+
 var mockFs = require('mock-fs');
 var Cache = require('../../../lib/cache/cache');
 var CacheStorage = require('../../../lib/cache/cache-storage');

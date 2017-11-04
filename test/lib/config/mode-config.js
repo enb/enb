@@ -1,3 +1,5 @@
+'use strict'
+
 var ModeConfig = require('../../../lib/config/mode-config');
 
 describe('config/mode-config', function () {

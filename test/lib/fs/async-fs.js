@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 
 var vowFs = require('vow-fs');

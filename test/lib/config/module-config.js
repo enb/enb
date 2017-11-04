@@ -1,3 +1,5 @@
+'use strict'
+
 var ModuleConfig = require('../../../lib/config/module-config');
 
 describe('config/module-config', function () {

@@ -1,3 +1,5 @@
+'use strict'
+
 var vow = require('vow');
 var Configurable = require('../../../lib/config/configurable');
 

@@ -1,3 +1,5 @@
+'use strict'
+
 var vow = require('vow');
 var fs = require('fs');
 var path = require('path');

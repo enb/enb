@@ -1,3 +1,5 @@
+'use strict'
+
 var NodeMaskConfig = require('../../../lib/config/node-mask-config');
 
 describe('config/node-mask-config', function () {

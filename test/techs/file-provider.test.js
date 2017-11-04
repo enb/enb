@@ -1,3 +1,5 @@
+'use strict'
+
 var proxyquire = require('proxyquire').noCallThru();
 var mockFs = require('mock-fs');
 var MockNode = proxyquire('mock-enb/lib/mock-node', {

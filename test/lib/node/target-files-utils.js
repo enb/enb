@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 // var process = require('process');
 var mockFs = require('mock-fs');

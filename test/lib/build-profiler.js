@@ -1,3 +1,5 @@
+'use strict'
+
 var BuildProfiler = require('../../lib/build-profiler');
 
 describe('BuildProfiler', function () {

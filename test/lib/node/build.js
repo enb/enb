@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var vow = require('vow');
 var nodeFactory = require('../../../lib/node');

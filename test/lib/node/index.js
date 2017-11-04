@@ -1,3 +1,5 @@
+'use strict';
+
 var nodeFactory = require('../../../lib/node');
 var Node = require('../../../lib/node/node');
 var NodeWithGraph = require('../../../lib/node/node-with-graph');

@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var nodeFactory = require('../../../lib/node');
 var MakePlatform = require('../../../lib/make');

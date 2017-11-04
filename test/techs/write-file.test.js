@@ -1,3 +1,5 @@
+'use strict';
+
 var proxyquire = require('proxyquire').noCallThru();
 var fs = require('fs');
 var mockFs = require('mock-fs');
@@ -14,7 +16,7 @@ describe('techs/write-file', function () {
     beforeEach(function () {
         mockFs({
             bundle: mockFs.directory({
-                mode: 0755 // eslint-disable-line no-octal
+                mode: 0o755
             })
         });
 

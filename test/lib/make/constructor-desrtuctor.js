@@ -1,3 +1,5 @@
+'use strict'
+
 var fs = require('fs');
 var vow = require('vow');
 var vfs = require('vow-fs');

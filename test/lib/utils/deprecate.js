@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var vm = require('vm');
 var Logger = require('../../../lib/logger');

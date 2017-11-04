@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var mockFs = require('mock-fs');
 var FileList = require('../../lib/file-list');

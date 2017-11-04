@@ -1,3 +1,5 @@
+'use strict'
+
 var path = require('path');
 var Logger = require('../../lib/logger');
 var colors = require('../../lib/ui/colorize');

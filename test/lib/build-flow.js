@@ -1632,7 +1632,7 @@ describe('build-flow', function () {
                     return {
                         name: basename,
                         fullname: filename,
-                        mtime: mtime,
+                        mtime,
                         suffix: target.split('.').slice(1).join('.')
                     };
                 },
@@ -1655,8 +1655,8 @@ describe('build-flow', function () {
                         name: basename,
                         fullname: dirname,
                         mtime: stat.mtime.getTime(),
-                        isDirectory: isDirectory,
-                        files: files,
+                        isDirectory,
+                        files,
                         suffix: target.split('.').slice(1).join('.')
                     };
                 }

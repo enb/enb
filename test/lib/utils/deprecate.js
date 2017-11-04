@@ -31,7 +31,7 @@ describe('deprecate', function () {
 
         it('should print correct filename for delayed messages', function () {
             var contents = 'var deprecate = require(deprecatePath); deprecate({ module: "test_module" });';
-            var context = vm.createContext({ require: require, deprecatePath: deprecatePath });
+            var context = vm.createContext({ require, deprecatePath });
 
             vm.runInContext(contents, context, '/test_module.js');
             deprecate.initialize();

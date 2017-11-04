@@ -76,7 +76,7 @@ describe('BuildProfiler', function () {
         beforeEach(function () {
             buildGraph = function (graph) {
                 return {
-                    graph: graph,
+                    graph,
                     getDirectDeps(targetName) {
                         return this.graph[targetName] ? this.graph[targetName].deps : [];
                     }

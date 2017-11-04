@@ -96,7 +96,7 @@ describe('make/initNode', function () {
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
@@ -117,7 +117,7 @@ describe('make/initNode', function () {
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
         ProjectConfig.prototype.getNodeMaskConfigs
             .withArgs('path/to/node').returns([nodeMaskConfig]);
@@ -136,7 +136,7 @@ describe('make/initNode', function () {
 
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
@@ -150,7 +150,7 @@ describe('make/initNode', function () {
         nodeConfig.getLanguages.returns(['ru']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
@@ -174,7 +174,7 @@ describe('make/initNode', function () {
         nodeConfig.getTargets.returns(['?.js']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
@@ -188,7 +188,7 @@ describe('make/initNode', function () {
         nodeConfig.getCleanTargets.returns(['?.js']);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {
@@ -203,7 +203,7 @@ describe('make/initNode', function () {
         nodeConfig.getTechs.returns([tech]);
         setup({
             nodePath: 'path/to/node',
-            nodeConfig: nodeConfig
+            nodeConfig
         });
 
         return makePlatform.initNode('path/to/node').then(function () {

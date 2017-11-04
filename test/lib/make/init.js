@@ -152,7 +152,7 @@ describe('make/init', function () {
         it('should execute config function if it passed', function () {
             var config = sinon.stub();
 
-            init_({ config: config });
+            init_({ config });
 
             expect(config).to.be.called;
         });
@@ -160,7 +160,7 @@ describe('make/init', function () {
         it('should pass project config instance to config function', function () {
             var config = sinon.stub();
 
-            init_({ config: config });
+            init_({ config });
 
             expect(config).to.be.calledWith(makePlatform.getProjectConfig());
         });
@@ -169,7 +169,7 @@ describe('make/init', function () {
             var config = sinon.stub();
             config.throws(new Error('test_error'));
 
-            return expect(init_({ config: config }))
+            return expect(init_({ config }))
                 .to.be.rejectedWith('test_error');
         });
 

@@ -1,20 +1,20 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
-var childProcess = require('child_process');
-var vow = require('vow');
-var TaskConfig = require('../../../lib/config/task-config');
-var MakePlatform = require('../../../lib/make');
-var EOL = require('os').EOL;
+const fs = require('fs');
+const path = require('path');
+const childProcess = require('child_process');
+const vow = require('vow');
+const TaskConfig = require('../../../lib/config/task-config');
+const MakePlatform = require('../../../lib/make');
+const EOL = require('os').EOL;
 
 describe('config/task-config', function () {
-    var sandbox = sinon.sandbox.create();
-    var taskConfig;
-    var taskName = 'test_task';
-    var makePlatform;
-    var projectPath = path.join(__dirname, '../../fixtures/sample-project');
-    var makePlatformMode = 'test';
+    const sandbox = sinon.sandbox.create();
+    let taskConfig;
+    const taskName = 'test_task';
+    let makePlatform;
+    const projectPath = path.join(__dirname, '../../fixtures/sample-project');
+    const makePlatformMode = 'test';
 
     beforeEach(function () {
         sandbox.stub(fs, 'existsSync');
@@ -47,7 +47,7 @@ describe('config/task-config', function () {
         });
 
         it('should set logger as sublogger from make platform', function () {
-            var expectedSubloggerScope = ':' + taskName;
+            const expectedSubloggerScope = ':' + taskName;
 
             expect(taskConfig._logger._scope).to.be.equal(expectedSubloggerScope);
         });
@@ -55,8 +55,8 @@ describe('config/task-config', function () {
 
     describe('log', function () {
         it('should log message', function () {
-            var testMessage = 'test_message';
-            var loggerSpy = new sinon.spy(taskConfig._logger, 'log');
+            const testMessage = 'test_message';
+            const loggerSpy = new sinon.spy(taskConfig._logger, 'log');
 
             taskConfig.log(testMessage);
 
@@ -65,11 +65,11 @@ describe('config/task-config', function () {
     });
 
     describe('buildTarget', function () {
-        var target = 'test_target';
+        const target = 'test_target';
 
         it('should initiate target build', function () {
-            var spy = new sinon.spy(taskConfig, 'buildTargets');
-            var expectedTargets = [target];
+            const spy = new sinon.spy(taskConfig, 'buildTargets');
+            const expectedTargets = [target];
 
             taskConfig.buildTarget(target);
 
@@ -77,8 +77,8 @@ describe('config/task-config', function () {
         });
 
         it('should initiate target build for undefined target', function () {
-            var spy = new sinon.spy(taskConfig, 'buildTargets');
-            var expectedTargets = [undefined];
+            const spy = new sinon.spy(taskConfig, 'buildTargets');
+            const expectedTargets = [undefined];
 
             taskConfig.buildTarget();
 
@@ -86,17 +86,17 @@ describe('config/task-config', function () {
         });
 
         it('should return promise', function () {
-            var result = taskConfig.buildTargets(target);
+            const result = taskConfig.buildTargets(target);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
     });
 
     describe('buildTargets', function () {
-        var targets = ['test_target'];
+        const targets = ['test_target'];
 
         it('should initiate targets build', function () {
-            var spy = new sinon.spy(makePlatform, 'buildTargets');
+            const spy = new sinon.spy(makePlatform, 'buildTargets');
 
             taskConfig.buildTargets(targets);
 
@@ -104,7 +104,7 @@ describe('config/task-config', function () {
         });
 
         it('should initiate targets build for empty targets', function () {
-            var spy = new sinon.spy(makePlatform, 'buildTargets');
+            const spy = new sinon.spy(makePlatform, 'buildTargets');
 
             taskConfig.buildTargets([]);
 
@@ -112,7 +112,7 @@ describe('config/task-config', function () {
         });
 
         it('should initiate targets build for undefined targets', function () {
-            var spy = new sinon.spy(makePlatform, 'buildTargets');
+            const spy = new sinon.spy(makePlatform, 'buildTargets');
 
             taskConfig.buildTargets();
 
@@ -120,18 +120,18 @@ describe('config/task-config', function () {
         });
 
         it('should return promise', function () {
-            var result = taskConfig.buildTargets(targets);
+            const result = taskConfig.buildTargets(targets);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
     });
 
     describe('cleanTarget', function () {
-        var target = 'test_target';
+        const target = 'test_target';
 
         it('should initiate target clean', function () {
-            var spy = new sinon.spy(taskConfig, 'cleanTargets');
-            var expectedTargets = [target];
+            const spy = new sinon.spy(taskConfig, 'cleanTargets');
+            const expectedTargets = [target];
 
             taskConfig.cleanTarget(target);
 
@@ -139,8 +139,8 @@ describe('config/task-config', function () {
         });
 
         it('should initiate target clean for undefined target', function () {
-            var spy = new sinon.spy(taskConfig, 'cleanTargets');
-            var expectedTargets = [undefined];
+            const spy = new sinon.spy(taskConfig, 'cleanTargets');
+            const expectedTargets = [undefined];
 
             taskConfig.cleanTarget();
 
@@ -148,17 +148,17 @@ describe('config/task-config', function () {
         });
 
         it('should return promise', function () {
-            var result = taskConfig.cleanTarget(target);
+            const result = taskConfig.cleanTarget(target);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
     });
 
     describe('cleanTargets', function () {
-        var targets = ['test_target'];
+        const targets = ['test_target'];
 
         it('should initiate targets clean', function () {
-            var spy = new sinon.spy(makePlatform, 'cleanTargets');
+            const spy = new sinon.spy(makePlatform, 'cleanTargets');
 
             taskConfig.cleanTargets(targets);
 
@@ -166,7 +166,7 @@ describe('config/task-config', function () {
         });
 
         it('should initiate targets clean for empty targets', function () {
-            var spy = new sinon.spy(makePlatform, 'cleanTargets');
+            const spy = new sinon.spy(makePlatform, 'cleanTargets');
 
             taskConfig.cleanTargets([]);
 
@@ -174,7 +174,7 @@ describe('config/task-config', function () {
         });
 
         it('should initiate targets clean for undefined targets', function () {
-            var spy = new sinon.spy(makePlatform, 'cleanTargets');
+            const spy = new sinon.spy(makePlatform, 'cleanTargets');
 
             taskConfig.cleanTargets();
 
@@ -182,15 +182,15 @@ describe('config/task-config', function () {
         });
 
         it('should return promise', function () {
-            var result = taskConfig.cleanTargets(targets);
+            const result = taskConfig.cleanTargets(targets);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
     });
 
     describe('shell', function () {
-        var command = 'echo test';
-        var execSpy;
+        const command = 'echo test';
+        let execSpy;
 
         before(function () {
             execSpy = new sinon.spy(childProcess, 'exec');
@@ -211,18 +211,18 @@ describe('config/task-config', function () {
         });
 
         it('should pass opts for shell command', function () {
-            var opts = { foo: 'bar' };
+            const opts = { foo: 'bar' };
 
             taskConfig.shell(command, opts);
 
-            var optsArg = execSpy.lastCall.args[1];
+            const optsArg = execSpy.lastCall.args[1];
 
             expect(optsArg).to.have.property('foo', 'bar');
         });
 
         it('should add env variables from make platform', function () {
-            var opts = { foo: 'bar' };
-            var expectedOpts = {
+            const opts = { foo: 'bar' };
+            const expectedOpts = {
                 foo: 'bar',
                 env: makePlatform.getEnv()
             };
@@ -233,8 +233,8 @@ describe('config/task-config', function () {
         });
 
         it('should concat user provided env variables with env variables from make platform', function () {
-            var opts = { env: { foo: 'bar' } };
-            var expectedOpts = { env: makePlatform.getEnv() };
+            const opts = { env: { foo: 'bar' } };
+            const expectedOpts = { env: makePlatform.getEnv() };
             expectedOpts.env.foo = 'bar';
 
             taskConfig.shell(command, opts);
@@ -243,9 +243,9 @@ describe('config/task-config', function () {
         });
 
         it('should prioritise user defined env variables over env variables provided by make platform', function () {
-            var makePlatformEnv = { foo: 'bar' };
-            var optsEnv = { foo: 'baz' };
-            var expectedOpts = { env: optsEnv };
+            const makePlatformEnv = { foo: 'bar' };
+            const optsEnv = { foo: 'baz' };
+            const expectedOpts = { env: optsEnv };
 
             makePlatform.setEnv(makePlatformEnv);
             taskConfig.shell(command, { env: optsEnv });
@@ -254,8 +254,8 @@ describe('config/task-config', function () {
         });
 
         it('should log command which will be executed', function () {
-            var logSpy = new sinon.spy(taskConfig, 'log');
-            var expectedOutput = '$ ' + command;
+            const logSpy = new sinon.spy(taskConfig, 'log');
+            const expectedOutput = '$ ' + command;
 
             taskConfig.shell(command);
 
@@ -263,7 +263,7 @@ describe('config/task-config', function () {
         });
 
         it('should return promise', function () {
-            var result = taskConfig.shell(command);
+            const result = taskConfig.shell(command);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -273,22 +273,22 @@ describe('config/task-config', function () {
         });
 
         it('should pass command output to promise', function () {
-            var expectedOutput = 'test' + EOL;
+            const expectedOutput = 'test' + EOL;
 
             return taskConfig.shell(command).then(function (results) {
-                var output = results[0];
+                const output = results[0];
                 expect(output).to.be.equal(expectedOutput);
             });
         });
 
         it('should reject promise of command execution was not successful', function () {
-            var brokenCommand = 'cal -a';
+            const brokenCommand = 'cal -a';
 
             return expect(taskConfig.shell(brokenCommand)).to.be.rejected;
         });
 
         it('should pass error with command failure reason to rejected promise', function () {
-            var brokenCommand = 'cal -a';
+            const brokenCommand = 'cal -a';
 
             return taskConfig.shell(brokenCommand).fail(function (error) {
                 expect(error).to.be.instanceOf(Error);

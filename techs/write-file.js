@@ -42,9 +42,9 @@
  * } ]);
  * ```
  */
-var enb = require('../lib/api');
+const enb = require('../lib/api');
 
-var vfs = enb.asyncFs;
+const vfs = enb.asyncFs;
 
 module.exports = enb.buildFlow.create()
     .name('write-file')

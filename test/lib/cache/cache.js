@@ -1,11 +1,11 @@
 'use strict'
 
-var mockFs = require('mock-fs');
-var Cache = require('../../../lib/cache/cache');
-var CacheStorage = require('../../../lib/cache/cache-storage');
+const mockFs = require('mock-fs');
+const Cache = require('../../../lib/cache/cache');
+const CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('cache/cache', function () {
-    var sandbox = sinon.sandbox.create();
+    const sandbox = sinon.sandbox.create();
 
     afterEach(function () {
         sandbox.restore();
@@ -14,8 +14,8 @@ describe('cache/cache', function () {
 
     describe('constructor', function () {
         it('should set cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
 
             cache.get();
 
@@ -23,8 +23,8 @@ describe('cache/cache', function () {
         });
 
         it('should set prefix', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
             });
@@ -37,8 +37,8 @@ describe('cache/cache', function () {
 
     describe('destruct', function () {
         it('should delete reference to cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
 
             cache.destruct();
 
@@ -48,8 +48,8 @@ describe('cache/cache', function () {
 
     describe('get', function () {
         it('should query data by cache prefix and key',  function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
             });
@@ -62,8 +62,8 @@ describe('cache/cache', function () {
 
     describe('set', function () {
         it('should set data to cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
 
             cache.set();
 
@@ -71,8 +71,8 @@ describe('cache/cache', function () {
         });
 
         it('should set value by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
             });
@@ -85,8 +85,8 @@ describe('cache/cache', function () {
 
     describe('invalidate', function () {
         it('should invalidate data in cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
 
             cache.invalidate();
 
@@ -94,8 +94,8 @@ describe('cache/cache', function () {
         });
 
         it('should invalidate data by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
             });
@@ -108,8 +108,8 @@ describe('cache/cache', function () {
 
     describe('drop', function () {
         it('should drop data by prefix in cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
 
             cache.drop();
 
@@ -117,8 +117,8 @@ describe('cache/cache', function () {
         });
 
         it('should drop data by cache prefix and key', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'testPrefix'
             });
@@ -131,16 +131,16 @@ describe('cache/cache', function () {
 
     describe('subCache', function () {
         it('should return cache', function () {
-            var cache = createCache_();
-            var subCache = cache.subCache();
+            const cache = createCache_();
+            const subCache = cache.subCache();
 
             expect(subCache).to.be.instanceOf(Cache);
         });
 
         it('should pass cache storage to new cache', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({ storage: cacheStorage });
-            var subCache = cache.subCache();
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({ storage: cacheStorage });
+            const subCache = cache.subCache();
 
             subCache.get();
 
@@ -148,12 +148,12 @@ describe('cache/cache', function () {
         });
 
         it('should create new cache with additional prefix based on parent cache prefix', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
-            var cache = createCache_({
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cache = createCache_({
                 storage: cacheStorage,
                 prefix: 'cache_prefix'
             });
-            var subCache = cache.subCache('subcache_prefix');
+            const subCache = cache.subCache('subcache_prefix');
 
             subCache.get();
 
@@ -163,7 +163,7 @@ describe('cache/cache', function () {
 
     describe('needRebuildFile', function () {
         it('should return true if no info about file cached', function () {
-            var cache = createCache_();
+            const cache = createCache_();
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns(undefined);
@@ -178,7 +178,7 @@ describe('cache/cache', function () {
                 })
             });
 
-            var cache = createCache_();
+            const cache = createCache_();
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns({ mtime: new Date(2).valueOf() });
 
@@ -192,7 +192,7 @@ describe('cache/cache', function () {
                 })
             });
 
-            var cache = createCache_();
+            const cache = createCache_();
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns({ mtime: new Date(1).valueOf() });
 
@@ -208,7 +208,7 @@ describe('cache/cache', function () {
                 })
             });
 
-            var cache = createCache_();
+            const cache = createCache_();
 
             sandbox.stub(cache, 'set');
 
@@ -225,7 +225,7 @@ describe('cache/cache', function () {
 
     describe('needRebuildFileList', function () {
         it('should return true if no info about file list cached', function () {
-            var cache = createCache_();
+            const cache = createCache_();
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns(undefined);
@@ -234,7 +234,7 @@ describe('cache/cache', function () {
         });
 
         it('should return true if not a file list cached for specific key', function () {
-            var cache = createCache_();
+            const cache = createCache_();
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns({ filename: 'file.js' });
@@ -243,8 +243,8 @@ describe('cache/cache', function () {
         });
 
         it('should return true if cached files list length differs from passed files list', function () {
-            var cache = createCache_();
-            var fileList = [
+            const cache = createCache_();
+            const fileList = [
                 { fullname: '/path/to/file.js' },
                 { fullname: '/path/to/another_file.js' }
             ];
@@ -257,9 +257,9 @@ describe('cache/cache', function () {
 
         it('should return true if file full name in cached file list differs from file full name in ' +
             'passed file list', function () {
-            var cache = createCache_();
-            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
-            var cachedFileList = [{ fullname: '/path/to/another_file.js', mtime: 1 }];
+            const cache = createCache_();
+            const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            const cachedFileList = [{ fullname: '/path/to/another_file.js', mtime: 1 }];
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns(cachedFileList);
@@ -269,9 +269,9 @@ describe('cache/cache', function () {
 
         it('should return true if file mtime in cached file list differs from file mtime in passed file ' +
             'list', function () {
-            var cache = createCache_();
-            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
-            var cachedFileList = [{ fullname: '/path/to/file.js', mtime: 2 }];
+            const cache = createCache_();
+            const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            const cachedFileList = [{ fullname: '/path/to/file.js', mtime: 2 }];
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns(cachedFileList);
@@ -280,9 +280,9 @@ describe('cache/cache', function () {
         });
 
         it('should return false for same file lists', function () {
-            var cache = createCache_();
-            var fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
-            var cachedFileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            const cache = createCache_();
+            const fileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
+            const cachedFileList = [{ fullname: '/path/to/file.js', mtime: 1 }];
 
             sandbox.stub(cache, 'get');
             cache.get.withArgs('cache_key').returns(cachedFileList);
@@ -293,7 +293,7 @@ describe('cache/cache', function () {
 
     describe('cacheFileList', function () {
         it('should set file list for sepcific key', function () {
-            var cache = createCache_();
+            const cache = createCache_();
 
             sinon.stub(cache, 'set');
             cache.set('testKey', [{ fullname: '/path/to/test_file.js', mtime: 1 }]);

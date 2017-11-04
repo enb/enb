@@ -1,22 +1,22 @@
 'use strict'
 
-var fs = require('fs');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var path = require('path');
-var MakePlatform = require('../../../lib/make');
-var NodeConfig = require('../../../lib/config/node-config');
-var Node = require('../../../lib/node/node');
-var ProjectConfig = require('../../../lib/config/project-config');
-var ModeConfig = require('../../../lib/config/mode-config');
-var Logger = require('../../../lib/logger');
-var BuildGraph = require('../../../lib/ui/build-graph');
-var CacheStorage = require('../../../lib/cache/cache-storage');
+const fs = require('fs');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const path = require('path');
+const MakePlatform = require('../../../lib/make');
+const NodeConfig = require('../../../lib/config/node-config');
+const Node = require('../../../lib/node/node');
+const ProjectConfig = require('../../../lib/config/project-config');
+const ModeConfig = require('../../../lib/config/mode-config');
+const Logger = require('../../../lib/logger');
+const BuildGraph = require('../../../lib/ui/build-graph');
+const CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/init', function () {
-    var makePlatform;
-    var sandbox = sinon.sandbox.create();
+    let makePlatform;
+    const sandbox = sinon.sandbox.create();
 
     beforeEach(function () {
         sandbox.stub(Node.prototype);
@@ -54,7 +54,7 @@ describe('make/init', function () {
         });
 
         describe('mode tests', function () {
-            var nodeConfig;
+            let nodeConfig;
 
             beforeEach(function () {
                 nodeConfig = sinon.createStubInstance(NodeConfig);
@@ -93,7 +93,7 @@ describe('make/init', function () {
             });
 
             it('should return promise on init call that resolves after all mode calls', function () {
-                var resolved = false;
+                let resolved = false;
 
                 ProjectConfig.prototype.getModeConfig.returns({
                     exec() {
@@ -152,7 +152,7 @@ describe('make/init', function () {
         });
 
         it('should execute config function if it passed', function () {
-            var config = sinon.stub();
+            const config = sinon.stub();
 
             init_({ config });
 
@@ -160,7 +160,7 @@ describe('make/init', function () {
         });
 
         it('should pass project config instance to config function', function () {
-            var config = sinon.stub();
+            const config = sinon.stub();
 
             init_({ config });
 
@@ -168,7 +168,7 @@ describe('make/init', function () {
         });
 
         it('should return rejected promise if config function threw error', function () {
-            var config = sinon.stub();
+            const config = sinon.stub();
             config.throws(new Error('test_error'));
 
             return expect(init_({ config }))
@@ -188,7 +188,7 @@ describe('make/init', function () {
         });
 
         it('should execute mode config passing to it project config instance', function () {
-            var modeConfig = sinon.createStubInstance(ModeConfig);
+            const modeConfig = sinon.createStubInstance(ModeConfig);
             ProjectConfig.prototype.getModeConfig.withArgs('test_mode').returns(modeConfig);
 
             init_({ mode: 'test_mode' });
@@ -241,10 +241,10 @@ describe('make/init', function () {
     });
 
     describe('config loading from fs tests', function () {
-        var ruConfigContents = 'module.exports = function(projectConfig) { projectConfig.setLanguages(["ru"]); };';
-        var enConfigContents = 'module.exports = function(projectConfig) { projectConfig.setLanguages(["ru"]); };';
-        var errorConfigContents = 'module.exports = function () { throw new Error("exc_in_config"); };';
-        var errorPConfigContents = 'module.exports = function () { throw new Error("exc_in_personal_config"); };';
+        const ruConfigContents = 'module.exports = function(projectConfig) { projectConfig.setLanguages(["ru"]); };';
+        const enConfigContents = 'module.exports = function(projectConfig) { projectConfig.setLanguages(["ru"]); };';
+        const errorConfigContents = 'module.exports = function () { throw new Error("exc_in_config"); };';
+        const errorPConfigContents = 'module.exports = function () { throw new Error("exc_in_personal_config"); };';
 
         afterEach(function () {
             mockFs.restore();
@@ -252,7 +252,7 @@ describe('make/init', function () {
 
         describe('regular config', function () {
             it('throw error if project directory does not have either .enb/ or .bem/ dirs', function () {
-                var func = function () {
+                const func = function () {
                     init_({
                         projectPath: '/path/to/project',
                         config: null // null because need to implicitly call makePlatform.init without configurator
@@ -361,7 +361,7 @@ describe('make/init', function () {
                     }
                 });
 
-                var initPromise = init_({
+                const initPromise = init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
@@ -397,7 +397,7 @@ describe('make/init', function () {
                     '/path/to/project/.enb/make.js': errorConfigContents
                 });
 
-                var initPromise = init_({
+                const initPromise = init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
@@ -473,7 +473,7 @@ describe('make/init', function () {
                     }
                 });
 
-                var initPromise = init_({
+                const initPromise = init_({
                     projectPath: '/path/to/project',
                     config: null // null because need to implicitly call makePlatform.init without configurator
                 });
@@ -501,7 +501,7 @@ describe('make/init', function () {
     });
 
     function init_(settings) {
-        var defaults = {
+        const defaults = {
             projectPath: '/default/project/path',
             mode: 'default_mode',
             config() {}

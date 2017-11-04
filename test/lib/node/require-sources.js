@@ -1,20 +1,20 @@
 'use strict';
 
-var vow = require('vow');
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
-var Logger = require('../../../lib/logger');
+const vow = require('vow');
+const path = require('path');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
+const Logger = require('../../../lib/logger');
 
 describe('node/require sources', function () {
-    var nodePath = path.join('path', 'to', 'node');
-    var makePlatform;
-    var node;
+    const nodePath = path.join('path', 'to', 'node');
+    let makePlatform;
+    let node;
 
     beforeEach(function () {
-        var projectDir = path.join('path', 'to', 'project');
+        const projectDir = path.join('path', 'to', 'project');
 
         makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
@@ -25,14 +25,14 @@ describe('node/require sources', function () {
     });
 
     describe('requireNodeSources', function () {
-        var sourcesByNodes = {};
+        const sourcesByNodes = {};
 
         beforeEach(function () {
             sourcesByNodes[nodePath] = ['?.js'];
         });
 
         it('should return promise', function () {
-            var result = node.requireNodeSources(sourcesByNodes);
+            const result = node.requireNodeSources(sourcesByNodes);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -60,7 +60,7 @@ describe('node/require sources', function () {
     });
 
     describe('requireSources', function () {
-        var tech;
+        let tech;
 
         beforeEach(function () {
             tech = new sinon.createStubInstance(BaseTech);
@@ -115,8 +115,8 @@ describe('node/require sources', function () {
         });
 
         it('should reject target if exception occured in tech', function () {
-            var rejectTarget = sinon.spy(node, 'rejectTarget');
-            var error = new Error('exception');
+            const rejectTarget = sinon.spy(node, 'rejectTarget');
+            const error = new Error('exception');
 
             tech.build.throws(error);
 
@@ -134,8 +134,8 @@ describe('node/require sources', function () {
         });
 
         it('should reject target if tech build finished unsuccessfully', function () {
-            var rejectTarget = sinon.spy(node, 'rejectTarget');
-            var error = new Error('reject');
+            const rejectTarget = sinon.spy(node, 'rejectTarget');
+            const error = new Error('reject');
 
             tech.build.returns(vow.reject(error));
 

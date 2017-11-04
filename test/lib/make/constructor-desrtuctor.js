@@ -1,19 +1,19 @@
 'use strict'
 
-var fs = require('fs');
-var vow = require('vow');
-var vfs = require('vow-fs');
-var mockFs = require('mock-fs');
-var MakePlatform = require('../../../lib/make');
-var ProjectConfig = require('../../../lib/config/project-config');
-var Node = require('../../../lib/node/node');
-var CacheStorage = require('../../../lib/cache/cache-storage');
-var Cache = require('../../../lib/cache/cache');
-var SharedResources = require('../../../lib/shared-resources');
+const fs = require('fs');
+const vow = require('vow');
+const vfs = require('vow-fs');
+const mockFs = require('mock-fs');
+const MakePlatform = require('../../../lib/make');
+const ProjectConfig = require('../../../lib/config/project-config');
+const Node = require('../../../lib/node/node');
+const CacheStorage = require('../../../lib/cache/cache-storage');
+const Cache = require('../../../lib/cache/cache');
+const SharedResources = require('../../../lib/shared-resources');
 
 describe('make/constructor-destructor', function () {
-    var sandbox = sinon.sandbox.create();
-    var makePlatform;
+    const sandbox = sinon.sandbox.create();
+    let makePlatform;
 
     beforeEach(function () {
         mockFs({});
@@ -52,7 +52,7 @@ describe('make/constructor-destructor', function () {
         });
 
         it('should drop cache storage', function () {
-            var cacheStorage = sinon.createStubInstance(CacheStorage);
+            const cacheStorage = sinon.createStubInstance(CacheStorage);
             makePlatform.setCacheStorage(cacheStorage);
 
             makePlatform.destruct();

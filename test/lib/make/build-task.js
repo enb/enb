@@ -1,17 +1,17 @@
 'use strict'
 
-var fs = require('fs');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var MakePlatform = require('../../../lib/make');
-var Node = require('../../../lib/node');
-var ProjectConfig = require('../../../lib/config/project-config');
-var TaskConfig = require('../../../lib/config/task-config');
+const fs = require('fs');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const MakePlatform = require('../../../lib/make');
+const Node = require('../../../lib/node');
+const ProjectConfig = require('../../../lib/config/project-config');
+const TaskConfig = require('../../../lib/config/task-config');
 
 describe('make/buildTask', function () {
-    var makePlatform;
-    var sandbox = sinon.sandbox.create();
+    let makePlatform;
+    const sandbox = sinon.sandbox.create();
 
     beforeEach(function (done) {
         mockFs({});
@@ -45,7 +45,7 @@ describe('make/buildTask', function () {
     });
 
     it('should pass make platform to task config', function () {
-        var taskConfig = sinon.createStubInstance(TaskConfig);
+        const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
             taskName: 'test_task',
@@ -57,7 +57,7 @@ describe('make/buildTask', function () {
     });
 
     it('should execute task', function () {
-        var taskConfig = sinon.createStubInstance(TaskConfig);
+        const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
             taskName: 'test_task',
@@ -70,7 +70,7 @@ describe('make/buildTask', function () {
     });
 
     it('should pass args to task config on exec', function () {
-        var taskConfig = sinon.createStubInstance(TaskConfig);
+        const taskConfig = sinon.createStubInstance(TaskConfig);
 
         setup({
             taskName: 'test_task',
@@ -84,7 +84,7 @@ describe('make/buildTask', function () {
 });
 
 function setup(settings) {
-    var defaults = {
+    const defaults = {
         taskName: 'default_task',
         task: sinon.createStubInstance(TaskConfig)
     };

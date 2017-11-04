@@ -1,10 +1,10 @@
 'use strict'
 
-var path = require('path');
-var Logger = require('../../lib/logger');
-var colors = require('../../lib/ui/colorize');
+const path = require('path');
+const Logger = require('../../lib/logger');
+const colors = require('../../lib/ui/colorize');
 
-var REGEX = {
+const REGEX = {
     time: /\d{2}:\d{2}:\d{2}\.\d{3}/,
     deprecatedTech: {
         samePackagesMessage: /Tech \S+ is deprecated\. Use tech \S+ instead\./,
@@ -17,11 +17,11 @@ var REGEX = {
 };
 
 describe('logger', function () {
-    var logger;
-    var consoleLogSpy;
-    var consoleWarnSpy;
-    var consoleErrorSpy;
-    var message;
+    let logger;
+    let consoleLogSpy;
+    let consoleWarnSpy;
+    let consoleErrorSpy;
+    let message;
 
     before(function () {
         // spying at console methods because logger built on top of it
@@ -46,21 +46,21 @@ describe('logger', function () {
 
     describe('constructor', function () {
         it('should set scope passed in params', function () {
-            var scope = 'test_scope';
-            var loggerWithScope = new Logger(scope);
+            const scope = 'test_scope';
+            const loggerWithScope = new Logger(scope);
 
             expect(loggerWithScope._scope).to.be.equal(scope);
         });
 
         it('should make logger enabled by default', function () {
-            var newLogger = new Logger();
+            const newLogger = new Logger();
 
             expect(newLogger.isEnabled()).to.be.true;
         });
 
         it('should set options passed in params', function () {
-            var options = { hideWarnings: true };
-            var loggerWithOptions = new Logger(null, options);
+            const options = { hideWarnings: true };
+            const loggerWithOptions = new Logger(null, options);
 
             expect(loggerWithOptions._options).to.be.deep.equal(options);
         });
@@ -68,7 +68,7 @@ describe('logger', function () {
 
     describe('log', function () {
         it('should not log message if logger disabled', function () {
-            var disabledLogger = new Logger();
+            const disabledLogger = new Logger();
 
             disabledLogger.setEnabled(false);
             disabledLogger.log(message);
@@ -83,8 +83,8 @@ describe('logger', function () {
         });
 
         it('should colorize time with grey color by default', function () {
-            var timeWithDash = REGEX.time.toString().replace(/\//g, '') + ' - ';
-            var colorizedTimeWithDash = colors.grey(timeWithDash).replace(/\[/g, '\\[');
+            const timeWithDash = REGEX.time.toString().replace(/\//g, '') + ' - ';
+            const colorizedTimeWithDash = colors.grey(timeWithDash).replace(/\[/g, '\\[');
 
             logger.log(message);
 
@@ -92,7 +92,7 @@ describe('logger', function () {
         });
 
         it('should add action to log message if it was passed', function () {
-            var action = 'test_action';
+            const action = 'test_action';
 
             logger.log(message, null, action);
 
@@ -100,7 +100,7 @@ describe('logger', function () {
         });
 
         it('should add scope to message if it was passed', function () {
-            var scope = 'test_scope';
+            const scope = 'test_scope';
 
             logger.log(message, scope);
 
@@ -108,8 +108,8 @@ describe('logger', function () {
         });
 
         it('should wrap scope to blue color', function () {
-            var scope = 'test_scope';
-            var expectedScope = colors.blue(scope);
+            const scope = 'test_scope';
+            const expectedScope = colors.blue(scope);
 
             logger.log(message, scope);
 
@@ -117,8 +117,8 @@ describe('logger', function () {
         });
 
         it('should wrap scope part after last : into magenta color, excluding last :', function () {
-            var scope = 'test_scope:trailing_part';
-            var expectedScope = colors.blue(scope.replace(/(:.+)$/, function (s, g) {
+            const scope = 'test_scope:trailing_part';
+            const expectedScope = colors.blue(scope.replace(/(:.+)$/, function (s, g) {
                 return colors.magenta(g.substr(1));
             }));
 
@@ -128,8 +128,8 @@ describe('logger', function () {
         });
 
         it('should wrap scope into [ ]', function () {
-            var scope = 'test_scope';
-            var expectedScope = '[' + colors.blue(scope) + ']';
+            const scope = 'test_scope';
+            const expectedScope = '[' + colors.blue(scope) + ']';
 
             logger.log(message, scope);
 
@@ -144,9 +144,9 @@ describe('logger', function () {
     });
 
     describe('logAction', function () {
-        var action;
-        var target;
-        var additionalInfo;
+        let action;
+        let target;
+        let additionalInfo;
 
         before(function () {
             action = 'test_action';
@@ -161,7 +161,7 @@ describe('logger', function () {
         });
 
         it('should colorize additional info with grey color', function () {
-            var colorizedAdditionalInfo = colors.grey(additionalInfo);
+            const colorizedAdditionalInfo = colors.grey(additionalInfo);
 
             logger.logAction(action, target, additionalInfo);
 
@@ -175,9 +175,9 @@ describe('logger', function () {
         });
 
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
-            var scope = 'test_scope';
-            var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + path.sep + target;
+            const scope = 'test_scope';
+            const loggerWithScope = new Logger(scope);
+            const expectedScope = scope + path.sep + target;
 
             loggerWithScope.logAction(action, target, additionalInfo);
 
@@ -191,7 +191,7 @@ describe('logger', function () {
         });
 
         it('should colorize action with green color', function () {
-            var colorizedAction = colors.green(action);
+            const colorizedAction = colors.green(action);
 
             logger.logAction(action, target, additionalInfo);
 
@@ -199,7 +199,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            var formattedAction = '[' + colors.green(action) + ']';
+            const formattedAction = '[' + colors.green(action) + ']';
 
             logger.logAction(action, target, additionalInfo);
 
@@ -208,9 +208,9 @@ describe('logger', function () {
     });
 
     describe('logWarningAction', function () {
-        var action;
-        var target;
-        var message;
+        let action;
+        let target;
+        let message;
 
         before(function () {
             action = 'test_action';
@@ -219,7 +219,7 @@ describe('logger', function () {
         });
 
         it('should not log warning if warnings disabled', function () {
-            var disabledWarningsLogger = new Logger(null, { hideWarnings: true });
+            const disabledWarningsLogger = new Logger(null, { hideWarnings: true });
 
             disabledWarningsLogger.logWarningAction(action, target, message);
 
@@ -239,9 +239,9 @@ describe('logger', function () {
         });
 
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
-            var scope = 'test_scope';
-            var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + path.sep + target;
+            const scope = 'test_scope';
+            const loggerWithScope = new Logger(scope);
+            const expectedScope = scope + path.sep + target;
 
             loggerWithScope.logWarningAction(action, target, message);
 
@@ -255,7 +255,7 @@ describe('logger', function () {
         });
 
         it('should colorize action with yellow color', function () {
-            var colorizedAction = colors.yellow(action);
+            const colorizedAction = colors.yellow(action);
 
             logger.logWarningAction(action, target, message);
 
@@ -263,7 +263,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            var formattedAction = '[' + colors.yellow(action) + ']';
+            const formattedAction = '[' + colors.yellow(action) + ']';
 
             logger.logWarningAction(action, target, message);
 
@@ -272,12 +272,12 @@ describe('logger', function () {
     });
 
     describe('logTechIsDeprecated', function () {
-        var target;
-        var deprecatedTech;
-        var thisPackage;
-        var newTech;
-        var newPackage;
-        var description;
+        let target;
+        let deprecatedTech;
+        let thisPackage;
+        let newTech;
+        let newPackage;
+        let description;
 
         before(function () {
             target = 'target';
@@ -289,7 +289,7 @@ describe('logger', function () {
         });
 
         it('should not log tech deprecated if warnings disabled', function () {
-            var disabledWarningsLogger = new Logger(null, { hideWarnings: true });
+            const disabledWarningsLogger = new Logger(null, { hideWarnings: true });
 
             disabledWarningsLogger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage,
                 description);
@@ -298,7 +298,7 @@ describe('logger', function () {
         });
 
         it('should add \'deprecated\' action to log message', function () {
-            var deprecated = '[' + colors.yellow('deprecated').replace() + ']';
+            const deprecated = '[' + colors.yellow('deprecated').replace() + ']';
 
             logger.logTechIsDeprecated();
 
@@ -345,7 +345,7 @@ describe('logger', function () {
         });
 
         it('should log old tech path in format %this_package%/techs/%deprecated_tech%', function () {
-            var oldTechPath = thisPackage + '/techs/' + deprecatedTech;
+            const oldTechPath = thisPackage + '/techs/' + deprecatedTech;
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -353,7 +353,7 @@ describe('logger', function () {
         });
 
         it('should make old tech path bold', function () {
-            var colorizedOldTechPath = colors.bold(thisPackage + '/techs/' + deprecatedTech);
+            const colorizedOldTechPath = colors.bold(thisPackage + '/techs/' + deprecatedTech);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -367,7 +367,7 @@ describe('logger', function () {
         });
 
         it('should make new package name bold', function () {
-            var boldNewPackageName = colors.bold(newPackage);
+            const boldNewPackageName = colors.bold(newPackage);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -375,7 +375,7 @@ describe('logger', function () {
         });
 
         it('should log new tech path in format %new_package%/techs/%new_tech%', function () {
-            var newTechPath = newPackage + '/techs/' + newTech;
+            const newTechPath = newPackage + '/techs/' + newTech;
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -383,7 +383,7 @@ describe('logger', function () {
         });
 
         it('should make new tech path bold', function () {
-            var newTechPathBold = colors.bold(newPackage + '/techs/' + newTech);
+            const newTechPathBold = colors.bold(newPackage + '/techs/' + newTech);
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -397,7 +397,7 @@ describe('logger', function () {
         });
 
         it('should add description to the end of log message', function () {
-            var regex = new RegExp(description + '$');
+            const regex = new RegExp(description + '$');
 
             logger.logTechIsDeprecated(target, deprecatedTech, thisPackage, newTech, newPackage, description);
 
@@ -406,12 +406,12 @@ describe('logger', function () {
     });
 
     describe('logOptionIsDeprecated', function () {
-        var target;
-        var thisPackage;
-        var tech;
-        var deprecatedOption;
-        var newOption;
-        var description;
+        let target;
+        let thisPackage;
+        let tech;
+        let deprecatedOption;
+        let newOption;
+        let description;
 
         before(function () {
             target = 'test_target';
@@ -423,7 +423,7 @@ describe('logger', function () {
         });
 
         it('should not log option deprecated if warnings disabled', function () {
-            var disabledWarningsLogger = new Logger(null, { hideWarnings: true });
+            const disabledWarningsLogger = new Logger(null, { hideWarnings: true });
 
             disabledWarningsLogger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption,
                 description);
@@ -432,7 +432,7 @@ describe('logger', function () {
         });
 
         it('should add \'deprecated\' action to log message', function () {
-            var deprecated = '[' + colors.yellow('deprecated').replace() + ']';
+            const deprecated = '[' + colors.yellow('deprecated').replace() + ']';
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -464,7 +464,7 @@ describe('logger', function () {
         });
 
         it('should make deprecated option bold', function () {
-            var deprecatedOptionBold = colors.bold(deprecatedOption);
+            const deprecatedOptionBold = colors.bold(deprecatedOption);
             logger.logOptionIsDeprecated(null, null, null, deprecatedOption);
 
             expect(consoleWarnSpy).to.be.calledWithMatch(deprecatedOptionBold);
@@ -477,7 +477,7 @@ describe('logger', function () {
         });
 
         it('should make new option bold', function () {
-            var newOptionBold = colors.bold(newOption);
+            const newOptionBold = colors.bold(newOption);
             logger.logOptionIsDeprecated(null, null, null, null, newOption);
 
             expect(consoleWarnSpy).to.be.calledWithMatch(newOptionBold);
@@ -498,7 +498,7 @@ describe('logger', function () {
         });
 
         it('should log tech path in format \'%package_name%/techs/%tech_name%\'', function () {
-            var techPath = thisPackage + '/techs/' + tech;
+            const techPath = thisPackage + '/techs/' + tech;
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -506,7 +506,7 @@ describe('logger', function () {
         });
 
         it('should make tech path bold', function () {
-            var boldTechPath = colors.bold(thisPackage + '/techs/' + tech);
+            const boldTechPath = colors.bold(thisPackage + '/techs/' + tech);
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -520,7 +520,7 @@ describe('logger', function () {
         });
 
         it('should add description to the end of the message', function () {
-            var regex = new RegExp(description + '$');
+            const regex = new RegExp(description + '$');
 
             logger.logOptionIsDeprecated(target, thisPackage, tech, deprecatedOption, newOption, description);
 
@@ -529,9 +529,9 @@ describe('logger', function () {
     });
 
     describe('logErrorAction', function () {
-        var action;
-        var target;
-        var additionalInfo;
+        let action;
+        let target;
+        let additionalInfo;
 
         before(function () {
             action = 'test_action';
@@ -546,7 +546,7 @@ describe('logger', function () {
         });
 
         it('should colorize action in red color', function () {
-            var colorizedAction = colors.red(action);
+            const colorizedAction = colors.red(action);
 
             logger.logErrorAction(action);
 
@@ -554,7 +554,7 @@ describe('logger', function () {
         });
 
         it('should wrap action into []', function () {
-            var formattedAction = '[' + colors.red(action) + ']';
+            const formattedAction = '[' + colors.red(action) + ']';
 
             logger.logErrorAction(action);
 
@@ -568,9 +568,9 @@ describe('logger', function () {
         });
 
         it('should unite target with scope dividing them with path.sep if logger has scope', function () {
-            var scope = 'test_scope';
-            var loggerWithScope = new Logger(scope);
-            var expectedScope = scope + path.sep + target;
+            const scope = 'test_scope';
+            const loggerWithScope = new Logger(scope);
+            const expectedScope = scope + path.sep + target;
 
             loggerWithScope.logErrorAction(action, target, message);
 
@@ -584,7 +584,7 @@ describe('logger', function () {
         });
 
         it('should colorize addition info in grey color', function () {
-            var colorizedAdditionalInfo = colors.grey(additionalInfo);
+            const colorizedAdditionalInfo = colors.grey(additionalInfo);
 
             logger.logErrorAction(null, null, additionalInfo);
 
@@ -593,8 +593,8 @@ describe('logger', function () {
     });
 
     describe('isValid', function () {
-        var target;
-        var tech;
+        let target;
+        let tech;
 
         before(function () {
             target = 'test_target';
@@ -621,7 +621,7 @@ describe('logger', function () {
     });
 
     describe('logClean', function () {
-        var target;
+        let target;
 
         before(function () {
             target = 'test_target';
@@ -641,38 +641,38 @@ describe('logger', function () {
     });
 
     describe('subLogger', function () {
-        var scope = 'test_scope';
+        const scope = 'test_scope';
 
         it('should return new Logger instance', function () {
             expect(logger.subLogger(scope)).to.be.instanceOf(Logger);
         });
 
         it('should assign scope passed in params to new logger', function () {
-            var subLogger = logger.subLogger(scope);
+            const subLogger = logger.subLogger(scope);
 
             expect(subLogger._scope).to.be.equal(scope);
         });
 
         it('should add self logger scope to new scope dividing them with path.sep', function () {
-            var newScope = 'new_scope';
-            var loggerWithScope = new Logger(scope);
-            var subLogger = loggerWithScope.subLogger(newScope);
+            const newScope = 'new_scope';
+            const loggerWithScope = new Logger(scope);
+            const subLogger = loggerWithScope.subLogger(newScope);
 
             expect(subLogger._scope).to.be.equal(scope + path.sep + newScope);
         });
 
         it('should pass own options to sublogger', function () {
-            var options = { hideWarnings: true };
-            var loggerWithOptions = new Logger(null, options);
-            var sublogger =  loggerWithOptions.subLogger(scope);
+            const options = { hideWarnings: true };
+            const loggerWithOptions = new Logger(null, options);
+            const sublogger =  loggerWithOptions.subLogger(scope);
 
             expect(sublogger._options).to.be.deep.equal(options);
         });
 
         it('should pass own permission for logging to sublogger', function () {
-            var newLogger = new Logger();
+            const newLogger = new Logger();
             newLogger.setEnabled(false);
-            var sublogger = newLogger.subLogger(scope);
+            const sublogger = newLogger.subLogger(scope);
 
             expect(sublogger.isEnabled()).to.be.equal(newLogger.isEnabled());
         });

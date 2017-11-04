@@ -1,10 +1,10 @@
 'use strict'
 
-var vow = require('vow');
-var Configurable = require('../../../lib/config/configurable');
+const vow = require('vow');
+const Configurable = require('../../../lib/config/configurable');
 
 describe('config/configurable', function () {
-    var configurable;
+    let configurable;
 
     beforeEach(function () {
         configurable = new Configurable();
@@ -12,7 +12,7 @@ describe('config/configurable', function () {
 
     describe('addChain', function () {
         it('should add calback to call chain', function () {
-            var testFunc = sinon.stub();
+            const testFunc = sinon.stub();
 
             configurable.addChain(testFunc);
 
@@ -22,7 +22,7 @@ describe('config/configurable', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = configurable.addChain();
+            const result = configurable.addChain();
 
             expect(result).to.be.equal(configurable);
         });
@@ -30,7 +30,7 @@ describe('config/configurable', function () {
 
     describe('configure', function () {
         it('should add callback to call chain', function () {
-            var testFunc = sinon.stub();
+            const testFunc = sinon.stub();
 
             configurable.configure(testFunc);
 
@@ -40,14 +40,14 @@ describe('config/configurable', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = configurable.configure();
+            const result = configurable.configure();
 
             expect(result).to.be.equal(configurable);
         });
     });
 
     describe('exec', function () {
-        var spy;
+        let spy;
 
         beforeEach(function () {
             spy = new sinon.spy();
@@ -61,7 +61,7 @@ describe('config/configurable', function () {
         });
 
         it('should execute callbacks in order they were submitted', function () {
-            var secondSpy = new sinon.spy();
+            const secondSpy = new sinon.spy();
 
             configurable.addChain(spy);
             configurable.addChain(secondSpy);
@@ -79,7 +79,7 @@ describe('config/configurable', function () {
         });
 
         it('should pass context to callback as first param', function () {
-            var context = {};
+            const context = {};
 
             configurable.addChain(spy);
             configurable.exec(null, context);
@@ -88,9 +88,9 @@ describe('config/configurable', function () {
         });
 
         it('should pass exec args to callback', function () {
-            var firstArg = 'foo';
-            var secondArg = 'bar';
-            var args = [firstArg, secondArg];
+            const firstArg = 'foo';
+            const secondArg = 'bar';
+            const args = [firstArg, secondArg];
 
             configurable.addChain(spy);
             configurable.exec(args);
@@ -99,7 +99,7 @@ describe('config/configurable', function () {
         });
 
         it('should return promise which will be fulfilled when all tasks in chain will be complete', function () {
-            var task = function () {
+            const task = function () {
                 return vow.resolve();
             };
 
@@ -110,7 +110,7 @@ describe('config/configurable', function () {
         });
 
         it('should return rejected promise if one of tasks in chain was rejected', function () {
-            var task = function () {
+            const task = function () {
                 return vow.reject();
             };
 

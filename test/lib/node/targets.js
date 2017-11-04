@@ -1,26 +1,26 @@
 'use strict';
 
-var path = require('path');
-var vow = require('vow');
-var mockFs = require('mock-fs');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var Logger = require('../../../lib/logger');
-var BaseTech = require('../../../lib/tech/base-tech');
+const path = require('path');
+const vow = require('vow');
+const mockFs = require('mock-fs');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const Logger = require('../../../lib/logger');
+const BaseTech = require('../../../lib/tech/base-tech');
 
 describe('node/targets', function () {
-    var node;
-    var tech;
-    var logger;
+    let node;
+    let tech;
+    let logger;
 
     beforeEach(function () {
         mockFs({});
 
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.join('path', 'to', 'project');
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.join('path', 'to', 'project');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
         logger = sinon.createStubInstance(Logger);
@@ -103,7 +103,7 @@ describe('node/targets', function () {
     });
 
     describe('rejectTarget', function () {
-        var error = new Error('test_error');
+        const error = new Error('test_error');
 
         it('should log node failed to build target', function () {
             node.rejectTarget('node.js', error);

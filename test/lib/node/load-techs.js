@@ -1,20 +1,20 @@
 'use strict';
 
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
+const path = require('path');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
 
 describe('node/loadTechs', function () {
-    var node;
-    var tech;
+    let node;
+    let tech;
 
     beforeEach(function () {
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.join('path', 'to', 'project');
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.join('path', 'to', 'project');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
         tech = sinon.createStubInstance(BaseTech);

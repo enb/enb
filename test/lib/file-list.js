@@ -1,8 +1,8 @@
 'use strict'
 
-var path = require('path');
-var mockFs = require('mock-fs');
-var FileList = require('../../lib/file-list');
+const path = require('path');
+const mockFs = require('mock-fs');
+const FileList = require('../../lib/file-list');
 
 require('chai')
     .use(require('chai-as-promised'))
@@ -10,9 +10,9 @@ require('chai')
 
 describe('lib', function () {
     describe('file-list', function () {
-        var fileList;
-        var files1;
-        var files2;
+        let fileList;
+        let files1;
+        let files2;
 
         beforeEach(function () {
             files1 = [
@@ -94,7 +94,7 @@ describe('lib', function () {
                 });
 
                 it('should return valid result for complex suffix', function () {
-                    var advancedFiles = [
+                    const advancedFiles = [
                         {
                             fullname: '/foo1/bar1/file1.bemhtml.js',
                             name: 'file1',
@@ -133,7 +133,7 @@ describe('lib', function () {
             });
 
             it('should return valid result for files with different fullnames but equal names', function () {
-                var advancedFiles = [
+                const advancedFiles = [
                     { fullname: '/foo1/bar1/file1.txt', name: 'file1', suffix: 'txt', mtime: 1437573848385 }
                 ];
 
@@ -144,9 +144,9 @@ describe('lib', function () {
         });
 
         describe('getFileInfo', function () {
-            var dirName;
-            var fullName;
-            var mTime;
+            let dirName;
+            let fullName;
+            let mTime;
 
             beforeEach(function () {
                 fileList = new FileList();

@@ -1,10 +1,10 @@
 'use strict'
 
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
 
 describe('config/node-mask-config', function () {
-    var nodeMaskConfig;
-    var mask = /\w*bundles/g;
+    let nodeMaskConfig;
+    const mask = /\w*bundles/g;
 
     beforeEach(function () {
         nodeMaskConfig = new NodeMaskConfig(mask);

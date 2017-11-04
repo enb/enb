@@ -1,14 +1,14 @@
 'use strict'
 
-var path = require('path');
+const path = require('path');
 
-var vowFs = require('vow-fs');
-var fileEval = require('file-eval');
+const vowFs = require('vow-fs');
+const fileEval = require('file-eval');
 
 describe('fs/async-fs', function () {
-    var previousLimit;
-    var asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
-    var sandbox = sinon.sandbox.create();
+    let previousLimit;
+    const asyncFsPath = path.join(__dirname, '../../../lib/fs/async-fs.js');
+    const sandbox = sinon.sandbox.create();
 
     before(function () {
         previousLimit = process.env.ENB_FILE_LIMIT;
@@ -28,7 +28,7 @@ describe('fs/async-fs', function () {
     });
 
     it('should return vowFs as it\'s result', function () {
-        var asyncFs = fileEval.sync(asyncFsPath);
+        const asyncFs = fileEval.sync(asyncFsPath);
 
         expect(asyncFs).to.be.equal(vowFs);
     });

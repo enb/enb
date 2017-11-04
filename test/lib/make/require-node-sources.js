@@ -1,19 +1,19 @@
 'use strict'
 
-var fs = require('fs');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var MakePlatform = require('../../../lib/make');
-var Node = require('../../../lib/node/node');
-var NodeConfig = require('../../../lib/config/node-config');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var Logger = require('../../../lib/logger');
+const fs = require('fs');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const MakePlatform = require('../../../lib/make');
+const Node = require('../../../lib/node/node');
+const NodeConfig = require('../../../lib/config/node-config');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const Logger = require('../../../lib/logger');
 
 describe('make/requireNodeSources', function () {
-    var makePlatform;
-    var sandbox;
+    let makePlatform;
+    let sandbox;
 
     before(function () {
         sandbox = sinon.sandbox.create();
@@ -39,13 +39,13 @@ describe('make/requireNodeSources', function () {
     });
 
     it('should return promise', function () {
-        var result = makePlatform.requireNodeSources('path/to/node');
+        const result = makePlatform.requireNodeSources('path/to/node');
 
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
     it('should init required node', function () {
-        var initNode = sinon.spy(makePlatform, 'initNode');
+        const initNode = sinon.spy(makePlatform, 'initNode');
 
         makePlatform.requireNodeSources('path/to/node');
 
@@ -70,7 +70,7 @@ describe('make/requireNodeSources', function () {
 });
 
 function setup (settings) {
-    var defaults = { nodePath: 'default/path' };
+    const defaults = { nodePath: 'default/path' };
 
     settings = Object.assign({}, defaults, settings);
 

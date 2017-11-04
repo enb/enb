@@ -1,22 +1,22 @@
 'use strict'
 
-var path = require('path');
-var vow = require('vow');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
-var Logger = require('../../../lib/logger');
+const path = require('path');
+const vow = require('vow');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
+const Logger = require('../../../lib/logger');
 
 describe('node/build', function () {
-    var nodePath = path.join('path', 'to', 'node');
-    var node;
+    const nodePath = path.join('path', 'to', 'node');
+    let node;
 
     beforeEach(function () {
-        var tech = sinon.createStubInstance(BaseTech);
+        const tech = sinon.createStubInstance(BaseTech);
         tech.getTargets.returns(['node.js']);
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(path.join('path', 'to', 'project'));
 
         node = nodeFactory.mkNode(nodePath, makePlatform, sinon.createStubInstance(Cache));
@@ -38,7 +38,7 @@ describe('node/build', function () {
     });
 
     it('should require sources for targets to build', function () {
-        var requireSources = sinon.spy(node, 'requireSources');
+        const requireSources = sinon.spy(node, 'requireSources');
 
         node.resolveTarget('node.js');
 
@@ -48,7 +48,7 @@ describe('node/build', function () {
     });
 
     it('should fulfill promise with paths to built targets', function () {
-        var targetPath = path.join(nodePath, 'node.js');
+        const targetPath = path.join(nodePath, 'node.js');
 
         node.resolveTarget('node.js');
 

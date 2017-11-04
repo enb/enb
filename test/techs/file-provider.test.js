@@ -1,18 +1,18 @@
 'use strict'
 
-var proxyquire = require('proxyquire').noCallThru();
-var mockFs = require('mock-fs');
-var MockNode = proxyquire('mock-enb/lib/mock-node', {
+const proxyquire = require('proxyquire').noCallThru();
+const mockFs = require('mock-fs');
+const MockNode = proxyquire('mock-enb/lib/mock-node', {
     enb: require('../../lib/api'),
     'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
     'enb/lib/cache/cache': require('../../lib/cache/cache')
 });
-var FileProviderTech = require('../../techs/file-provider');
+const FileProviderTech = require('../../techs/file-provider');
 
 describe('techs/file-provider', function () {
-    var bundle;
-    var resolveSpy;
-    var rejectSpy;
+    let bundle;
+    let resolveSpy;
+    let rejectSpy;
 
     beforeEach(function () {
         mockFs({

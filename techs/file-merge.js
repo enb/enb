@@ -22,11 +22,11 @@
  * } ]);
  * ```
  */
-var vow = require('vow');
+const vow = require('vow');
 
-var enb = require('../lib/api');
-var vfs = enb.asyncFs;
-var File = require('enb-source-map/lib/file');
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
+const File = require('enb-source-map/lib/file');
 
 module.exports = enb.buildFlow.create()
     .name('file-merge')
@@ -37,10 +37,10 @@ module.exports = enb.buildFlow.create()
     .defineOption('sourcemap', false)
     .useSourceListFilenames('sources')
     .builder(function (sources) {
-        var divider = this._divider;
-        var sourcemap = this._sourcemap;
-        var target = this._target;
-        var node = this.node;
+        const divider = this._divider;
+        const sourcemap = this._sourcemap;
+        const target = this._target;
+        const node = this.node;
 
         return vow.all(sources.map(function (sourceFilename) {
             return vfs.read(sourceFilename, 'utf8');
@@ -49,7 +49,7 @@ module.exports = enb.buildFlow.create()
                 return results.join(divider);
             }
 
-            var relFileNames = sources.map(node.relativePath, node);
+            const relFileNames = sources.map(node.relativePath, node);
 
             return joinWithSourceMaps(relFileNames, results, divider, target);
         });
@@ -58,7 +58,7 @@ module.exports = enb.buildFlow.create()
 
 ///
 function joinWithSourceMaps(fileNames, contents, divider, target) {
-    var targetFile = new File(target, {sourceMap: true, comment: 'block'});
+    const targetFile = new File(target, {sourceMap: true, comment: 'block'});
 
     fileNames.forEach(function (file, i) {
         targetFile.writeFileContent(file, contents[i]);

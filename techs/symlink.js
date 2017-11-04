@@ -21,10 +21,10 @@
  * } ]);
  * ```
  */
-var inherit = require('inherit');
+const inherit = require('inherit');
 
-var enb = require('../lib/api');
-var vfs = enb.asyncFs;
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
     getName() {
@@ -41,10 +41,10 @@ module.exports = inherit(enb.BaseTech, {
     },
 
     build() {
-        var symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
-        var symlinkTargetPath = this.node.resolvePath(symlinkTarget);
-        var fileTarget = this.node.unmaskTargetName(this._fileTarget);
-        var _this = this;
+        const symlinkTarget = this.node.unmaskTargetName(this._symlinkTarget);
+        const symlinkTargetPath = this.node.resolvePath(symlinkTarget);
+        const fileTarget = this.node.unmaskTargetName(this._fileTarget);
+        const _this = this;
         function createSymlink() {
             return vfs.symLink(fileTarget, symlinkTargetPath).then(function () {
                 _this.node.resolveTarget(symlinkTarget);

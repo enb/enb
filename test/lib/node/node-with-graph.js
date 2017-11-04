@@ -1,28 +1,28 @@
 'use strict';
 
-var path = require('path');
-var vow = require('vow');
-var Node = require('../../../lib/node/node');
-var NodeWithGraph = require('../../../lib/node/node-with-graph');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var Logger = require('../../../lib/logger');
-var BaseTech = require('../../../lib/tech/base-tech');
-var BuildGraph = require('../../../lib/ui/build-graph');
+const path = require('path');
+const vow = require('vow');
+const Node = require('../../../lib/node/node');
+const NodeWithGraph = require('../../../lib/node/node-with-graph');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const Logger = require('../../../lib/logger');
+const BaseTech = require('../../../lib/tech/base-tech');
+const BuildGraph = require('../../../lib/ui/build-graph');
 
 describe('node-with-graph', function () {
-    var sandbox = sinon.sandbox.create();
-    var nodePath = path.join('path', 'to', 'node');
-    var node;
-    var graph;
+    const sandbox = sinon.sandbox.create();
+    const nodePath = path.join('path', 'to', 'node');
+    let node;
+    let graph;
 
     beforeEach(function () {
-        var projectDir = path.join('path', 'to', 'project');
+        const projectDir = path.join('path', 'to', 'project');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
-        var cache = sinon.createStubInstance(Cache);
+        const cache = sinon.createStubInstance(Cache);
         cache.subCache.returns(sinon.createStubInstance(Cache));
 
         graph = sinon.createStubInstance(BuildGraph);
@@ -47,7 +47,7 @@ describe('node-with-graph', function () {
 
     describe('loadTechs', function () {
         it('should add targets to build graph', function () {
-            var tech = sinon.createStubInstance(BaseTech);
+            const tech = sinon.createStubInstance(BaseTech);
             tech.getTargets.returns(['node.js']);
             tech.getName.returns('tech');
             node.setTechs([tech]);

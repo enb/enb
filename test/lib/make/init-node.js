@@ -1,25 +1,25 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var Node = require('../../../lib/node/node');
-var nodeFactory = require('../../../lib/node');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var ModeConfig = require('../../../lib/config/mode-config');
-var Logger = require('../../../lib/logger');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
+const fs = require('fs');
+const path = require('path');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const Node = require('../../../lib/node/node');
+const nodeFactory = require('../../../lib/node');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const ModeConfig = require('../../../lib/config/mode-config');
+const Logger = require('../../../lib/logger');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
 
 describe('make/initNode', function () {
-    var sandbox = sinon.sandbox.create();
-    var makePlatform;
-    var node;
+    const sandbox = sinon.sandbox.create();
+    let makePlatform;
+    let node;
 
     beforeEach(function () {
         mockFs({});
@@ -73,8 +73,8 @@ describe('make/initNode', function () {
     });
 
     it('should set node logger as sublogger of own logger', function () {
-        var logger = sinon.createStubInstance(Logger);
-        var expectedLogger = sinon.createStubInstance(Logger);
+        const logger = sinon.createStubInstance(Logger);
+        const expectedLogger = sinon.createStubInstance(Logger);
 
         logger.subLogger.withArgs('path/to/node').returns(expectedLogger);
         setup({ nodePath: 'path/to/node' });
@@ -94,7 +94,7 @@ describe('make/initNode', function () {
     });
 
     it('should execute node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         setup({
             nodePath: 'path/to/node',
@@ -114,8 +114,8 @@ describe('make/initNode', function () {
     });
 
     it('should execute node mask config and pass it node config as context', function () {
-        var nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const nodeMaskConfig = sinon.createStubInstance(NodeMaskConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         setup({
             nodePath: 'path/to/node',
@@ -130,8 +130,8 @@ describe('make/initNode', function () {
     });
 
     it('should execute mode config and pass it node config as context', function () {
-        var modeConfig = sinon.createStubInstance(ModeConfig);
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const modeConfig = sinon.createStubInstance(ModeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getModeConfig
             .withArgs('mode').returns(modeConfig);
@@ -147,7 +147,7 @@ describe('make/initNode', function () {
     });
 
     it('should set node languages as node config languages if languages available from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getLanguages.returns(['ru']);
         setup({
@@ -171,7 +171,7 @@ describe('make/initNode', function () {
     });
 
     it('should set node targets to build as targets to build from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getTargets.returns(['?.js']);
         setup({
@@ -185,7 +185,7 @@ describe('make/initNode', function () {
     });
 
     it('should set node targets to clean as targets to clean from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
 
         nodeConfig.getCleanTargets.returns(['?.js']);
         setup({
@@ -199,8 +199,8 @@ describe('make/initNode', function () {
     });
 
     it('should set node techs as techs from node config', function () {
-        var nodeConfig = sinon.createStubInstance(NodeConfig);
-        var tech = sinon.createStubInstance(BaseTech);
+        const nodeConfig = sinon.createStubInstance(NodeConfig);
+        const tech = sinon.createStubInstance(BaseTech);
 
         nodeConfig.getTechs.returns([tech]);
         setup({
@@ -231,7 +231,7 @@ describe('make/initNode', function () {
 });
 
 function setup (params) {
-    var defaults = {
+    const defaults = {
         nodePath: 'default/path',
         nodeConfig: sinon.createStubInstance(NodeConfig),
         nodeMaskConfig: sinon.createStubInstance(NodeMaskConfig)

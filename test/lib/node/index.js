@@ -1,11 +1,11 @@
 'use strict';
 
-var nodeFactory = require('../../../lib/node');
-var Node = require('../../../lib/node/node');
-var NodeWithGraph = require('../../../lib/node/node-with-graph');
+const nodeFactory = require('../../../lib/node');
+const Node = require('../../../lib/node/node');
+const NodeWithGraph = require('../../../lib/node/node-with-graph');
 
 describe('node/mk', function () {
-    var sandbox = sinon.sandbox.create();
+    const sandbox = sinon.sandbox.create();
 
     afterEach(function () {
         sandbox.restore();

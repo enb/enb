@@ -1,12 +1,12 @@
 'use strict'
 
-var path = require('path');
-var vm = require('vm');
-var Logger = require('../../../lib/logger');
+const path = require('path');
+const vm = require('vm');
+const Logger = require('../../../lib/logger');
 
 describe('deprecate', function () {
-    var deprecate;
-    var deprecatePath = require.resolve('../../../lib/utils/deprecate.js');
+    let deprecate;
+    const deprecatePath = require.resolve('../../../lib/utils/deprecate.js');
 
     beforeEach (function () {
         deprecate = require(deprecatePath);
@@ -32,13 +32,13 @@ describe('deprecate', function () {
         });
 
         it('should print correct filename for delayed messages', function () {
-            var contents = 'var deprecate = require(deprecatePath); deprecate({ module: "test_module" });';
-            var context = vm.createContext({ require, deprecatePath });
+            const contents = 'var deprecate = require(deprecatePath); deprecate({ module: "test_module" });';
+            const context = vm.createContext({ require, deprecatePath });
 
             vm.runInContext(contents, context, '/test_module.js');
             deprecate.initialize();
 
-            var expected = path.normalize('test/lib/utils/deprecate.js');
+            const expected = path.normalize('test/lib/utils/deprecate.js');
 
             Logger.prototype.logWarningAction
                 .should.be.calledWithMatch(sinon.match.any, expected); // locates test file as smth called deprecate

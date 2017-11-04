@@ -1,22 +1,22 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var Node = require('../../../lib/node/node');
-var MakePlatform = require('../../../lib/make');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var Cache = require('../../../lib/cache/cache');
-var CacheStorage = require('../../../lib/cache/cache-storage');
+const fs = require('fs');
+const path = require('path');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const Node = require('../../../lib/node/node');
+const MakePlatform = require('../../../lib/make');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const Cache = require('../../../lib/cache/cache');
+const CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/cleanTarget', function () {
-    var makePlatform;
-    var sandbox = sinon.sandbox.create();
-    var projectPath = '/path/to/project';
+    let makePlatform;
+    const sandbox = sinon.sandbox.create();
+    const projectPath = '/path/to/project';
 
     beforeEach(function (done) {
         mockFs({});
@@ -38,14 +38,14 @@ describe('make/cleanTarget', function () {
     });
 
     it('should return promise', function () {
-        var result = makePlatform.cleanTargets();
+        const result = makePlatform.cleanTargets();
 
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
     it('should create cache', function () {
-        var cacheStorage = sinon.createStubInstance(CacheStorage);
-        var projectName = path.basename(projectPath);
+        const cacheStorage = sinon.createStubInstance(CacheStorage);
+        const projectName = path.basename(projectPath);
 
         makePlatform.setCacheStorage(cacheStorage);
         makePlatform.cleanTargets();
@@ -61,7 +61,7 @@ describe('make/cleanTarget', function () {
     });
 
     it('should init nodes', function () {
-        var initNode = sinon.spy(makePlatform, 'initNode');
+        const initNode = sinon.spy(makePlatform, 'initNode');
 
         setup({ nodePath: 'path/to/node' });
 
@@ -104,7 +104,7 @@ describe('make/cleanTarget', function () {
     });
 
     it('should force single node build multiple targets if multiple targets for single node passed', function () {
-        var targets = [
+        const targets = [
             'path/to/node/?.css',
             'path/to/node/?.js'
         ];
@@ -118,8 +118,8 @@ describe('make/cleanTarget', function () {
 });
 
 function setup (settings) {
-    var nodeConfigs = {};
-    var defaults = { nodePath: 'default/path' };
+    const nodeConfigs = {};
+    const defaults = { nodePath: 'default/path' };
 
     settings = Object.assign({}, defaults, settings);
 

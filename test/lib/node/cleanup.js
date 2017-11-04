@@ -1,21 +1,21 @@
 'use strict'
 
-var path = require('path');
-var vow = require('vow');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var BaseTech = require('../../../lib/tech/base-tech');
+const path = require('path');
+const vow = require('vow');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const BaseTech = require('../../../lib/tech/base-tech');
 
 describe('node/cleanup', function () {
-    var node;
-    var tech;
+    let node;
+    let tech;
 
     beforeEach(function () {
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.join('path', 'to', 'project');
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.join('path', 'to', 'project');
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
         tech = sinon.createStubInstance(BaseTech);
@@ -36,7 +36,7 @@ describe('node/cleanup', function () {
         });
 
         it('should return promise', function () {
-            var result = node.cleanTargets(['node.js']);
+            const result = node.cleanTargets(['node.js']);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -57,7 +57,7 @@ describe('node/cleanup', function () {
 
     describe('clean', function () {
         it('should return promise', function () {
-            var result = node.clean(['node.js']);
+            const result = node.clean(['node.js']);
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -69,7 +69,7 @@ describe('node/cleanup', function () {
         });
 
         it('should initiate clean for resolved targets', function () {
-            var cleanTargets = sinon.spy(node, 'cleanTargets');
+            const cleanTargets = sinon.spy(node, 'cleanTargets');
 
             return node.clean(['node.js']).then(function () {
                 expect(cleanTargets).to.be.called;

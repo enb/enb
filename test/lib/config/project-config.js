@@ -1,17 +1,17 @@
 'use strict'
 
-var path = require('path');
-var mockFs = require('mock-fs');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var TaskConfig = require('../../../lib/config/task-config');
-var ModeConfig = require('../../../lib/config/mode-config');
-var ModuleConfig = require('../../../lib/config/module-config');
+const path = require('path');
+const mockFs = require('mock-fs');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const TaskConfig = require('../../../lib/config/task-config');
+const ModeConfig = require('../../../lib/config/mode-config');
+const ModuleConfig = require('../../../lib/config/module-config');
 
 describe('config/project-config', function () {
-    var projectRoot = path.resolve(__dirname);
-    var projectConfig;
+    const projectRoot = path.resolve(__dirname);
+    let projectConfig;
 
     beforeEach(function () {
         projectConfig =  new ProjectConfig(projectRoot);
@@ -72,7 +72,7 @@ describe('config/project-config', function () {
         });
 
         it('should copy process environment variables to self environment variables container', function () {
-            var expectedEnvVariables = {};
+            const expectedEnvVariables = {};
 
             Object.keys(process.env).forEach(function (key) {
                 expectedEnvVariables[key] = process.env[key];
@@ -84,7 +84,7 @@ describe('config/project-config', function () {
 
     describe('getLanguages', function () {
         it('should return previously set languages', function () {
-            var languages = ['en', 'ru'];
+            const languages = ['en', 'ru'];
 
             projectConfig.setLanguages(languages);
 
@@ -98,7 +98,7 @@ describe('config/project-config', function () {
 
     describe('setLanguages', function () {
         it('should set languages', function () {
-            var languages = ['en', 'ru'];
+            const languages = ['en', 'ru'];
 
             projectConfig.setLanguages(languages);
 
@@ -106,7 +106,7 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.setLanguages();
+            const result = projectConfig.setLanguages();
 
             expect(result).to.be.equal(projectConfig);
         });
@@ -124,25 +124,25 @@ describe('config/project-config', function () {
         });
 
         it('should resolve source path passed as string', function () {
-            var sourcePath = 'path/to/level';
-            var expectedResolvedPath = path.resolve(projectRoot, sourcePath);
-            var result = projectConfig.resolvePath(sourcePath);
+            const sourcePath = 'path/to/level';
+            const expectedResolvedPath = path.resolve(projectRoot, sourcePath);
+            const result = projectConfig.resolvePath(sourcePath);
 
             expect(result).to.be.equal(expectedResolvedPath);
         });
 
         it('should resolve path passed as object with property path', function () {
-            var sourcePath = { path: 'path/to/level' };
-            var expectedResolvedPath = { path: path.resolve(projectRoot, sourcePath.path) };
-            var result = projectConfig.resolvePath(sourcePath);
+            const sourcePath = { path: 'path/to/level' };
+            const expectedResolvedPath = { path: path.resolve(projectRoot, sourcePath.path) };
+            const result = projectConfig.resolvePath(sourcePath);
 
             expect(result).to.be.deep.equal(expectedResolvedPath);
         });
     });
 
     describe('node', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+        const nodePath = 'path/to/node';
+        const configurator = function () {};
 
         it('should add node config to node configs', function () {
             projectConfig.node(nodePath, configurator);
@@ -163,9 +163,9 @@ describe('config/project-config', function () {
         });
 
         it('should not create new node config if adding multiple configurators for same node path', function () {
-            var anotherConfigurator = function () {};
-            var firstNodeConfig;
-            var secondNodeConfig;
+            const anotherConfigurator = function () {};
+            let firstNodeConfig;
+            let secondNodeConfig;
 
             projectConfig.node(nodePath, configurator);
             firstNodeConfig = projectConfig.getNodeConfig(nodePath);
@@ -176,7 +176,7 @@ describe('config/project-config', function () {
         });
 
         it('should remove leading path separator from node path', function () {
-            var modifiedNodePath = path.sep + nodePath;
+            const modifiedNodePath = path.sep + nodePath;
 
             projectConfig.node(modifiedNodePath, configurator);
 
@@ -184,7 +184,7 @@ describe('config/project-config', function () {
         });
 
         it('should remove trailing path separator from node path', function () {
-            var modifiedNodePath = nodePath + path.sep;
+            const modifiedNodePath = nodePath + path.sep;
 
             projectConfig.node(modifiedNodePath, configurator);
 
@@ -192,7 +192,7 @@ describe('config/project-config', function () {
         });
 
         it('should remove leading and trailing path separators from node path', function () {
-            var modifiedNodePath = path.sep + nodePath + path.sep;
+            const modifiedNodePath = path.sep + nodePath + path.sep;
 
             projectConfig.node(modifiedNodePath, configurator);
 
@@ -200,17 +200,17 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.node(nodePath, configurator);
+            const result = projectConfig.node(nodePath, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('nodes', function () {
-        var configurator = function () {};
+        const configurator = function () {};
 
         beforeEach(function () {
-            var config = {};
+            const config = {};
 
             config[projectRoot] = {
                 blocks: {},
@@ -225,7 +225,7 @@ describe('config/project-config', function () {
         });
 
         it('should add configurator to node configs', function () {
-            var nodePath = 'path/to/node';
+            const nodePath = 'path/to/node';
 
             projectConfig.nodes(nodePath, configurator);
 
@@ -234,8 +234,8 @@ describe('config/project-config', function () {
         });
 
         it('should add node configs for multiple paths passed as relative paths', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
 
             projectConfig.nodes(nodePath, anotherNodePath, configurator);
 
@@ -246,9 +246,9 @@ describe('config/project-config', function () {
         });
 
         it('should add node configs for multiple paths passed as array of relative paths', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
-            var paths = [nodePath, anotherNodePath];
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
+            const paths = [nodePath, anotherNodePath];
 
             projectConfig.nodes(paths, configurator);
 
@@ -260,9 +260,9 @@ describe('config/project-config', function () {
 
         it('should add node configs for multiple paths passed as shell mask, adding node configs as relative paths ' +
             'after resolving shell mask', function () {
-            var nodeMask = '/*';
-            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
-            var pageNodePath = 'page';
+            const nodeMask = '/*';
+            const blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
+            const pageNodePath = 'page';
 
             projectConfig.nodes(nodeMask, configurator);
 
@@ -274,13 +274,13 @@ describe('config/project-config', function () {
 
         it('should add node configs for multiple paths passed in mixed manner: as relative path, array of relative ' +
             'paths and shell mask', function () {
-            var nodePath = 'path/to/node';
-            var anotherNodePath = 'path/to/another/node';
-            var blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
-            var pageNodePath = 'page';
-            var nodeMask = '/*';
-            var pathsArray = [anotherNodePath];
-            var expectedPath = [nodePath, anotherNodePath, blocksNodePath, pageNodePath];
+            const nodePath = 'path/to/node';
+            const anotherNodePath = 'path/to/another/node';
+            const blocksNodePath = 'blocks'; // blocks and pages are directories in root of project fixture
+            const pageNodePath = 'page';
+            const nodeMask = '/*';
+            const pathsArray = [anotherNodePath];
+            const expectedPath = [nodePath, anotherNodePath, blocksNodePath, pageNodePath];
 
             projectConfig.nodes(nodePath, pathsArray, nodeMask, configurator);
 
@@ -291,17 +291,17 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var nodePath = 'path/to/node';
+            const nodePath = 'path/to/node';
 
-            var result = projectConfig.nodes(nodePath, configurator);
+            const result = projectConfig.nodes(nodePath, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('nodeMask', function () {
-        var mask = /\w*bundles/g;
-        var configurator = function () {};
+        const mask = /\w*bundles/g;
+        const configurator = function () {};
 
         it('should add node mask config', function () {
             projectConfig.nodeMask(mask, configurator);
@@ -317,8 +317,8 @@ describe('config/project-config', function () {
         });
 
         it('should create different node mask configs for same masks', function () {
-            var anotherConfigurator = function () {};
-            var expectedConfigsAmount = 2;
+            const anotherConfigurator = function () {};
+            const expectedConfigsAmount = 2;
 
             projectConfig.nodeMask(mask, configurator);
             projectConfig.nodeMask(mask, anotherConfigurator);
@@ -327,15 +327,15 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.nodeMask(mask, configurator);
+            const result = projectConfig.nodeMask(mask, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('task', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+        const taskName = 'test_task';
+        const configurator = function () {};
 
         it('should add task config', function () {
             projectConfig.task(taskName, configurator);
@@ -351,9 +351,9 @@ describe('config/project-config', function () {
         });
 
         it('should not create new task config if adding multiple configurators for same task name', function () {
-            var firstTaskConfig;
-            var secondTaskConfig;
-            var anotherConfigurator = function () {};
+            let firstTaskConfig;
+            let secondTaskConfig;
+            const anotherConfigurator = function () {};
 
             projectConfig.task(taskName, configurator);
             firstTaskConfig = projectConfig.getTaskConfig(taskName);
@@ -364,15 +364,15 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.task(taskName, configurator);
+            const result = projectConfig.task(taskName, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('mode', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+        const modeName = 'test_mode';
+        const configurator = function () {};
 
         it('should add mode config', function () {
             projectConfig.mode(modeName, configurator);
@@ -388,9 +388,9 @@ describe('config/project-config', function () {
         });
 
         it('should not create new mode config if adding multiple configurators for same mode name', function () {
-            var firstModeConfig;
-            var secondModeConfig;
-            var anotherConfigurator = function () {};
+            let firstModeConfig;
+            let secondModeConfig;
+            const anotherConfigurator = function () {};
 
             projectConfig.mode(modeName, configurator);
             firstModeConfig = projectConfig.getModeConfig(modeName);
@@ -401,15 +401,15 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.mode(modeName, configurator);
+            const result = projectConfig.mode(modeName, configurator);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('registerModule', function () {
-        var moduleName = 'test_module';
-        var moduleConfig;
+        const moduleName = 'test_module';
+        let moduleConfig;
 
         beforeEach(function () {
             moduleConfig = new ModuleConfig();
@@ -422,9 +422,9 @@ describe('config/project-config', function () {
         });
 
         it('should not allow registering multiple modules for same name', function () {
-            var anotherModuleConfig = new ModuleConfig();
-            var expectedExcMessage = 'Module "' + moduleName + '" is already registered';
-            var func = function () {
+            const anotherModuleConfig = new ModuleConfig();
+            const expectedExcMessage = 'Module "' + moduleName + '" is already registered';
+            const func = function () {
                 projectConfig.registerModule(moduleName, moduleConfig);
                 projectConfig.registerModule(moduleName, anotherModuleConfig);
             };
@@ -433,8 +433,8 @@ describe('config/project-config', function () {
         });
 
         it('should allow registering same module for different names', function () {
-            var anotherModuleName = 'another_test_module';
-            var func = function () {
+            const anotherModuleName = 'another_test_module';
+            const func = function () {
                 projectConfig.registerModule(moduleName, moduleConfig);
                 projectConfig.registerModule(anotherModuleName, moduleConfig);
             };
@@ -444,9 +444,9 @@ describe('config/project-config', function () {
     });
 
     describe('module', function () {
-        var moduleName = 'test_module';
-        var configurator = function () {};
-        var moduleConfig;
+        const moduleName = 'test_module';
+        const configurator = function () {};
+        let moduleConfig;
 
         beforeEach(function () {
             moduleConfig = new ModuleConfig();
@@ -460,9 +460,9 @@ describe('config/project-config', function () {
         });
 
         it('should throw error on attempt to configure non-registered module', function () {
-            var nonRegisteredModuleName = 'non_registered_module';
-            var expectedErrorMessage = 'Module "' + nonRegisteredModuleName + '" is not registered.';
-            var func = function () { projectConfig.module(nonRegisteredModuleName, configurator); };
+            const nonRegisteredModuleName = 'non_registered_module';
+            const expectedErrorMessage = 'Module "' + nonRegisteredModuleName + '" is not registered.';
+            const func = function () { projectConfig.module(nonRegisteredModuleName, configurator); };
 
             expect(func).to.throw(expectedErrorMessage);
         });
@@ -477,8 +477,8 @@ describe('config/project-config', function () {
     });
 
     describe('getTaskConfigs', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+        const taskName = 'test_task';
+        const configurator = function () {};
 
         it('should return tasks', function () {
             projectConfig.task(taskName, configurator);
@@ -489,8 +489,8 @@ describe('config/project-config', function () {
     });
 
     describe('getTaskConfig', function () {
-        var taskName = 'test_task';
-        var configurator = function () {};
+        const taskName = 'test_task';
+        const configurator = function () {};
 
         it('should return task config if it was added to project config', function () {
             projectConfig.task(taskName, configurator);
@@ -500,15 +500,15 @@ describe('config/project-config', function () {
         });
 
         it('should return undefined if task config is missing in project config', function () {
-            var missedTaskName = 'missed_task';
+            const missedTaskName = 'missed_task';
 
             expect(projectConfig.getTaskConfig(missedTaskName)).to.be.undefined;
         });
     });
 
     describe('getModeConfigs', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+        const modeName = 'test_mode';
+        const configurator = function () {};
 
         it('should return mode configs', function () {
             projectConfig.mode(modeName, configurator);
@@ -519,8 +519,8 @@ describe('config/project-config', function () {
     });
 
     describe('getModeConfig', function () {
-        var modeName = 'test_mode';
-        var configurator = function () {};
+        const modeName = 'test_mode';
+        const configurator = function () {};
 
         it('should return mode config if mode was added to project config', function () {
             projectConfig.mode(modeName, configurator);
@@ -530,15 +530,15 @@ describe('config/project-config', function () {
         });
 
         it('should return undefined if mode was not added to project config', function () {
-            var missedModeName = 'missed_mode';
+            const missedModeName = 'missed_mode';
 
             expect(projectConfig.getModeConfig(missedModeName)).to.be.undefined;
         });
     });
 
     describe('getNodeConfigs', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+        const nodePath = 'path/to/node';
+        const configurator = function () {};
 
         it('should return node configs', function () {
             projectConfig.node(nodePath, configurator);
@@ -549,8 +549,8 @@ describe('config/project-config', function () {
     });
 
     describe('getNodeConfig', function () {
-        var nodePath = 'path/to/node';
-        var configurator = function () {};
+        const nodePath = 'path/to/node';
+        const configurator = function () {};
 
         it('should return node config if it was added to project config', function () {
             projectConfig.node(nodePath, configurator);
@@ -560,15 +560,15 @@ describe('config/project-config', function () {
         });
 
         it('should return undefined if node config was not added for requested path', function () {
-            var wrongNodePath = 'path/to/missing/node';
+            const wrongNodePath = 'path/to/missing/node';
 
             expect(projectConfig.getNodeConfig(wrongNodePath)).to.be.undefined;
         });
     });
 
     describe('getNodeMaskConfigs', function () {
-        var mask = /\w*bundles/g;
-        var configurator = function () {};
+        const mask = /\w*bundles/g;
+        const configurator = function () {};
 
         it('should return all node mask configs if no node path specified', function () {
             projectConfig.nodeMask(mask, configurator);
@@ -579,9 +579,9 @@ describe('config/project-config', function () {
         });
 
         it('should return mask config if it\'s mask matches with path', function () {
-            var nodePath = 'path/to/desktop.bundles';
-            var anotherMask = /\w*nodes/g;
-            var result;
+            const nodePath = 'path/to/desktop.bundles';
+            const anotherMask = /\w*nodes/g;
+            let result;
 
             projectConfig.nodeMask(mask, configurator);
             projectConfig.nodeMask(anotherMask, configurator);
@@ -596,8 +596,8 @@ describe('config/project-config', function () {
 
     describe('getEnv', function () {
         it('should return env option if it was set', function () {
-            var optionName = 'option_name';
-            var optionValue = 'option_value';
+            const optionName = 'option_name';
+            const optionValue = 'option_value';
 
             projectConfig.setEnv(optionName, optionValue);
 
@@ -605,7 +605,7 @@ describe('config/project-config', function () {
         });
 
         it('should return undefined if env option was not set', function () {
-            var optionName = 'option_name';
+            const optionName = 'option_name';
 
             expect(projectConfig.getEnv(optionName)).to.be.undefined;
         });
@@ -613,8 +613,8 @@ describe('config/project-config', function () {
 
     describe('setEnv', function () {
         it('should set env variable passed as key and value strings', function () {
-            var optionName = 'option_name';
-            var optionValue = 'option_value';
+            const optionName = 'option_name';
+            const optionValue = 'option_value';
 
             projectConfig.setEnv(optionName, optionValue);
 
@@ -622,8 +622,8 @@ describe('config/project-config', function () {
         });
 
         it('should set env variable value as undefined if only variable name provided', function () {
-            var optionName = 'option_name';
-            var env;
+            const optionName = 'option_name';
+            let env;
 
             projectConfig.setEnv(optionName);
             env = projectConfig.getEnvValues();
@@ -633,11 +633,11 @@ describe('config/project-config', function () {
         });
 
         it('should set env variables passed as env variables hash', function () {
-            var options = {
+            const options = {
                 foo: 'bar',
                 fizz: 'buzz'
             };
-            var env;
+            let env;
 
             projectConfig.setEnv(options);
             env = projectConfig.getEnvValues();
@@ -650,8 +650,8 @@ describe('config/project-config', function () {
 
     describe('getEnvValues', function () {
         it('should return env values', function () {
-            var expectedEnv = {};
-            var env;
+            const expectedEnv = {};
+            let env;
 
             Object.keys(process.env).forEach(function (key) {
                 expectedEnv[key] = process.env[key];
@@ -663,11 +663,11 @@ describe('config/project-config', function () {
     });
 
     describe('includeConfig', function () {
-        var configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
+        const configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
 
         it('should resolve config path before using it', function () {
-            var nonResolvedConfigPath = '../../fixtures/project-configs/project-config.js';
-            var expectedPath = configPath;
+            const nonResolvedConfigPath = '../../fixtures/project-configs/project-config.js';
+            const expectedPath = configPath;
 
             projectConfig.includeConfig(nonResolvedConfigPath);
 
@@ -687,14 +687,14 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.includeConfig(configPath);
+            const result = projectConfig.includeConfig(configPath);
 
             expect(result).to.be.equal(projectConfig);
         });
     });
 
     describe('getIncludedConfigFilenames', function () {
-        var configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
+        const configPath = path.join(__dirname, '../../fixtures/project-configs/project-config.js');
 
         it('should return array containing included config filenames if any configs were included', function () {
             projectConfig.includeConfig(configPath);
@@ -711,9 +711,9 @@ describe('config/project-config', function () {
     });
 
     describe('setLevelNamingScheme', function () {
-        var levelPath = 'level/path';
-        var schemeBuilder = function () {};
-        var resolvePathSpy;
+        const levelPath = 'level/path';
+        const schemeBuilder = function () {};
+        let resolvePathSpy;
 
         beforeEach(function () {
             resolvePathSpy = new sinon.spy(projectConfig, 'resolvePath');
@@ -728,7 +728,7 @@ describe('config/project-config', function () {
         });
 
         it('should add level naming scheme to level naming schemes if level path passed as string', function () {
-            var expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
+            const expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
 
             projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 
@@ -737,7 +737,7 @@ describe('config/project-config', function () {
         });
 
         it('should add level naming scheme to level naming schemes if level path passed as array', function () {
-            var expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
+            const expectedLevelNamingSchemeName = projectConfig.resolvePath(levelPath);
 
             projectConfig.setLevelNamingScheme([levelPath], schemeBuilder);
 
@@ -747,8 +747,8 @@ describe('config/project-config', function () {
 
         it('should add multiple level naming schemes to level naming schemes if level paths passed as ' +
             'array', function () {
-            var anotherLevelPath = 'another/level/path';
-            var paths = [levelPath, anotherLevelPath];
+            const anotherLevelPath = 'another/level/path';
+            const paths = [levelPath, anotherLevelPath];
 
             projectConfig.setLevelNamingScheme(paths, schemeBuilder);
 
@@ -765,7 +765,7 @@ describe('config/project-config', function () {
         });
 
         it('should not resolve absolute level path', function () {
-            var absoluteLevelPath = '/' + levelPath;
+            const absoluteLevelPath = '/' + levelPath;
 
             projectConfig.setLevelNamingScheme(absoluteLevelPath, schemeBuilder);
 
@@ -773,7 +773,7 @@ describe('config/project-config', function () {
         });
 
         it('should support method chaining pattern', function () {
-            var result = projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
+            const result = projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 
             expect(result).to.be.equal(projectConfig);
         });
@@ -781,9 +781,9 @@ describe('config/project-config', function () {
 
     describe('getLevelNamingSchemes', function () {
         it('should return level naming schemes', function () {
-            var levelPath = 'level/path';
-            var expectedLevelPath = projectConfig.resolvePath(levelPath);
-            var schemeBuilder = function () {};
+            const levelPath = 'level/path';
+            const expectedLevelPath = projectConfig.resolvePath(levelPath);
+            const schemeBuilder = function () {};
 
             projectConfig.setLevelNamingScheme(levelPath, schemeBuilder);
 

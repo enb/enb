@@ -1,29 +1,29 @@
 'use strict';
 
-var fs = require('fs');
+const fs = require('fs');
 // var process = require('process');
-var mockFs = require('mock-fs');
-var vow = require('vow');
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var Logger = require('../../../lib/logger');
+const mockFs = require('mock-fs');
+const vow = require('vow');
+const path = require('path');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const Logger = require('../../../lib/logger');
 
 describe('node/target files utils', function () {
-    var nodeFullPath;
-    var node;
+    let nodeFullPath;
+    let node;
 
     beforeEach(function () {
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.resolve('path', 'to', 'project');
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.resolve('path', 'to', 'project');
         nodeFullPath = path.join(projectDir, nodePath);
 
-        var mockFsConfig = {};
+        const mockFsConfig = {};
         mockFsConfig[nodeFullPath] = {};
         mockFs(mockFsConfig);
 
-        var makePlatform = sinon.createStubInstance(MakePlatform);
+        const makePlatform = sinon.createStubInstance(MakePlatform);
         makePlatform.getDir.returns(projectDir);
 
         node = nodeFactory.mkNode(nodePath, makePlatform, sinon.createStubInstance(Cache));
@@ -34,9 +34,9 @@ describe('node/target files utils', function () {
     });
 
     describe('cleanTargetFile', function () {
-        var filename = 'file.js';
-        var filepath;
-        var unlinkStub;
+        const filename = 'file.js';
+        let filepath;
+        let unlinkStub;
 
         before(function () {
             unlinkStub = sinon.stub(fs, 'unlinkSync');
@@ -57,7 +57,7 @@ describe('node/target files utils', function () {
         });
 
         it('should resolve path to target file', function () {
-            var resolvePath = sinon.spy(node, 'resolvePath');
+            const resolvePath = sinon.spy(node, 'resolvePath');
 
             node.cleanTargetFile(filename);
 
@@ -91,7 +91,7 @@ describe('node/target files utils', function () {
 
     describe('createTmpFileForTarget', function () {
         it('should return promise', function () {
-            var result = node.createTmpFileForTarget('test_target.js');
+            const result = node.createTmpFileForTarget('test_target.js');
 
             expect(result).to.be.instanceOf(vow.Promise);
         });
@@ -103,10 +103,10 @@ describe('node/target files utils', function () {
         });
 
         it('should build temp file name as _tmp_%time%%random_string%_%target_name%', function () {
-            var regexp = new RegExp('_tmp_\\d{13,14}\\w{6,7}_' + 'test_target\\.js');
+            const regexp = new RegExp('_tmp_\\d{13,14}\\w{6,7}_' + 'test_target\\.js');
 
             return node.createTmpFileForTarget('test_target.js').then(function (filename) {
-                var relPath = path.relative(nodeFullPath, filename);
+                const relPath = path.relative(nodeFullPath, filename);
 
                 expect(relPath).to.match(regexp);
             });

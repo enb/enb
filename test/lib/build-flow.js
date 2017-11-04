@@ -1,24 +1,24 @@
 'use strict'
 
-var path = require('path');
-var fs = require('fs');
-var inherit = require('inherit');
-var mockFs = require('mock-fs');
-var deasync = require('deasync');
-var proxyquire = require('proxyquire').noCallThru();
-var loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync;
-var framework = require('../../lib/build-flow');
-var BaseTech = require('../../lib/tech/base-tech');
-var FileList = require('../../lib/file-list');
-var MockNode = proxyquire('mock-enb/lib/mock-node', {
+const path = require('path');
+const fs = require('fs');
+const inherit = require('inherit');
+const mockFs = require('mock-fs');
+const deasync = require('deasync');
+const proxyquire = require('proxyquire').noCallThru();
+const loadDirSync = require('mock-enb/utils/dir-utils').loadDirSync;
+const framework = require('../../lib/build-flow');
+const BaseTech = require('../../lib/tech/base-tech');
+const FileList = require('../../lib/file-list');
+const MockNode = proxyquire('mock-enb/lib/mock-node', {
     enb: require('../../lib/api'),
     'enb/lib/cache/cache-storage': require('../../lib/cache/cache-storage'),
     'enb/lib/cache/cache': require('../../lib/cache/cache')
 });
-var EOL = require('os').EOL;
+const EOL = require('os').EOL;
 
 describe('build-flow', function () {
-    var flow;
+    let flow;
 
     beforeEach(function () {
         flow = framework.create();
@@ -42,34 +42,34 @@ describe('build-flow', function () {
 
     describe('dummy', function () {
         it('should create instance of BaseTech', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', 'file.ext')
                 .createTech();
 
-            var tech = new Tech();
+            const tech = new Tech();
 
             tech.should.instanceOf(BaseTech);
         });
 
         it('should create tech with specified name', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', 'file.ext')
                 .createTech();
 
-            var tech = new Tech();
+            const tech = new Tech();
 
             tech.getName().should.be.equal('name');
         });
 
         it('should throw error if target not specified', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target')
                 .createTech();
 
-            var bundle = new MockNode('bundle');
+            const bundle = new MockNode('bundle');
 
             (function () {
                 init(bundle, Tech);
@@ -77,44 +77,44 @@ describe('build-flow', function () {
         });
 
         it('should create tech with default target value', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', 'file.ext')
                 .createTech();
 
-            var tech = init(Tech);
+            const tech = init(Tech);
 
             tech.getTargets().should.be.deep.equal(['file.ext']);
         });
 
         it('should create tech with specified target', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target')
                 .createTech();
 
-            var tech = init(Tech, { target: 'file.ext' });
+            const tech = init(Tech, { target: 'file.ext' });
 
             tech.getTargets().should.be.deep.equal(['file.ext']);
         });
 
         it('should support target mask', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .createTech();
 
-            var bundle = new MockNode('bundle');
-            var tech = init(bundle, Tech);
+            const bundle = new MockNode('bundle');
+            const tech = init(bundle, Tech);
 
             tech.getTargets().should.be.deep.equal(['bundle.ext']);
         });
     });
 
     describe('build', function () {
-        var target = 'bundle.ext';
-        var dir = 'bundle';
-        var bundle;
+        const target = 'bundle.ext';
+        const dir = 'bundle';
+        let bundle;
 
         beforeEach(function () {
             bundle = new MockNode(dir);
@@ -129,7 +129,7 @@ describe('build-flow', function () {
         });
 
         it('should throw error if builder method not defined', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', target)
                 .createTech();
@@ -140,7 +140,7 @@ describe('build-flow', function () {
         });
 
         it('should write result to file', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', target)
                 .builder(function () {
@@ -148,19 +148,19 @@ describe('build-flow', function () {
                 })
                 .createTech();
 
-            var tech = init(bundle, Tech);
+            const tech = init(bundle, Tech);
 
             return tech.build()
                 .then(function () {
-                    var filename = path.resolve(dir, target);
-                    var contents = fs.readFileSync(filename, 'utf-8');
+                    const filename = path.resolve(dir, target);
+                    const contents = fs.readFileSync(filename, 'utf-8');
 
                     contents.should.be.equal('Hello World!');
                 });
         });
 
         it('should wrap result', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', target)
                 .wrapper(function (str) {
@@ -171,20 +171,20 @@ describe('build-flow', function () {
                 })
                 .createTech();
 
-            var tech = init(bundle, Tech);
+            const tech = init(bundle, Tech);
 
             return tech.build()
                 .then(function () {
-                    var filename = path.resolve(dir, target);
-                    var contents = fs.readFileSync(filename, 'utf-8');
+                    const filename = path.resolve(dir, target);
+                    const contents = fs.readFileSync(filename, 'utf-8');
 
                     contents.should.be.equal('<div>Hello World!</div>');
                 });
         });
 
         it('should redefine save method', function () {
-            var filename = path.resolve('file.ext');
-            var Tech = flow
+            const filename = path.resolve('file.ext');
+            const Tech = flow
                 .name('name')
                 .target('target', target)
                 .saver(function (targetPath, str) {
@@ -195,20 +195,20 @@ describe('build-flow', function () {
                 })
                 .createTech();
 
-            var tech = init(bundle, Tech);
+            const tech = init(bundle, Tech);
 
             return tech.build()
                 .then(function () {
-                    var contents = fs.readFileSync(filename, 'utf-8');
+                    const contents = fs.readFileSync(filename, 'utf-8');
 
                     contents.should.be.equal('Hello World!');
                 });
         });
 
         it('should prepare build', function () {
-            var data = 'Hello world';
-            var dataFilename = path.resolve('data.txt');
-            var Tech = flow
+            const data = 'Hello world';
+            const dataFilename = path.resolve('data.txt');
+            const Tech = flow
                 .name('name')
                 .target('target', target)
                 .prepare(function () {
@@ -219,22 +219,22 @@ describe('build-flow', function () {
                 })
                 .createTech();
 
-            var tech = init(bundle, Tech);
+            const tech = init(bundle, Tech);
 
             fs.writeFileSync(dataFilename, data);
 
             return tech.build()
                 .then(function () {
-                    var filename = path.resolve(dir, target);
-                    var contents = fs.readFileSync(filename, 'utf-8');
+                    const filename = path.resolve(dir, target);
+                    const contents = fs.readFileSync(filename, 'utf-8');
 
                     contents.should.be.equal(data);
                 });
         });
 
         it('should have node in builder', function () {
-            var actual = null;
-            var Tech = flow
+            let actual = null;
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .builder(function () {
@@ -242,7 +242,7 @@ describe('build-flow', function () {
                 })
                 .createTech();
 
-            var tech = init(bundle, Tech);
+            const tech = init(bundle, Tech);
 
             return tech.build()
                 .then(function () {
@@ -254,7 +254,7 @@ describe('build-flow', function () {
     describe('options', function () {
         describe('required', function () {
             it('should throw error if value is not specified', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineRequiredOption('opt')
@@ -266,25 +266,25 @@ describe('build-flow', function () {
             });
 
             it('should provide specified value', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineRequiredOption('opt')
                     .createTech();
 
-                var tech = init(Tech, { opt: 'value' });
+                const tech = init(Tech, { opt: 'value' });
 
                 tech._opt.should.be.equal('value');
             });
 
             it('should provide value to specified field', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineRequiredOption('opt', 'field')
                     .createTech();
 
-                var tech = init(Tech, { opt: 'value' });
+                const tech = init(Tech, { opt: 'value' });
 
                 tech.field.should.be.equal('value');
             });
@@ -292,37 +292,37 @@ describe('build-flow', function () {
 
         describe('not required', function () {
             it('should provide default value', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineOption('opt', 'value')
                     .createTech();
 
-                var tech = init(Tech);
+                const tech = init(Tech);
 
                 tech._opt.should.be.equal('value');
             });
 
             it('should provide specified value', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineOption('opt', 'value')
                     .createTech();
 
-                var tech = init(Tech, { opt: 'value2' });
+                const tech = init(Tech, { opt: 'value2' });
 
                 tech._opt.should.be.equal('value2');
             });
 
             it('should provide value to specified field', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineOption('opt', 'value', 'field')
                     .createTech();
 
-                var tech = init(Tech);
+                const tech = init(Tech);
 
                 tech.field.should.be.equal('value');
             });
@@ -330,20 +330,20 @@ describe('build-flow', function () {
 
         describe('aliases', function () {
             it('should provide value from option with alias name', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineOption('opt')
                     .optionAlias('opt', 'alias')
                     .createTech();
 
-                var tech = init(Tech, { alias: 'value' });
+                const tech = init(Tech, { alias: 'value' });
 
                 tech._opt.should.be.equal('value');
             });
 
             it('should support several aliases', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .defineOption('opt1')
@@ -352,7 +352,7 @@ describe('build-flow', function () {
                     .optionAlias('opt2', 'alias2')
                     .createTech();
 
-                var tech = init(Tech, { alias1: 'value1', alias2: 'value2' });
+                const tech = init(Tech, { alias1: 'value1', alias2: 'value2' });
 
                 tech._opt1.should.be.equal('value1');
                 tech._opt2.should.be.equal('value2');
@@ -361,39 +361,39 @@ describe('build-flow', function () {
 
         describe('target', function () {
             it('should support option mask for target', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '{opt}.ext')
                     .defineOption('opt', 'value')
                     .createTech();
 
-                var bundle = new MockNode('bundle');
-                var tech = init(bundle, Tech);
+                const bundle = new MockNode('bundle');
+                const tech = init(bundle, Tech);
 
                 tech.getTargets().should.be.deep.equal(['value.ext']);
             });
 
             it('should remove `{opt}` if option is not specified', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '{opt}.ext')
                     .createTech();
 
-                var bundle = new MockNode('bundle');
-                var tech = init(bundle, Tech);
+                const bundle = new MockNode('bundle');
+                const tech = init(bundle, Tech);
 
                 tech.getTargets().should.be.deep.equal(['.ext']);
             });
 
             it('should remove `{opt}` if option has no default value', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '{opt}.ext')
                     .defineOption('opt')
                     .createTech();
 
-                var bundle = new MockNode('bundle');
-                var tech = init(bundle, Tech);
+                const bundle = new MockNode('bundle');
+                const tech = init(bundle, Tech);
 
                 tech.getTargets().should.be.deep.equal(['.ext']);
             });
@@ -401,9 +401,9 @@ describe('build-flow', function () {
     });
 
     describe('FileList', function () {
-        var file1;
-        var file2;
-        var files;
+        let file1;
+        let file2;
+        let files;
 
         before(function () {
             file1 = {
@@ -421,13 +421,13 @@ describe('build-flow', function () {
 
         describe('files', function () {
             it('should expect FileList from `?.files` target', function () {
-                var list = new FileList();
-                var bundle = new MockNode('bundle');
+                const list = new FileList();
+                const bundle = new MockNode('bundle');
 
                 list.addFiles(files);
                 bundle.provideTechData('?.files', list);
 
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useFileList(['ext1', 'ext2'])
@@ -438,19 +438,19 @@ describe('build-flow', function () {
             });
 
             it('should add `filesTarget` option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useFileList(['ext'])
                     .createTech();
 
-                var tech = init(Tech, { filesTarget: 'target.ext' });
+                const tech = init(Tech, { filesTarget: 'target.ext' });
 
                 tech._filesTarget.should.be.equal('target.ext');
             });
 
             it('should filter files by suffixes', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useFileList(['ext2'])
@@ -461,7 +461,7 @@ describe('build-flow', function () {
             });
 
             it('should add `sourceSuffixes` option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useFileList(['ext2'])
@@ -472,13 +472,13 @@ describe('build-flow', function () {
             });
 
             it('should support suffix as string', function () {
-                var list = new FileList();
-                var bundle = new MockNode('bundle');
+                const list = new FileList();
+                const bundle = new MockNode('bundle');
 
                 list.addFiles(files);
                 bundle.provideTechData('?.files', list);
 
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useFileList('ext1')
@@ -491,14 +491,14 @@ describe('build-flow', function () {
 
         describe('dirs', function () {
             it('should expect FileList from `?.dirs` target', function () {
-                var list = new FileList();
-                var bundle = new MockNode('bundle');
+                const list = new FileList();
+                const bundle = new MockNode('bundle');
 
                 list.addFiles(files);
 
                 bundle.provideTechData('?.dirs', list);
 
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useDirList(['ext1', 'ext2'])
@@ -509,19 +509,19 @@ describe('build-flow', function () {
             });
 
             it('should add `dirsTarget` option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useDirList(['ext'])
                     .createTech();
 
-                var tech = init(Tech, { dirsTarget: 'target' });
+                const tech = init(Tech, { dirsTarget: 'target' });
 
                 tech._dirsTarget.should.be.equal('target');
             });
 
             it('should filter files by suffixes', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useDirList(['ext2'])
@@ -532,7 +532,7 @@ describe('build-flow', function () {
             });
 
             it('should add `sourceDirSuffixes` option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useDirList(['ext2'])
@@ -543,7 +543,7 @@ describe('build-flow', function () {
             });
 
             it('should support suffix as string', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', '?.ext')
                     .useDirList('ext1')
@@ -556,7 +556,7 @@ describe('build-flow', function () {
 
         function build(node, Tech, opts) {
             if (!(node instanceof MockNode)) {
-                var list = new FileList();
+                const list = new FileList();
 
                 opts = Tech;
                 Tech = node;
@@ -568,8 +568,8 @@ describe('build-flow', function () {
                 node.provideTechData('?.dirs', list);
             }
 
-            var actual;
-            var SafeTech = Tech.buildFlow()
+            let actual;
+            const SafeTech = Tech.buildFlow()
                 .saver(function () {})
                 .builder(function (sourceFiles) {
                     actual = sourceFiles;
@@ -584,8 +584,8 @@ describe('build-flow', function () {
     });
 
     describe('dependencies', function () {
-        var dir;
-        var basename;
+        let dir;
+        let basename;
 
         before(function () {
             dir = 'bundle';
@@ -603,7 +603,7 @@ describe('build-flow', function () {
         });
 
         it('should require source from its node', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .dependOn('dependence', basename)
@@ -617,9 +617,9 @@ describe('build-flow', function () {
         });
 
         it('should require source from its node and provide filename', function () {
-            var actual = '';
+            let actual = '';
 
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceFilename('dependence', basename)
@@ -630,7 +630,7 @@ describe('build-flow', function () {
 
             return build(Tech)
                 .then(function (requires) {
-                    var expected = path.resolve(dir, basename);
+                    const expected = path.resolve(dir, basename);
 
                     requires.should.be.contain('.dependants');
                     actual.should.be.equal(expected);
@@ -638,9 +638,9 @@ describe('build-flow', function () {
         });
 
         it('should require sources from its node and provide filenames', function () {
-            var actual = [];
+            let actual = [];
 
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceListFilenames('dependencies', ['.dep1', '.dep2'])
@@ -662,13 +662,13 @@ describe('build-flow', function () {
         });
 
         it('should require source from its node and provide contents', function () {
-            var actual = '';
-            var dirname = path.resolve(dir);
-            var filename = path.join(dirname, basename);
+            let actual = '';
+            const dirname = path.resolve(dir);
+            const filename = path.join(dirname, basename);
 
             fs.writeFileSync(filename, 'Hello World!');
 
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceText('dependencies', '.dependants')
@@ -686,10 +686,10 @@ describe('build-flow', function () {
         });
 
         it('should require source from its node and provide data', function () {
-            var actual = {};
-            var expected = { data: true };
+            let actual = {};
+            const expected = { data: true };
 
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceResult('dependencies', basename)
@@ -705,15 +705,15 @@ describe('build-flow', function () {
         });
 
         function build(Tech, data) {
-            var requires = [];
-            var MyMockNode = inherit(MockNode, {
+            let requires = [];
+            const MyMockNode = inherit(MockNode, {
                 requireSources(sources) {
                     requires = [].concat(requires, sources);
 
                     return this.__base(sources);
                 }
             });
-            var bundle = new MyMockNode(dir);
+            const bundle = new MyMockNode(dir);
 
             if (data) {
                 Object.keys(data).forEach(function (key) {
@@ -740,8 +740,8 @@ describe('build-flow', function () {
         });
 
         it('should warn about deprecated tech in current package', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .deprecated('old-package')
@@ -750,8 +750,8 @@ describe('build-flow', function () {
 
             return bundle.runTech(Tech)
                 .then(function () {
-                    var logger = bundle.getLogger();
-                    var messages = logger._messages;
+                    const logger = bundle.getLogger();
+                    const messages = logger._messages;
 
                     messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated.',
@@ -762,8 +762,8 @@ describe('build-flow', function () {
         });
 
         it('should warn about deprecated tech and point to new package', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .deprecated('old-package', 'new-package')
@@ -772,8 +772,8 @@ describe('build-flow', function () {
 
             return bundle.runTech(Tech)
                 .then(function () {
-                    var logger = bundle.getLogger();
-                    var messages = logger._messages;
+                    const logger = bundle.getLogger();
+                    const messages = logger._messages;
 
                     messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
@@ -785,8 +785,8 @@ describe('build-flow', function () {
         });
 
         it('should warn about deprecated tech and point to new tech', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .deprecated('old-package', 'new-package', 'new-tech')
@@ -795,8 +795,8 @@ describe('build-flow', function () {
 
             return bundle.runTech(Tech)
                 .then(function () {
-                    var logger = bundle.getLogger();
-                    var messages = logger._messages;
+                    const logger = bundle.getLogger();
+                    const messages = logger._messages;
 
                     messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
@@ -808,8 +808,8 @@ describe('build-flow', function () {
         });
 
         it('should warn about deprecated tech and write description', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .deprecated('old-package', 'new-package', 'new-tech', ' The Description.')
@@ -818,8 +818,8 @@ describe('build-flow', function () {
 
             return bundle.runTech(Tech)
                 .then(function () {
-                    var logger = bundle.getLogger();
-                    var messages = logger._messages;
+                    const logger = bundle.getLogger();
+                    const messages = logger._messages;
 
                     messages.should.be.deep.contains({
                         message: 'Tech old-package/techs/name is deprecated. ' +
@@ -833,11 +833,11 @@ describe('build-flow', function () {
     });
 
     describe('helpers', function () {
-        var dir = 'files';
-        var filename1 = path.join(dir, 'file-1.ext');
-        var filename2 = path.join(dir, 'file-2.ext');
-        var contents1 = 'one';
-        var contents2 = 'two';
+        const dir = 'files';
+        const filename1 = path.join(dir, 'file-1.ext');
+        const filename2 = path.join(dir, 'file-2.ext');
+        const contents1 = 'one';
+        const contents2 = 'two';
 
         beforeEach(function () {
             mockFs({
@@ -857,7 +857,7 @@ describe('build-flow', function () {
         });
 
         it('should join empty string', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .justJoinFiles()
@@ -868,8 +868,8 @@ describe('build-flow', function () {
         });
 
         it('should ingore source result', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceResult('dependence', '.dependants')
@@ -883,7 +883,7 @@ describe('build-flow', function () {
         });
 
         it('should join files', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useFileList(['ext'])
@@ -898,9 +898,9 @@ describe('build-flow', function () {
         });
 
         it('should join files with comments', function () {
-            var path1 = path.join('..', filename1);
-            var path2 = path.join('..', filename2);
-            var Tech = flow
+            const path1 = path.join('..', filename1);
+            const path2 = path.join('..', filename2);
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useFileList(['ext'])
@@ -919,7 +919,7 @@ describe('build-flow', function () {
         });
 
         it('should join files with specified wrapper', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useFileList(['ext'])
@@ -936,7 +936,7 @@ describe('build-flow', function () {
         });
 
         it('should join source files', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceFilename('source-one', 'target-1.ext')
@@ -952,7 +952,7 @@ describe('build-flow', function () {
         });
 
         it('should join source files with specified wrapper', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceFilename('source-one', 'target-1.ext')
@@ -970,7 +970,7 @@ describe('build-flow', function () {
         });
 
         it('should join sources', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceText('source-one', 'target-1.ext')
@@ -986,7 +986,7 @@ describe('build-flow', function () {
         });
 
         it('should join files if use `justJoinSources`', function () {
-            var Tech = flow
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useFileList(['ext'])
@@ -1001,8 +1001,8 @@ describe('build-flow', function () {
         });
 
         it('should ignore source result if use `justJoinSources`', function () {
-            var bundle = new MockNode('bundle');
-            var Tech = flow
+            const bundle = new MockNode('bundle');
+            const Tech = flow
                 .name('name')
                 .target('target', '?.ext')
                 .useSourceResult('dependence', '.dependants')
@@ -1021,7 +1021,7 @@ describe('build-flow', function () {
                 node = new MockNode('bundle');
             }
 
-            var list = new FileList();
+            const list = new FileList();
 
             list.addFiles(loadDirSync(dir));
             node.provideTechData('?.files', list);
@@ -1046,16 +1046,16 @@ describe('build-flow', function () {
 
         describe('base', function () {
             it('should inherit tech', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .createTech();
 
-                var tech1 = new Tech();
-                var tech2 = new ChildTech();
+                const tech1 = new Tech();
+                const tech2 = new ChildTech();
 
                 tech1.getName().should.be.equal(tech2.getName());
                 tech1.getTargets().should.be.deep.equal(tech2.getTargets());
@@ -1063,59 +1063,59 @@ describe('build-flow', function () {
             });
 
             it('should inherit name', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .createTech();
 
-                var tech = new ChildTech();
+                const tech = new ChildTech();
 
                 tech.getName().should.be.equal('name');
             });
 
             it('should inherit target', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .createTech();
 
-                var tech = init(ChildTech);
+                const tech = init(ChildTech);
 
                 tech.getTargets().should.be.deep.equal(['file.ext']);
             });
 
             it('should redefine name', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('old-name')
                     .target('target', 'file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .name('new-name')
                     .createTech();
 
-                var tech = new ChildTech();
+                const tech = new ChildTech();
 
                 tech.getName().should.be.equal('new-name');
             });
 
             it('should redefine target', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'old-file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .target('target', 'new-file.ext')
                     .createTech();
 
-                var tech = init(ChildTech);
+                const tech = init(ChildTech);
 
                 tech.getTargets().should.be.deep.equal(['new-file.ext']);
             });
@@ -1123,32 +1123,32 @@ describe('build-flow', function () {
 
         describe('options', function () {
             it('should inherit option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .defineOption('opt', 'value')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .createTech();
 
-                var tech = init(ChildTech);
+                const tech = init(ChildTech);
 
                 tech._opt.should.be.equal('value');
             });
 
             it('should redefine option', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .defineOption('opt', 'old-value')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .defineOption('opt', 'new-value')
                     .createTech();
 
-                var tech = init(ChildTech);
+                const tech = init(ChildTech);
 
                 tech._opt.should.be.equal('new-value');
             });
@@ -1156,9 +1156,9 @@ describe('build-flow', function () {
 
         describe('methods', function () {
             it('should inherit method', function () {
-                var actual = '';
-                var expected = 'Hello World!';
-                var Tech = flow
+                let actual = '';
+                const expected = 'Hello World!';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
@@ -1168,13 +1168,13 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function () {
                         actual = this.hello();
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1183,9 +1183,9 @@ describe('build-flow', function () {
             });
 
             it('should inherit methods that use other method', function () {
-                var actual = '';
-                var expected = 'Hello World!';
-                var Tech = flow
+                let actual = '';
+                const expected = 'Hello World!';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
@@ -1198,13 +1198,13 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function () {
                         actual = this.hello();
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1213,8 +1213,8 @@ describe('build-flow', function () {
             });
 
             it('should redefine method', function () {
-                var actual = '';
-                var Tech = flow
+                let actual = '';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .methods({
@@ -1224,7 +1224,7 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function () {
                         actual = this.hello();
                     })
@@ -1235,7 +1235,7 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1244,9 +1244,9 @@ describe('build-flow', function () {
             });
 
             it('should inherit static method', function () {
-                var actual = '';
-                var expected = 'Hello World!';
-                var Tech = flow
+                let actual = '';
+                const expected = 'Hello World!';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .staticMethods({
@@ -1256,13 +1256,13 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function () {
                         actual = ChildTech.hello();
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1271,8 +1271,8 @@ describe('build-flow', function () {
             });
 
             it('should redefine static method', function () {
-                var actual = '';
-                var Tech = flow
+                let actual = '';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .staticMethods({
@@ -1282,7 +1282,7 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function () {
                         actual = ChildTech.hello();
                     })
@@ -1293,7 +1293,7 @@ describe('build-flow', function () {
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1303,9 +1303,9 @@ describe('build-flow', function () {
         });
 
         describe('super', function () {
-            var MyBaseTech;
-            var Tech;
-            var bundle;
+            let MyBaseTech;
+            let Tech;
+            let bundle;
             beforeEach(function () {
                 bundle = new MockNode('bundle');
                 MyBaseTech = flow
@@ -1322,14 +1322,14 @@ describe('build-flow', function () {
                 });
 
                 it('should call base builder by default', function () {
-                    var ChildTech = Tech.buildFlow().createTech();
+                    const ChildTech = Tech.buildFlow().createTech();
 
                     return bundle.runTechAndGetContent(ChildTech)
                         .should.eventually.eql(['42']);
                 });
 
                 it('should allow to call base builder via __base property', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(function () {
                             return '!' + this.__base.apply(this, arguments);
                         })
@@ -1340,8 +1340,8 @@ describe('build-flow', function () {
                 });
 
                 it('should be passed thru the child to the base builder', function () {
-                    var ChildTech = Tech.buildFlow().createTech();
-                    var GrandChildTech = ChildTech.buildFlow()
+                    const ChildTech = Tech.buildFlow().createTech();
+                    const GrandChildTech = ChildTech.buildFlow()
                         .builder(function () {
                             return '!' + this.__base.apply(this, arguments);
                         })
@@ -1366,7 +1366,7 @@ describe('build-flow', function () {
                 });
 
                 it('should call base method by default', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_thisHello)
                         .createTech();
 
@@ -1375,7 +1375,7 @@ describe('build-flow', function () {
                 });
 
                 it('should allow to call base method via __base property', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_thisHello)
                         .methods({
                             hello() {
@@ -1389,10 +1389,10 @@ describe('build-flow', function () {
                 });
 
                 it('should be passed thru the child to the base method', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_thisHello)
                         .createTech();
-                    var GrandChildTech = ChildTech.buildFlow()
+                    const GrandChildTech = ChildTech.buildFlow()
                         .methods({
                             hello() {
                                 return '!' + this.__base.apply(this, arguments);
@@ -1419,7 +1419,7 @@ describe('build-flow', function () {
                 });
 
                 it('should call base static method by default', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_staticHello)
                         .createTech();
 
@@ -1428,7 +1428,7 @@ describe('build-flow', function () {
                 });
 
                 it('should allow to call base static method via __base property', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_staticHello)
                         .staticMethods({
                             hello() {
@@ -1442,10 +1442,10 @@ describe('build-flow', function () {
                 });
 
                 it('should be passed thru the child to the base static method', function () {
-                    var ChildTech = Tech.buildFlow()
+                    const ChildTech = Tech.buildFlow()
                         .builder(_staticHello)
                         .createTech();
-                    var GrandChildTech = ChildTech.buildFlow()
+                    const GrandChildTech = ChildTech.buildFlow()
                         .staticMethods({
                             hello() {
                                 return '!' + this.__base.apply(this, arguments);
@@ -1461,52 +1461,52 @@ describe('build-flow', function () {
 
         describe('dependencies', function () {
             it('should inherit dependence', function () {
-                var dir = 'bundle';
-                var basename = '.dependants';
-                var actual = '';
-                var Tech = flow
+                const dir = 'bundle';
+                const basename = '.dependants';
+                let actual = '';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .useSourceFilename('dependence', basename)
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .builder(function (filename) {
                         actual = filename;
                     })
                     .createTech();
 
-                var bundle = new MockNode(dir);
+                const bundle = new MockNode(dir);
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
-                        var expected = path.resolve(dir, basename);
+                        const expected = path.resolve(dir, basename);
 
                         actual.should.be.equal(expected);
                     });
             });
 
             it('should redefine dependence', function () {
-                var dir = 'bundle';
-                var actual = '';
-                var Tech = flow
+                const dir = 'bundle';
+                let actual = '';
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .useSourceFilename('dependence', '.old-file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .useSourceFilename('dependence', 'new-file.ext')
                     .builder(function (filename) {
                         actual = filename;
                     })
                     .createTech();
 
-                var bundle = new MockNode(dir);
+                const bundle = new MockNode(dir);
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
-                        var expected = path.resolve(dir, 'new-file.ext');
+                        const expected = path.resolve(dir, 'new-file.ext');
 
                         actual.should.be.equal(expected);
                     });
@@ -1515,21 +1515,21 @@ describe('build-flow', function () {
 
         describe('unuse', function () {
             it('should unuse other target', function () {
-                var actual;
-                var Tech = flow
+                let actual;
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .useSourceFilename('dependence', '.old-file.ext')
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .unuseTarget('dependence')
                     .builder(function () {
                         actual = arguments.length;
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1538,21 +1538,21 @@ describe('build-flow', function () {
             });
 
             it('should unuse other target with files', function () {
-                var actual;
-                var Tech = flow
+                let actual;
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .useFileList(['ext'])
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .unuseFileList()
                     .builder(function () {
                         actual = arguments.length;
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1561,21 +1561,21 @@ describe('build-flow', function () {
             });
 
             it('should unuse other target with dirs', function () {
-                var actual;
-                var Tech = flow
+                let actual;
+                const Tech = flow
                     .name('name')
                     .target('target', 'file.ext')
                     .useDirList(['ext'])
                     .createTech();
 
-                var ChildTech = Tech.buildFlow()
+                const ChildTech = Tech.buildFlow()
                     .unuseDirList()
                     .builder(function () {
                         actual = arguments.length;
                     })
                     .createTech();
 
-                var bundle = new MockNode('bundle');
+                const bundle = new MockNode('bundle');
 
                 return bundle.runTech(ChildTech)
                     .then(function () {
@@ -1586,13 +1586,13 @@ describe('build-flow', function () {
     });
 
     describe('cache', function () {
-        var bundle;
-        var helper;
-        var target;
-        var blocksDirname;
-        var blockFilename;
-        var blockDirname;
-        var fileList;
+        let bundle;
+        let helper;
+        let target;
+        let blocksDirname;
+        let blockFilename;
+        let blockDirname;
+        let fileList;
 
         before(function () {
             target = 'file.ext';
@@ -1620,16 +1620,16 @@ describe('build-flow', function () {
             fileList = new FileList();
             helper = {
                 change(target) {
-                    var filename = _getFilename(target);
+                    const filename = _getFilename(target);
 
                     deasync.sleep(10);
 
                     fs.writeFileSync(filename, 'new-value');
                 },
                 fileInfo(target) {
-                    var filename = _getFilename(target);
-                    var basename = path.basename(target);
-                    var mtime = fs.statSync(filename).mtime.getTime();
+                    const filename = _getFilename(target);
+                    const basename = path.basename(target);
+                    const mtime = fs.statSync(filename).mtime.getTime();
 
                     return {
                         name: basename,
@@ -1639,15 +1639,15 @@ describe('build-flow', function () {
                     };
                 },
                 dirInfo(target) {
-                    var dirname = _getFilename(target);
-                    var basename = path.basename(target);
-                    var stat = fs.statSync(dirname);
-                    var isDirectory = stat.isDirectory();
-                    var files = [];
+                    const dirname = _getFilename(target);
+                    const basename = path.basename(target);
+                    const stat = fs.statSync(dirname);
+                    const isDirectory = stat.isDirectory();
+                    let files = [];
 
                     if (isDirectory) {
                         files = fs.readdirSync(dirname).map(function (basename) {
-                            var filename = path.join(dirname, basename);
+                            const filename = path.join(dirname, basename);
 
                             return FileList.getFileInfo(filename);
                         });
@@ -1665,7 +1665,7 @@ describe('build-flow', function () {
             };
 
             function _getFilename(target) {
-                var parts = target.split(path.sep).length;
+                const parts = target.split(path.sep).length;
 
                 return parts > 1 ? path.resolve(target) : bundle.resolvePath(target);
             }
@@ -1677,7 +1677,7 @@ describe('build-flow', function () {
 
         describe('target', function () {
             it('should save target info', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .builder(function () {})
@@ -1685,18 +1685,18 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var cache = bundle.getNodeCache(target);
-                        var expected = helper.fileInfo(target);
-                        var actual = cache.get('target');
+                        const cache = bundle.getNodeCache(target);
+                        const expected = helper.fileInfo(target);
+                        const actual = cache.get('target');
 
                         actual.should.be.deep.equal(expected);
                     });
             });
 
             it('should not rebuild if target has not been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .saver(function (filename, result) {
@@ -1717,9 +1717,9 @@ describe('build-flow', function () {
             });
 
             it('should rebuild if target has been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .saver(function (filename, result) {
@@ -1744,7 +1744,7 @@ describe('build-flow', function () {
 
         describe('dependencies', function () {
             it('should save dependency info', function () {
-                var Tech = flow
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependency', '.dependants')
@@ -1753,9 +1753,9 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var cache = bundle.getNodeCache(target);
-                        var expected = helper.fileInfo('.dependants');
-                        var actual = cache.get('target:.dependants');
+                        const cache = bundle.getNodeCache(target);
+                        const expected = helper.fileInfo('.dependants');
+                        const actual = cache.get('target:.dependants');
 
                         actual.should.be.deep.equal(expected);
                     });
@@ -1763,9 +1763,9 @@ describe('build-flow', function () {
 
             describe('usages', function () {
                 it('should not rebuild if dependence has not been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .dependOn('dependence', '.dependants')
@@ -1787,9 +1787,9 @@ describe('build-flow', function () {
                 });
 
                 it('should not rebuild if dependencies are not changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .dependOn('dependence-1', '.dependants-1')
@@ -1812,9 +1812,9 @@ describe('build-flow', function () {
                 });
 
                 it('should rebuild if dependence has been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .dependOn('dependence', '.dependants')
@@ -1838,9 +1838,9 @@ describe('build-flow', function () {
                 });
 
                 it('should rebuild if one of the dependencies has been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .dependOn('dependence-1', '.dependants-1')
@@ -1867,9 +1867,9 @@ describe('build-flow', function () {
 
             describe('source list', function () {
                 it('should not rebuild if dependencies are not changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
@@ -1891,9 +1891,9 @@ describe('build-flow', function () {
                 });
 
                 it('should rebuild if one of the dependencies has been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useSourceListFilenames('dependencies', ['.dependants-1', '.dependants-2'])
@@ -1921,7 +1921,7 @@ describe('build-flow', function () {
         describe('FileList', function () {
             describe('files', function () {
                 it('should save FileList info', function () {
-                    var Tech = flow
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useFileList(['ext'])
@@ -1933,18 +1933,18 @@ describe('build-flow', function () {
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            var cache = bundle.getNodeCache(target);
-                            var expected = helper.fileInfo(blockFilename);
-                            var actual = cache.get('target:bundle.files');
+                            const cache = bundle.getNodeCache(target);
+                            const expected = helper.fileInfo(blockFilename);
+                            const actual = cache.get('target:bundle.files');
 
                             actual.should.be.deep.equal([expected]);
                         });
                 });
 
                 it('should not rebuild if files has not been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useFileList(['ext'])
@@ -1969,9 +1969,9 @@ describe('build-flow', function () {
                 });
 
                 it('should rebuild if files has been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useFileList(['ext'])
@@ -2004,30 +2004,30 @@ describe('build-flow', function () {
 
             describe('dirs', function () {
                 it('should save FileList info', function () {
-                    var Tech = flow
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useDirList(['dir'])
                         .builder(function () {})
                         .createTech();
 
-                    var dirInfo = helper.dirInfo(blockDirname);
+                    const dirInfo = helper.dirInfo(blockDirname);
                     fileList.addFiles([dirInfo]);
                     bundle.provideTechData('?.dirs', fileList);
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            var cache = bundle.getNodeCache(target);
-                            var info = cache.get('target:bundle.dirs');
+                            const cache = bundle.getNodeCache(target);
+                            const info = cache.get('target:bundle.dirs');
 
                             info.should.be.deep.equal(dirInfo.files);
                         });
                 });
 
                 it('should not rebuild if files has not been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useDirList(['dir'])
@@ -2052,9 +2052,9 @@ describe('build-flow', function () {
                 });
 
                 it('should rebuild if files has been changed', function () {
-                    var actual = 0;
-                    var i = 0;
-                    var Tech = flow
+                    let actual = 0;
+                    let i = 0;
+                    const Tech = flow
                         .name('name')
                         .target('target', target)
                         .useDirList(['dir'])
@@ -2071,7 +2071,7 @@ describe('build-flow', function () {
 
                     return bundle.runTech(Tech)
                         .then(function () {
-                            var filename = path.join(blockDirname, 'block.ext');
+                            const filename = path.join(blockDirname, 'block.ext');
 
                             helper.change(filename);
 
@@ -2090,8 +2090,8 @@ describe('build-flow', function () {
 
         describe('needRebuild', function () {
             it('should provide instance of Cache to method', function () {
-                var actual;
-                var Tech = flow
+                let actual;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependence', '.dependants')
@@ -2103,16 +2103,16 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var expected = bundle.getNodeCache(target);
+                        const expected = bundle.getNodeCache(target);
 
                         actual.should.be.deep.equal(expected);
                     });
             });
 
             it('should rebuild if method return `false` but target has been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .needRebuild(function () {
@@ -2138,9 +2138,9 @@ describe('build-flow', function () {
             });
 
             it('should rebuild if method return `false` but dependence has been changed', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependence', '.dependants')
@@ -2167,9 +2167,9 @@ describe('build-flow', function () {
             });
 
             it('should rebuild if method return `true` but target has not been changes', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .needRebuild(function () {
@@ -2193,9 +2193,9 @@ describe('build-flow', function () {
             });
 
             it('should rebuild if method return `true` but dependence has not been changes', function () {
-                var actual = 0;
-                var i = 0;
-                var Tech = flow
+                let actual = 0;
+                let i = 0;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependence', '.dependants')
@@ -2222,8 +2222,8 @@ describe('build-flow', function () {
 
         describe('saveCache', function () {
             it('should provide instance of Cache to method', function () {
-                var actual;
-                var Tech = flow
+                let actual;
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependence', '.dependants')
@@ -2235,15 +2235,15 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var expected = bundle.getNodeCache(target);
+                        const expected = bundle.getNodeCache(target);
 
                         actual.should.be.deep.equal(expected);
                     });
             });
 
             it('should cache custom data', function () {
-                var expected = { data: true };
-                var Tech = flow
+                const expected = { data: true };
+                const Tech = flow
                     .name('name')
                     .target('target', target)
                     .dependOn('dependence', '.dependants')
@@ -2255,7 +2255,7 @@ describe('build-flow', function () {
 
                 return bundle.runTech(Tech)
                     .then(function () {
-                        var cache = bundle.getNodeCache(target);
+                        const cache = bundle.getNodeCache(target);
 
                         cache.get('data').should.be.deep.equal(expected);
                     });
@@ -2271,7 +2271,7 @@ function init(node, Tech, opts) {
         node = new MockNode('node');
     }
 
-    var tech = new Tech(opts);
+    const tech = new Tech(opts);
 
     tech.init(node);
 

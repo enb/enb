@@ -22,10 +22,10 @@
  * } ]);
  * ```
  */
-var inherit = require('inherit');
+const inherit = require('inherit');
 
-var enb = require('../lib/api');
-var vfs = enb.asyncFs;
+const enb = require('../lib/api');
+const vfs = enb.asyncFs;
 
 module.exports = inherit(enb.BaseTech, {
     getName() {
@@ -51,16 +51,14 @@ module.exports = inherit(enb.BaseTech, {
     },
 
     build() {
-        var _this = this;
-        var node = this.node;
-        var target = node.unmaskTargetName(this._target);
-        var cache = node.getNodeCache(target);
-        var targetPath = node.resolvePath(target);
-        var sourceNode = this._sourceNode;
-        var source;
-        var sourcePath;
-        var requirements = {};
-        var requireSources;
+        const _this = this;
+        const node = this.node;
+        const target = node.unmaskTargetName(this._target);
+        const cache = node.getNodeCache(target);
+        const targetPath = node.resolvePath(target);
+        const sourceNode = this._sourceNode
+        const requirements = {};
+        let source, sourcePath, requireSources;
 
         if (sourceNode) {
             source = node.unmaskNodeTargetName(sourceNode, this._source);

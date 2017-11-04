@@ -1,16 +1,16 @@
 'use strict';
 
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
+const path = require('path');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
 
 describe('node/constructor and destructor', function () {
-    var nodePath = path.join('path', 'to', 'node');
-    var projectDir = path.join('path', 'to', 'project');
-    var cache;
-    var makePlatform;
-    var node;
+    const nodePath = path.join('path', 'to', 'node');
+    const projectDir = path.join('path', 'to', 'project');
+    let cache;
+    let makePlatform;
+    let node;
 
     beforeEach(function () {
         cache = sinon.createStubInstance(Cache);
@@ -32,14 +32,14 @@ describe('node/constructor and destructor', function () {
         });
 
         it('should set absolute path to node dir', function () {
-            var expectedPath = path.resolve(projectDir, nodePath);
+            const expectedPath = path.resolve(projectDir, nodePath);
 
             expect(node.getDir()).to.be.equal(expectedPath);
         });
 
         it('should set target name as name of node directory', function () {
-            var ext = 'ext';
-            var expectedName = [path.basename(nodePath), ext].join('.');
+            const ext = 'ext';
+            const expectedName = [path.basename(nodePath), ext].join('.');
 
             expect(node.getTargetName(ext)).be.equal(expectedName);
         });
@@ -50,7 +50,7 @@ describe('node/constructor and destructor', function () {
         });
 
         it('should create cache for node', function () {
-            var expectedCache = cache.subCache(nodePath);
+            const expectedCache = cache.subCache(nodePath);
 
             expect(node.getNodeCache()).to.be.deep.equal(expectedCache);
         });

@@ -1,17 +1,17 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var mockFs = require('mock-fs');
+const mockFs = require('mock-fs');
 
-var MakePlatform = require('../../../lib/make');
-var CacheStorage = require('../../../lib/cache/cache-storage');
+const MakePlatform = require('../../../lib/make');
+const CacheStorage = require('../../../lib/cache/cache-storage');
 
 describe('make/cache', function () {
-    var sandbox = sinon.sandbox.create();
-    var makePlatform;
-    var cacheStorage;
+    const sandbox = sinon.sandbox.create();
+    let makePlatform;
+    let cacheStorage;
 
     beforeEach(function () {
         sandbox.stub(fs, 'existsSync');
@@ -104,7 +104,7 @@ describe('make/cache', function () {
         });
 
         it('should save makefile mtimes', function () {
-            var expectedMakefiles = {};
+            const expectedMakefiles = {};
             expectedMakefiles[path.normalize('/path/to/project/.enb/make.js')] = new Date(1).valueOf();
 
             setup(cacheStorage, makePlatform, {
@@ -155,7 +155,7 @@ describe('make/cache', function () {
  * @param {Object} settings
  */
 function setup(cacheStorage, makePlatform, settings) {
-    var defaults = {
+    const defaults = {
         currentENBVersion: 'defaultENBVersion',
         cachedENBVersion: 'defaultENBVersion',
         currentMakePlatformMode: 'defaultMakePlatformMode',
@@ -166,7 +166,7 @@ function setup(cacheStorage, makePlatform, settings) {
 
     settings = Object.assign({}, defaults, settings);
 
-    var makeFiles = {};
+    const makeFiles = {};
     makeFiles[path.normalize('/path/to/project/.enb/make.js')] = settings.cachedMakeFileMtime.valueOf();
 
     cacheStorage.get.withArgs(':make', 'version').returns(settings.cachedENBVersion);

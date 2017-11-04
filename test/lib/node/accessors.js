@@ -1,20 +1,20 @@
 'use strict'
 
-var path = require('path');
-var nodeFactory = require('../../../lib/node');
-var MakePlatform = require('../../../lib/make');
-var Cache = require('../../../lib/cache/cache');
-var Logger = require('../../../lib/logger');
-var BaseTech = require('../../../lib/tech/base-tech');
+const path = require('path');
+const nodeFactory = require('../../../lib/node');
+const MakePlatform = require('../../../lib/make');
+const Cache = require('../../../lib/cache/cache');
+const Logger = require('../../../lib/logger');
+const BaseTech = require('../../../lib/tech/base-tech');
 
 describe('node', function () {
     describe('accessors', function () {
-        var nodePath = path.join('path', 'to', 'node');
-        var projectDir = path.join('path', 'to', 'project');
-        var makePlatform;
-        var nodeCache;
-        var cache;
-        var node;
+        const nodePath = path.join('path', 'to', 'node');
+        const projectDir = path.join('path', 'to', 'project');
+        let makePlatform;
+        let nodeCache;
+        let cache;
+        let node;
 
         beforeEach(function () {
             makePlatform = sinon.createStubInstance(MakePlatform);
@@ -42,7 +42,7 @@ describe('node', function () {
         });
 
         describe('setLogger', function () {
-            var logger;
+            let logger;
 
             beforeEach(function () {
                 logger = sinon.createStubInstance(Logger);
@@ -60,7 +60,7 @@ describe('node', function () {
         });
 
         describe('setLanguages', function () {
-            var languages = ['en', 'ru'];
+            const languages = ['en', 'ru'];
 
             it('should set languages', function () {
                 node.setLanguages(languages);
@@ -75,7 +75,7 @@ describe('node', function () {
 
         describe('getDir', function () {
             it('should return absolute path to node dir', function () {
-                var expectedPath = path.resolve(projectDir, nodePath);
+                const expectedPath = path.resolve(projectDir, nodePath);
 
                 expect(node.getDir()).to.be.equal(expectedPath);
             });
@@ -94,8 +94,8 @@ describe('node', function () {
         });
 
         describe('getTechs', function () {
-            var baseTech = sinon.createStubInstance(BaseTech);
-            var techs = [baseTech];
+            const baseTech = sinon.createStubInstance(BaseTech);
+            const techs = [baseTech];
 
             it('should return previously registered techs', function () {
                 node.setTechs(techs);
@@ -117,7 +117,7 @@ describe('node', function () {
             });
 
             it('should return subcache of node cache if subcache name provided', function () {
-                var expectedCache = nodeCache.subCache('name');
+                const expectedCache = nodeCache.subCache('name');
 
                 expect(node.getNodeCache('name')).to.be.deep.equal(expectedCache);
             });

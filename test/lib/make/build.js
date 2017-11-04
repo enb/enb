@@ -1,21 +1,21 @@
 'use strict'
 
-var fs = require('fs');
-var path = require('path');
-var vow = require('vow');
-var vowFs = require('vow-fs');
-var mockFs = require('mock-fs');
-var Node = require('../../../lib/node/node');
-var MakePlatform = require('../../../lib/make');
-var ProjectConfig = require('../../../lib/config/project-config');
-var NodeMaskConfig = require('../../../lib/config/node-mask-config');
-var NodeConfig = require('../../../lib/config/node-config');
-var TaskConfig = require('../../../lib/config/task-config');
-var Logger = require('../../../lib/logger');
+const fs = require('fs');
+const path = require('path');
+const vow = require('vow');
+const vowFs = require('vow-fs');
+const mockFs = require('mock-fs');
+const Node = require('../../../lib/node/node');
+const MakePlatform = require('../../../lib/make');
+const ProjectConfig = require('../../../lib/config/project-config');
+const NodeMaskConfig = require('../../../lib/config/node-mask-config');
+const NodeConfig = require('../../../lib/config/node-config');
+const TaskConfig = require('../../../lib/config/task-config');
+const Logger = require('../../../lib/logger');
 
 describe('make/build', function () {
-    var makePlatform;
-    var sandbox = sinon.sandbox.create();
+    let makePlatform;
+    const sandbox = sinon.sandbox.create();
 
     beforeEach(function (done) {
         mockFs({});
@@ -37,13 +37,13 @@ describe('make/build', function () {
     });
 
     it('should return promise', function () {
-        var result = makePlatform.build([]);
+        const result = makePlatform.build([]);
 
         expect(result).to.be.instanceOf(vow.Promise);
     });
 
     it('should build task if target provided and task config available in project config', function () {
-        var buildTask = sinon.spy(makePlatform, 'buildTask');
+        const buildTask = sinon.spy(makePlatform, 'buildTask');
 
         setup({ nodePath: 'path/to/node' });
         ProjectConfig.prototype.getTaskConfig
@@ -55,7 +55,7 @@ describe('make/build', function () {
     });
 
     it('should pass to building task target and args', function () {
-        var buildTask = sinon.spy(makePlatform, 'buildTask');
+        const buildTask = sinon.spy(makePlatform, 'buildTask');
 
         setup({ nodePath: 'path/to/node' });
         ProjectConfig.prototype.getTaskConfig
@@ -67,7 +67,7 @@ describe('make/build', function () {
     });
 
     it('should build targets if no taskConfig available in project config for target', function () {
-        var buildTargets = sinon.spy(makePlatform, 'buildTargets');
+        const buildTargets = sinon.spy(makePlatform, 'buildTargets');
 
         setup({ nodePath: 'path/to/node' });
         ProjectConfig.prototype.getTaskConfig.returns(null);
@@ -78,7 +78,7 @@ describe('make/build', function () {
     });
 
     it('should build targets if no info about targets to build passed', function () {
-        var buildTargets = sinon.spy(makePlatform, 'buildTargets');
+        const buildTargets = sinon.spy(makePlatform, 'buildTargets');
 
         setup();
         makePlatform.build([]);
@@ -111,8 +111,8 @@ describe('make/build', function () {
 });
 
 function setup (settings) {
-    var nodeConfigs = {};
-    var defaults = { nodePath: 'default/path' };
+    const nodeConfigs = {};
+    const defaults = { nodePath: 'default/path' };
 
     settings = Object.assign({}, defaults, settings);
 

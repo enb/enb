@@ -5,6 +5,7 @@ const fs = require('fs');
 const EOL = require('os').EOL;
 
 const inherit = require('inherit');
+const fileSuffix = require('file-suffix');
 const mockFs = require('mock-fs');
 const deasync = require('deasync');
 const proxyquire = require('proxyquire').noCallThru();
@@ -1617,7 +1618,7 @@ describe('build-flow', () => {
                         name: basename,
                         fullname: filename,
                         mtime,
-                        suffix: target.split('.').slice(1).join('.')
+                        suffix: fileSuffix(basename)
                     };
                 },
                 dirInfo(target) {
@@ -1641,7 +1642,7 @@ describe('build-flow', () => {
                         mtime: stat.mtime.getTime(),
                         isDirectory,
                         files,
-                        suffix: target.split('.').slice(1).join('.')
+                        suffix: fileSuffix(basename)
                     };
                 }
             };

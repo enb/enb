@@ -46,7 +46,7 @@
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
     "enb-source-map": "1.11.0",
-    "file-eval": "github:node-eval/file-eval#60cb8ef16df528a6472961e4f36400068b962f37",
+    "file-eval": "1.3.0",
     "file-suffix": "1.0.1",
     "glob": "7.1.2",
     "inherit": "2.2.6",
@@ -64,7 +64,7 @@
     "vow": "0.4.17",
     "vow-fs": "0.3.6",
     "vow-node": "0.3.0",
-    "worker-farm": "1.5.0"
+    "worker-farm": "1.5.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",

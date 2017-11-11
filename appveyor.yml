@@ -3,6 +3,7 @@ version: "{build}"
 branches:
   only:
     - master
+    - /^greenkeeper/.*$/
 
 environment:
   nodejs_version: "6"

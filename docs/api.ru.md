@@ -2,7 +2,7 @@
 
 ## Node API
 
-Каждой технологии в `init` приходит инстанция (Это instance?) [ноды](terms.ru.md) (Node), для которой необходимо собирать [таргеты](terms.ru.md).
+Каждой технологии в `init` приходит экземпляр класса (instance) [ноды](terms.ru.md) (Node), для которой необходимо собирать [таргеты](terms.ru.md).
 С помощью ноды технология взаимодействует с процессом сборки.
 
 Основные методы класса Node:
@@ -137,7 +137,7 @@ String Node::getRootDir()
 [Logger](/mdevils/enb/blob/master/lib/logger.js)
 
 ```javascript
-// Возвращает инстанцию логгера для ноды.
+// Возвращает экземпляр класса логгера для ноды.
 Logger Node::getLogger()
 ```
 
@@ -152,7 +152,7 @@ this.node.getLogger().log('Hello World');
 [Cache](/mdevils/enb/blob/master/lib/cache/cache.js)
 
 ```javascript
-// Возвращает инстанцию кэша для таргета ноды.
+// Возвращает экземпляр класса кэша для таргета ноды.
 Cache Node::getNodeCache(String targetName)
 ```
 

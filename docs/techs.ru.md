@@ -1,7 +1,6 @@
-Технологии для работы с файлами
-===============================
+# Технологии для работы с файлами
 
-Все технологии, включенные в пакет `ENB`, находятся в папке `techs` пакета. Подключаются из make-файла с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
+Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из [make-файла](terms.ru.md) с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
 
 Если при настройке технологии в опциях указана подстрока `{lang}`, то будет создано столько копий технологии, сколько языков установлено для ноды или проекта (если у ноды не указаны языки).
 
@@ -20,8 +19,7 @@ nodeConfig.addTech([require('js-i18n'), { target: '?.en.js', lang: 'en' }]);
 nodeConfig.addTech([require('js-i18n'), { target: '?.tk.js', lang: 'tk' }]);
 ```
 
-file-copy
----------
+## file-copy
 
 Копирует один таргет в другой.
 Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
@@ -40,8 +38,7 @@ nodeConfig.addTech([ require('enb/techs/file-copy'), {
 } ]);
 ```
 
-file-merge
-----------
+## file-merge
 
 Склеивает набор файлов в один.
 
@@ -61,8 +58,7 @@ nodeConfig.addTech([ require('enb/techs/file-merge'), {
 } ]);
 ```
 
-file-provider
--------------
+## file-provider
 
 Предоставляет существующий файл для make-платформы.
 Может, например, использоваться для предоставления исходного *bemdecl*-файла.
@@ -77,8 +73,7 @@ file-provider
 nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
 ```
 
-symlink
--------
+## symlink
 
 Создает симлинк из одного таргета в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
 

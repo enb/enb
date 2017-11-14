@@ -1,10 +1,9 @@
-API
-===
+# API
 
 ## Node API
 
-Каждой технологии в `init` приходит инстанция ноды, для которой необходимо собирать таргеты.
-Через ноду технология взаимодействует с процессом сборки.
+Каждой технологии в `init` приходит экземпляр класса (instance) [ноды](terms.ru.md) (Node), для которой необходимо собирать [таргеты](terms.ru.md).
+С помощью ноды технология взаимодействует с процессом сборки.
 
 Основные методы класса Node:
 
@@ -52,13 +51,13 @@ undefined Node::resolveTarget(String targetName[, Object result])
 // #1
 this.node.resolveTarget('index.css');
 
-// #2 Получаем имя таргета динамически с помощью суффикса.
+// #2 Получает имя таргета динамически с помощью суффикса.
 this.node.resolveTarget(this.node.getTargetName('css'));
 
-// #3 Получаем имя таргета путем демаскирования таргета.
+// #3 Получает имя таргета путем демаскирования таргета.
 this.node.resolveTarget(this.node.unmaskTargetName('?.css'));
 
-// #4 Передаем значение.
+// #4 Передает значение.
 var target = this.node.unmaskTargetName('?.deps.js'),
     targetPath = this.node.resolvePath(target);
 delete require.cache[targetPath]; // Избавляемся от кэширования в nodejs.
@@ -78,7 +77,7 @@ undefined Node::rejectTarget(String targetName, Error error)
 // #1
 this.node.rejectTarget('index.css', new Error('Could not find CSS Tools.'));
 
-// #2 Получаем имя таргета динамически с помощью суффикса.
+// #2 Получает имя таргета динамически с помощью суффикса.
 this.node.rejectTarget(this.node.getTargetName('css'), new Error('Could not find CSS Tools.'));
 ```
 
@@ -94,7 +93,7 @@ Promise(Object[]) Node::requireSources(String[] targetNames)
 
 **Пример**
 
-Например, нам надо объединить в один файл `index.css` и `index.ie.css` и записать в `index.all.css`.
+Необходимо объединить в один файл `index.css` и `index.ie.css` и записать в `index.all.css`.
 
 ```javascript
 var vowFs = require('vow-fs');
@@ -115,7 +114,7 @@ var vowFs = require('vow-fs');
 ### node.relativePath
 
 ```javascript
-// Возвращает относительный путь к таргету относительно ноды.
+// Возвращает путь к таргету относительно ноды.
 String Node::relativePath(String targetName)
 ```
 
@@ -138,7 +137,7 @@ String Node::getRootDir()
 [Logger](/mdevils/enb/blob/master/lib/logger.js)
 
 ```javascript
-// Возвращает инстанцию логгера для ноды.
+// Возвращает экземпляр класса логгера для ноды.
 Logger Node::getLogger()
 ```
 
@@ -153,37 +152,38 @@ this.node.getLogger().log('Hello World');
 [Cache](/mdevils/enb/blob/master/lib/cache/cache.js)
 
 ```javascript
-// Возвращает инстанцию кэша для таргета ноды.
+// Возвращает экземпляр класса кэша для таргета ноды.
 Cache Node::getNodeCache(String targetName)
 ```
 
-Кэширование необходимо для того, чтобы избегать повторной сборки файлов, для которых сборка не требуется. Кэшируется время изменения исходных и конечных файлов после окончания сборки каждой технологии. Логика кэширования реализуется в каждой технологии индивидуально для максимальной гибкости.
+Кэширование позволяет избегать повторной сборки файлов, для которых сборка не требуется. Кэшируется время изменения исходных и конечных файлов после окончания сборки каждой технологии. Логика кэширования реализуется в каждой технологии индивидуально для максимальной гибкости.
 
-С помощью методов `Boolean needRebuildFile(String cacheKey, String filePath)` и `Boolean needRebuildFileList(String cacheKey, FileInfo[] files)` производится валидация кэша.
+Валидация кэша производится с помощью методов `Boolean needRebuildFile(String cacheKey, String filePath)` и `Boolean needRebuildFileList(String cacheKey, FileInfo[] files)`.
 
-С помощью методов `undefined cacheFileInfo(String cacheKey, String filePath)` и `undefined cacheFileList(String cacheKey, FileInfo[] files)` производится сохранение информации о файлах в кэш.
-
+Сохранение информации о файлах в кэш производится помощью методов `undefined cacheFileInfo(String cacheKey, String filePath)` и `undefined cacheFileList(String cacheKey, FileInfo[] files)`.
 
 ### node.getSharedResources
 
 [SharedResources](lib/shared-resources/index.js)
 
 Набор ресурсов, которые могут быть использованы в технологиях:
-- [JobQueue](lib/shared-resources/job-queue/index.js) - пул дочерних процессов для выполнения "тяжелых" задач
+- [JobQueue](lib/shared-resources/job-queue/index.js) - пул дочерних процессов для выполнения «тяжелых» задач.
 
 **Пример**
 
 Контент файла `some-processor.js`:
+
 ```js
 module.exports = function(arg1, arg2) {
     var res = null;
-    // Здесь какая-то нагруженная работа, возможно с использованием промисов
+    // Здесь выполняется какая-то «нагруженная» работа, возможно с использованием промисов
     return res;
 }
 ```
 В технологии:
+
 ```js
 var jobQueue = this.node.getSharedResources().jobQueue;
-// Выполнить таску в отдельном процессе, возвращается промис с результатом
+// Выполняет задачу в отдельном процессе, возвращает промис с результатом
 return jobQueue.push(require.resolve('./path/to/processor'), arg1, arg2);
 ```

@@ -1,8 +1,20 @@
 # Технологии для работы с файлами
 
-Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из [make-файла](terms.ru.md) с помощью `require('enb/techs/<tech-name>')`. Например, `require('enb/techs/js')`. Подключаются к ноде указанием класса и опций: `nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`, либо без опций: `nodeConfig.addTech(require('enb/techs/<tech-name>'));`.
+Все технологии, включенные в пакет ENB, находятся в папке `techs` пакета. Подключаются из [make-файла](terms.ru.md) с помощью `require('enb/techs/<tech-name>')`.
 
-Если при настройке технологии в опциях указана подстрока `{lang}`, то будет создано столько копий технологии, сколько языков установлено для ноды или проекта (если у ноды не указаны языки).
+Например:
+
+`require('enb/techs/js')`
+
+Чтобы подключить технологию к [ноде](./terms.ru.md), укажите класс и опции (необязательно):
+
+`nodeConfig.addTech([ require('enb/techs/<tech-name>'), {/* [options] */} ]);`
+
+Без опций:
+
+`nodeConfig.addTech(require('enb/techs/<tech-name>'));`
+
+Чтобы создать копии технологий для каждого языка, который установлен для ноды или проекта (если у ноды не указаны языки), укажите подстроку `{lang}` в опциях при настройке технологии.
 
 Например:
 
@@ -19,26 +31,35 @@ nodeConfig.addTech([require('js-i18n'), { target: '?.en.js', lang: 'en' }]);
 nodeConfig.addTech([require('js-i18n'), { target: '?.tk.js', lang: 'tk' }]);
 ```
 
-## file-copy
+## Технологии
+
+* [file-copy](#file-copy)
+* [file-merge](#file-merge)
+* [file-provider](#file-provider)
+* [symlink](#symlink)
+* [write-file](#write-file)
+
+### file-copy
 
 Копирует один таргет в другой.
 Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
 
 **Опции**
 
-* *String* **sourceTarget** — Исходный таргет. Обязательная опция.
-* *String* **destTarget** — Результирующий таргет. Обязательная опция.
+* *String* **source** — Исходный таргет. Обязательная опция.
+* *String* **sourceNode** — Путь ноды с исходным таргетом.
+* *String* **target** — Результирующий таргет. Обязательная опция.
 
 **Пример**
 
 ```javascript
 nodeConfig.addTech([ require('enb/techs/file-copy'), {
-  sourceTarget: '?.css',
-  destTarget: '_?.css'
+  source: '?.css',
+  target: '_?.css'
 } ]);
 ```
 
-## file-merge
+### file-merge
 
 Склеивает набор файлов в один.
 
@@ -58,7 +79,7 @@ nodeConfig.addTech([ require('enb/techs/file-merge'), {
 } ]);
 ```
 
-## file-provider
+### file-provider
 
 Предоставляет существующий файл для make-платформы.
 Может, например, использоваться для предоставления исходного *bemdecl*-файла.
@@ -73,7 +94,7 @@ nodeConfig.addTech([ require('enb/techs/file-merge'), {
 nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js' } ]);
 ```
 
-## symlink
+### symlink
 
 Создает симлинк из одного таргета в другой. Может, например, использоваться для построения `_?.css` из `?.css` для development-режима.
 
@@ -88,5 +109,45 @@ nodeConfig.addTech([ require('enb/techs/file-provider'), { target: '?.bemdecl.js
 nodeConfig.addTech([ require('enb/techs/symlink'), {
   fileTarget: '?.css',
   symlinkTarget: '_?.css'
+} ]);
+```
+
+### write-file
+
+ Записывает целевой файл в файловую систему.
+
+ **Опции**
+
+* *String* **target** — имя генерируемого файла. Обязательная опция.
+* *String | Buffer* **content** - контент генерируемого файла, если он есть файл будет сгенерирован
+* *Object | String* **fileOptions** - [аттрибуты генерируемого файла]{@link https://goo.gl/ZZzrdr} (default: 'utf8')
+
+**Пример**
+
+Генерируем текстовый-файл
+
+```javascript
+nodeConfig.addTech([ require('enb/techs/write-file'), {
+    content: 'bla bla bla',
+    fileOptions: {
+        encoding: 'utf8', // default
+        mode: '0o666', // default
+        flag: 'w' //default
+        },
+    target: '?.bla.txt'
+} ]);
+ ```
+
+Генерируем `bemdecl`-файл
+
+```javascript
+nodeConfig.addTech([ require('enb/techs/write-file'), {
+    content: 'exports.blocks = {name: "bla"}',
+    fileOptions: {
+        encoding: 'utf8', // default
+        mode: '0o666', // default
+        flag: 'w' //default
+        },
+    target: '?.bemdecl.js'
 } ]);
 ```

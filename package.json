@@ -41,7 +41,7 @@
     "chalk": "2.3.0",
     "clear-require": "1.0.1",
     "cli-table": "0.3.1",
-    "commander": "2.12.2",
+    "commander": "2.13.0",
     "connect": "3.6.5",
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",

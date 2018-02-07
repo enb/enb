@@ -59,7 +59,7 @@
     "rangem": "1.0.2",
     "resolve": "1.5.0",
     "serve-favicon": "2.4.5",
-    "serve-static": "1.13.1",
+    "serve-static": "1.13.2",
     "stack-trace": "0.0.10",
     "vow": "0.4.17",
     "vow-fs": "0.3.6",

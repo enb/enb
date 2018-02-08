@@ -2,7 +2,7 @@
 
 ## Node API
 
-Каждой технологии в `init` приходит экземпляр класса (instance) [ноды](terms.ru.md) (Node), для которой необходимо собирать [таргеты](terms.ru.md).
+Каждой технологии в `init` приходит экземпляр класса (instance) [ноды](../terms/terms.ru.md) (Node), для которой необходимо собирать [таргеты](../terms/terms.ru.md).
 С помощью ноды технология взаимодействует с процессом сборки.
 
 Основные методы класса Node:
@@ -164,10 +164,10 @@ Cache Node::getNodeCache(String targetName)
 
 ### node.getSharedResources
 
-[SharedResources](lib/shared-resources/index.js)
+[SharedResources](../../lib/shared-resources/index.js)
 
 Набор ресурсов, которые могут быть использованы в технологиях:
-- [JobQueue](lib/shared-resources/job-queue/index.js) - пул дочерних процессов для выполнения «тяжелых» задач.
+- [JobQueue](../../lib/shared-resources/job-queue/index.js) - пул дочерних процессов для выполнения «тяжелых» задач.
 
 **Пример**
 

@@ -23,7 +23,10 @@ describe('lib', () => {
             ];
             files2 = [
                 { fullname: '/foo/bar/file3.txt', name: 'file3', suffix: 'txt', mtime: 1437573848385 },
-                { fullname: '/foo/bar/file4.html', name: 'file4', suffix: 'html', mtime: 1437573848385 }
+                { fullname: '/foo/bar/file4.html', name: 'file4', suffix: 'html', mtime: 1437573848385 },
+                { fullname: '/foo/bar/file5.css', name: 'file5', suffix: 'css', mtime: 1437573848385 },
+                { fullname: '/foo/baz/file5.styl', name: 'file5', suffix: 'styl', mtime: 1437573848385 }
+
             ];
         });
 
@@ -59,7 +62,7 @@ describe('lib', () => {
             });
 
             it('should add each file from files to items array', () => {
-                fileList.items.should.have.length(4);
+                fileList.items.should.have.length(6);
                 fileList.items.should.be.deep.equal(files1.concat(files2));
             });
 
@@ -108,6 +111,12 @@ describe('lib', () => {
                     fileList.addFiles(advancedFiles);
                     fileList.getBySuffix(['bemhtml.js']).should.be.instanceOf(Array).and.have.length(1);
                     fileList.getBySuffix(['bemhtml.js'])[0].should.be.deep.equal(advancedFiles[0]);
+                });
+
+                it('should preserve file order', () => {
+                    fileList.addFiles(files2);
+                    fileList.getBySuffix(['styl', 'css']).should.be.deep.equal(files2.slice(2));
+                    fileList.getBySuffix(['css', 'styl']).should.be.deep.equal(files2.slice(2));
                 });
             });
 

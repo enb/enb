@@ -54,7 +54,7 @@
     "lodash.frompairs": "4.0.1",
     "lodash.uniq": "4.5.0",
     "percentile": "1.2.0",
-    "pretty-ms": "3.1.0",
+    "pretty-ms": "5.0.0",
     "puml-link": "0.0.1",
     "rangem": "1.0.2",
     "resolve": "1.5.0",

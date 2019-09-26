@@ -45,7 +45,7 @@
     "connect": "3.6.5",
     "enb-async-require": "1.0.1",
     "enb-require-or-eval": "1.0.2",
-    "enb-source-map": "1.12.0",
+    "enb-source-map": "1.12.1",
     "file-eval": "2.0.0",
     "file-suffix": "1.0.1",
     "glob": "7.1.2",
